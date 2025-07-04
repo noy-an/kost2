@@ -18,6 +18,8 @@
           <span class="hide-menu">MAIN MENU</span>
         </li>
 
+
+
         <li class="sidebar-item">
           <a class="sidebar-link" href="{{ route('admin.index') }}" aria-expanded="false">
             <span><i class="ti ti-home"></i></span>
@@ -57,6 +59,12 @@
           <a class="sidebar-link" href="{{ route('tagihan.index') }}" aria-expanded="false">
             <span><i class="ti ti-file-invoice"></i></span>
             <span class="hide-menu">Tagihan</span>
+          </a>
+        </li>
+          <li class="sidebar-item">
+          <a class="sidebar-link" href="{{ route('pengguna.index') }}" aria-expanded="false">
+            <span><i class="ti ti-credit-card"></i></span>
+            <span class="hide-menu">Pengguna</span>
           </a>
         </li>
 

@@ -10,6 +10,7 @@ use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\KostController;       
 use App\Http\Controllers\TagihanController;    
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\PenggunaController;
 
 
 
@@ -33,7 +34,7 @@ Route::resource('booking', BookingController::class);
 Route::resource('kontak', KontakController::class);
 Route::resource('pembayaran', PembayaranController::class);
 Route::resource('tagihan', TagihanController::class);
-
+Route::resource('pengguna', PenggunaController::class);
 });
 
 Route::get('/registrasi/pelanggan', [AuthController::class, 'registrasiPelanggan'])->name('registrasipelanggan');
