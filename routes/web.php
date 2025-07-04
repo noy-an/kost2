@@ -16,14 +16,15 @@ Route::resource('/kost', \App\Http\Controllers\KostController::class);
 Route::resource('/about', \App\Http\Controllers\AboutController::class);
 Route::resource('/contact', \App\Http\Controllers\ContactController::class);
 
+Route::middleware(['auth', 'role:admin'])->group(function () {
+  Route::resource('admin', \App\Http\Controllers\AdminController::class);
 
-Route::resource('/admin', \App\Http\Controllers\AdminController::class);
+});
 
 Route::get('/registrasi/pelanggan', [AuthController::class, 'registrasiPelanggan'])->name('registrasipelanggan');
 Route::post('/registrasi/pelanggan/submit', [AuthController::class, 'submitRegistrasiPelanggan'])->name('registrasipelanggan.submit');
-Route::get('/registrasi', [AuthController::class, 'Registrasi'])->name('registrasi');
-Route::post('/registrasi/submit', [AuthController::class, 'submitRegistrasi'])->name('registrasi.submit');
-Route::get('/login', [AuthController::class, 'Login'])->name('login');
+
+Route::get('/login', [AuthController::class, 'Login'])->middleware(['guest'])->name('login');
 Route::post('/login/submit', [AuthController::class, 'submitLogin'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

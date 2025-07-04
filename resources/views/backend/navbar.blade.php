@@ -34,7 +34,12 @@
                 <i class="ti ti-list-check fs-6"></i>
                 <p class="mb-0 fs-3">My Task</p>
               </a>
-              <a href="{{ route('logout') }}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+              <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button class="btn btn-outline-primary mx-3 mt-2 d-block">
+                            <i class="dw dw-logout me-2"></i> Log Out
+                        </button>
+                    </form>
             </div>
           </div>
         </li>

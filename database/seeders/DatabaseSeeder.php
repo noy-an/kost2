@@ -23,12 +23,13 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin'
         ]);
        User::create([
-            'name' => 'bayu',
-            'email' => 'bayunovantrd@gmail.com',
+            'name' => 'Pemilik',
+            'email' => 'pemilik@gmail.com',
             'password' => Hash::make('222222'),
-            'phone' => '0882948977',
-            'role' => 'admin'
+            'phone' => '0882944277',
+            'role' => 'pemilik'
         ]);
+      
         
     }
 }

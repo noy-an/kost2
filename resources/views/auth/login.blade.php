@@ -335,7 +335,7 @@
         <!-- Register Section -->
         <div class="register-section">
           <p class="register-text">Belum memiliki akun?</p>
-          <a href="{{route('registrasi')}}" class="register-link">
+          <a href="{{route('registrasipelanggan')}}" class="register-link">
             Daftar sekarang
           </a>
         </div>

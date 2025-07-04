@@ -20,40 +20,19 @@ class AuthController extends Controller
        $user->email = $request->email;
        $user->role = $request->role;
        $user->phone = $request->phone;
-       $user->url_diri = $request->url_diri;
+       $user->avatar = $request->avatar;
+       $user->id_card = $request->id_card;
        $user->password =bcrypt($request->password);
-        if ($request->hasFile('url_diri')) {
-        $user->url_diri = $request->file('url_diri')->store('diri', 'public');
+        if ($request->hasFile('id_card')) {
+        $user->id_card = $request->file('id_card')->store('id_card', 'public');
+    }
+        if ($request->hasFile('avatar')) {
+        $user->avatar = $request->file('avatar')->store('avatar', 'public');
     }
        $user->save();   
        return redirect()->route('login')->with('sukses', 'Registration successful as owner. Please log in.');;
     }
-      public function Registrasi()
-    {
-        return view('auth.registrasi');
-    }
-    public function submitRegistrasi(Request $request)
-    {
-       $user = new User();
-       $user->name = $request->name;
-       $user->email = $request->email;
-       $user->role = $request->role;
-       $user->phone = $request->phone;
-       $user->password =bcrypt($request->password);
-  if ($request->hasFile('url_ktp')) {
-        $user->url_ktp = $request->file('url_ktp')->store('ktp', 'public');
-    }
-
-    if ($request->hasFile('url_npwp')) {
-        $user->url_npwp = $request->file('url_npwp')->store('npwp', 'public');
-    }
-
-    if ($request->hasFile('url_diri')) {
-        $user->url_diri = $request->file('url_diri')->store('diri', 'public');
-    }
-       $user->save();   
-       return redirect()->route('login')->with('sukses', 'Registration successful as owner. Please log in.');;
-    }
+     
 
     public function login()
     {
@@ -74,12 +53,8 @@ class AuthController extends Controller
                 return redirect()->route('admin.index');
             } elseif ($user->role === 'pemilik') {
                 return redirect()->route('pemilik.index');
-            } elseif ($user->role === 'marketing') {
-                return redirect()->route('marketing.index');
-            } elseif ($user->role === 'customer') {
+            } elseif ($user->role === 'pelanggan') {
                 return redirect()->route('home.index');
-            } elseif ($user->role === 'resepsionis') {
-                return redirect()->route('resepsionis.index');
             } else {
                 return redirect()->route('login')->with('gagal', 'Unauthorized access.');
             }
