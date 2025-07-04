@@ -17,7 +17,7 @@
 
         <div class="mb-3">
             <label for="booking_id" class="form-label">Booking</label>
-            <select name="booking_id" id="booking_id" class="form-select @error('booking_id') is-invalid @enderror" required>
+            <select name="booking_id" id="booking_id" class="form-select @error('booking_id') is-invalid @enderror" >
                 <option value="">-- Pilih Booking --</option>
                 @foreach($bookings as $booking)
                     <option value="{{ $booking->id }}" {{ (old('booking_id', $tagihan->booking_id) == $booking->id) ? 'selected' : '' }}>
@@ -32,7 +32,7 @@
 
         <div class="mb-3">
             <label for="bayar_per_bulan" class="form-label">Bayar Per Bulan</label>
-            <input type="number" name="bayar_per_bulan" id="bayar_per_bulan" class="form-control @error('bayar_per_bulan') is-invalid @enderror" value="{{ old('bayar_per_bulan', $tagihan->bayar_per_bulan) }}" required>
+            <input type="number" name="bayar_per_bulan" id="bayar_per_bulan" class="form-control @error('bayar_per_bulan') is-invalid @enderror" value="{{ old('bayar_per_bulan', $tagihan->bayar_per_bulan) }}" >
             @error('bayar_per_bulan')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -40,7 +40,7 @@
 
         <div class="mb-3">
             <label for="jumlah_bayar" class="form-label">Jumlah Bayar</label>
-            <input type="number" name="jumlah_bayar" id="jumlah_bayar" class="form-control @error('jumlah_bayar') is-invalid @enderror" value="{{ old('jumlah_bayar', $tagihan->jumlah_bayar) }}" required>
+            <input type="number" name="jumlah_bayar" id="jumlah_bayar" class="form-control @error('jumlah_bayar') is-invalid @enderror" value="{{ old('jumlah_bayar', $tagihan->jumlah_bayar) }}" >
             @error('jumlah_bayar')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror

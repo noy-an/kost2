@@ -16,7 +16,7 @@
 
         <div class="mb-3">
             <label for="booking_id" class="form-label">Booking</label>
-            <select name="booking_id" id="booking_id" class="form-select @error('booking_id') is-invalid @enderror" required>
+            <select name="booking_id" id="booking_id" class="form-select @error('booking_id') is-invalid @enderror" >
                 <option value="">-- Pilih Booking --</option>
                 @foreach($bookings as $booking)
                     <option value="{{ $booking->id }}" {{ old('booking_id') == $booking->id ? 'selected' : '' }}>
@@ -31,7 +31,7 @@
 
         <div class="mb-3">
             <label for="metode_bayar" class="form-label">Metode Bayar</label>
-            <input type="text" name="metode_bayar" id="metode_bayar" class="form-control @error('metode_bayar') is-invalid @enderror" value="{{ old('metode_bayar') }}" required>
+            <input type="text" name="metode_bayar" id="metode_bayar" class="form-control @error('metode_bayar') is-invalid @enderror" value="{{ old('metode_bayar') }}" >
             @error('metode_bayar')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -39,7 +39,7 @@
 
         <div class="mb-3">
             <label for="status_bayar" class="form-label">Status Bayar</label>
-            <select name="status_bayar" id="status_bayar" class="form-select @error('status_bayar') is-invalid @enderror" required>
+            <select name="status_bayar" id="status_bayar" class="form-select @error('status_bayar') is-invalid @enderror" >
                 <option value="">-- Pilih Status --</option>
                 <option value="paid" {{ old('status_bayar') == 'paid' ? 'selected' : '' }}>Paid</option>
                 <option value="unpaid" {{ old('status_bayar') == 'unpaid' ? 'selected' : '' }}>Unpaid</option>
@@ -51,7 +51,7 @@
 
         <div class="mb-3">
             <label for="no_rekening" class="form-label">No Rekening</label>
-            <input type="number" name="no_rekening" id="no_rekening" class="form-control @error('no_rekening') is-invalid @enderror" value="{{ old('no_rekening') }}" required>
+            <input type="number" name="no_rekening" id="no_rekening" class="form-control @error('no_rekening') is-invalid @enderror" value="{{ old('no_rekening') }}" >
             @error('no_rekening')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -59,7 +59,7 @@
 
         <div class="mb-3">
             <label for="tempat_bayar" class="form-label">Tempat Bayar</label>
-            <input type="text" name="tempat_bayar" id="tempat_bayar" class="form-control @error('tempat_bayar') is-invalid @enderror" value="{{ old('tempat_bayar') }}" required>
+            <input type="text" name="tempat_bayar" id="tempat_bayar" class="form-control @error('tempat_bayar') is-invalid @enderror" value="{{ old('tempat_bayar') }}" >
             @error('tempat_bayar')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -67,7 +67,7 @@
 
         <div class="mb-3">
             <label for="transaksi_id" class="form-label">Transaksi ID</label>
-            <input type="text" name="transaksi_id" id="transaksi_id" class="form-control @error('transaksi_id') is-invalid @enderror" value="{{ old('transaksi_id') }}" required>
+            <input type="text" name="transaksi_id" id="transaksi_id" class="form-control @error('transaksi_id') is-invalid @enderror" value="{{ old('transaksi_id') }}" >
             @error('transaksi_id')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -75,7 +75,7 @@
 
         <div class="mb-3">
             <label for="bukti_bayar" class="form-label">Bukti Bayar</label>
-            <input type="file" name="bukti_bayar" id="bukti_bayar" class="form-control @error('bukti_bayar') is-invalid @enderror" required>
+            <input type="file" name="bukti_bayar" id="bukti_bayar" class="form-control @error('bukti_bayar') is-invalid @enderror" >
             @error('bukti_bayar')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror

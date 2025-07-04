@@ -21,7 +21,7 @@
 
       <div class="mb-3">
         <label for="nama" class="form-label">Nama</label>
-        <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama', $kontak->nama) }}" required>
+        <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama', $kontak->nama) }}" >
         @error('nama')
           <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -29,7 +29,7 @@
 
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
-        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $kontak->email) }}" required>
+        <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $kontak->email) }}" >
         @error('email')
           <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -37,7 +37,7 @@
 
       <div class="mb-3">
         <label for="subjek" class="form-label">Subjek</label>
-        <input type="text" name="subjek" id="subjek" class="form-control @error('subjek') is-invalid @enderror" value="{{ old('subjek', $kontak->subjek) }}" required>
+        <input type="text" name="subjek" id="subjek" class="form-control @error('subjek') is-invalid @enderror" value="{{ old('subjek', $kontak->subjek) }}" >
         @error('subjek')
           <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -45,7 +45,7 @@
 
       <div class="mb-3">
         <label for="pesan" class="form-label">Pesan</label>
-        <textarea name="pesan" id="pesan" rows="5" class="form-control @error('pesan') is-invalid @enderror" required>{{ old('pesan', $kontak->pesan) }}</textarea>
+        <textarea name="pesan" id="pesan" rows="5" class="form-control @error('pesan') is-invalid @enderror" >{{ old('pesan', $kontak->pesan) }}</textarea>
         @error('pesan')
           <div class="invalid-feedback">{{ $message }}</div>
         @enderror
