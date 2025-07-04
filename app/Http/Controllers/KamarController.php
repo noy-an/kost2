@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class KostController extends Controller
+class KamarController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-         return view('kost.index',[
-            'title' => 'Kost'
+            return view('kamar.index',[
+            'title' => 'Kamar Kost'
         ]);
     }
 

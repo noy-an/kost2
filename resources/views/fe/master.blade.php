@@ -136,13 +136,22 @@
                     <div class="col-lg-10">
                         <div class="nav-menu">
                             <nav class="mainmenu">
-                                <ul>
-                                    <li class="active"><a href="{{ route('home.index') }}">Home</a></li>
-                                    <li><a href="{{ route('kost.index') }}">Kost</a></li>
-                                    <li><a href="{{ route('about.index') }}">About Us</a></li>
-                                    <li><a href="{{ route('contact.index') }}">Contact</a></li>
-                                </ul>
-                            </nav>
+    <ul>
+        <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+            <a href="{{ route('home.index') }}">Home</a>
+        </li>
+        <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+            <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+        </li>
+        <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+            <a href="{{ route('about.index') }}">About Us</a>
+        </li>
+        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
+            <a href="{{ route('contact.index') }}">Contact</a>
+        </li>
+    </ul>
+</nav>
+
                             <div class="nav-right search-switch">
                                 <i class="icon_search"></i>
                             </div>

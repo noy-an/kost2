@@ -1,59 +1,67 @@
-@extends('fe.master')
+@extends('fe.master') {{-- Ganti jika pakai layout lain --}}
 @section('content')
-<!-- Contact Section Begin -->
-    <section class="contact-section spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="contact-text">
-                        <h2>Contact Info</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua.</p>
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td class="c-o">Address:</td>
-                                    <td>856 Cordia Extension Apt. 356, Lake, US</td>
-                                </tr>
-                                <tr>
-                                    <td class="c-o">Phone:</td>
-                                    <td>(12) 345 67890</td>
-                                </tr>
-                                <tr>
-                                    <td class="c-o">Email:</td>
-                                    <td>info.colorlib@gmail.com</td>
-                                </tr>
-                                <tr>
-                                    <td class="c-o">Fax:</td>
-                                    <td>+(12) 345 67890</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="col-lg-7 offset-lg-1">
-                    <form action="#" class="contact-form">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <input type="text" placeholder="Your Name">
-                            </div>
-                            <div class="col-lg-6">
-                                <input type="text" placeholder="Your Email">
-                            </div>
-                            <div class="col-lg-12">
-                                <textarea placeholder="Your Message"></textarea>
-                                <button type="submit">Submit Now</button>
-                            </div>
-                        </div>
-                    </form>
+
+<section class="contact-section spad">
+    <div class="container">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="contact-text">
+                    <h2>Contact Info</h2>
+                    <p>Silakan hubungi kami kapan saja jika ada pertanyaan.</p>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="c-o">Address:</td>
+                                <td>856 Cordia Extension Apt. 356, Lake, US</td>
+                            </tr>
+                            <tr>
+                                <td class="c-o">Phone:</td>
+                                <td>(12) 345 67890</td>
+                            </tr>
+                            <tr>
+                                <td class="c-o">Email:</td>
+                                <td>info@contoh.com</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="map">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.0606825994123!2d-72.8735845851828!3d40.760690042573295!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89e85b24c9274c91%3A0xf310d41b791bcb71!2sWilliam%20Floyd%20Pkwy%2C%20Mastic%20Beach%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbd!4v1578582744646!5m2!1sen!2sbd"
-                    height="470" style="border:0;" allowfullscreen=""></iframe>
+            <div class="col-lg-7 offset-lg-1">
+                <form action="{{ route('contact.store') }}" method="POST" class="contact-form">
+                    @csrf
+                    <div class="row">
+                        <div class="col-lg-6 mb-3">
+                            <input type="text" name="nama" placeholder="Your Name" required>
+                        </div>
+                        <div class="col-lg-6 mb-3">
+                            <input type="email" name="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="col-lg-12 mb-3">
+                            <input type="text" name="subjek" placeholder="Subject" required>
+                        </div>
+                        <div class="col-lg-12 mb-3">
+                            <textarea name="pesan" placeholder="Your Message" required></textarea>
+                        </div>
+                        <div class="col-lg-12">
+                            <button type="submit" class="primary-btn">Submit Now</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-    </section>
-    <!-- Contact Section End -->
+
+        <div class="map mt-5">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18..."
+                height="470" style="border:0;" allowfullscreen=""></iframe>
+        </div>
+    </div>
+</section>
+
 @endsection
