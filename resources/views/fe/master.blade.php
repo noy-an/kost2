@@ -58,42 +58,21 @@
             <a href="#" class="bk-btn">Booking Now</a>
         </div>
         <nav class="mainmenu mobile-menu">
-             <ul>
-        <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
-            <a href="{{ route('home.index') }}">Home</a>
-        </li>
-        <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
-            <a href="{{ route('kamar.index') }}">Kamar Kost</a>
-        </li>
-        <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
-            <a href="{{ route('about.index') }}">About Us</a>
-        </li>
-        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
-            <a href="{{ route('contact.index') }}">Contact</a>
-        </li>
-
-        {{-- ✅ Tampilkan tombol login/register jika belum login --}}
-        @guest
-            <li>
-                <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
-            </li>
-            <li>
-                <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
-            </li>
-        @endguest
-
-        {{-- ✅ Tampilkan tombol logout jika sudah login --}}
-        @auth
-            <li>
-                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
-                        Logout
-                    </button>
-                </form>
-            </li>
-        @endauth
-    </ul>
+            <ul>
+                <li class="active"><a href="{{ route('home.index') }}">Home</a></li>
+                <li><a href="./rooms.html">Rooms</a></li>
+                <li><a href="./about-us.html">About Us</a></li>
+                <li><a href="./pages.html">Pages</a>
+                    <ul class="dropdown">
+                        <li><a href="./room-details.html">Room Details</a></li>
+                        <li><a href="#">Deluxe Room</a></li>
+                        <li><a href="#">Family Room</a></li>
+                        <li><a href="#">Premium Room</a></li>
+                    </ul>
+                </li>
+                <li><a href="./blog.html">News</a></li>
+                <li><a href="./contact.html">Contact</a></li>
+            </ul>
         </nav>
         <div id="mobile-menu-wrap"></div>
         <div class="top-social">
@@ -156,20 +135,20 @@
                     </div>
                     <div class="col-lg-10">
                         <div class="nav-menu">
-<nav class="mainmenu">
-    <ul>
-        <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
-            <a href="{{ route('home.index') }}">Home</a>
-        </li>
-        <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
-            <a href="{{ route('kamar.index') }}">Kamar Kost</a>
-        </li>
-        <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
-            <a href="{{ route('about.index') }}">About Us</a>
-        </li>
-        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
-            <a href="{{ route('contact.index') }}">Contact</a>
-        </li>
+                                <nav class="mainmenu">
+                                    <ul>
+                                        <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+                                            <a href="{{ route('home.index') }}">Home</a>
+                                        </li>
+                                        <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+                                            <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+                                        </li>
+                                        <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+                                            <a href="{{ route('about.index') }}">About Us</a>
+                                        </li>
+                                        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
+                                            <a href="{{ route('contact.index') }}">Contact</a>
+                                        </li>
 
                                         @auth
                                         <li>
