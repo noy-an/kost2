@@ -154,7 +154,7 @@
                                         <li>
                                             <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                                                 @csrf
-                                                <button type="submit" style="background:none;border:none;color:#fff;font-weight:bold;padding: 10px 15px;">
+                                                <button type="submit" style="background:none;border:none;color:black;font-weight:bold;padding: 10px 15px;">
                                                     Logout
                                                 </button>
                                             </form>
