@@ -8,20 +8,20 @@
   <link rel="stylesheet" href="{{ asset('backend/assets/css/styles.min.css') }}" />
 </head>
 <body>
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+   @yield('sidebar')
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+      @yield('navbar')
+      <div class="container-fluid">
+        <!--  Row 1 -->
 
-  {{-- Navbar langsung include --}}
-  @include('backend.navbar')
-
-  <div class="d-flex">
-    {{-- Sidebar langsung include --}}
-    @include('backend.sidebar')
-
-    {{-- Content area --}}
-    <main class="flex-fill p-3">
-      @yield('content')
-    </main>
+        @yield('content')
+       
+      </div>
+    </div>
   </div>
-
 
   {{-- Scripts --}}
   <script src="{{ asset('backend/assets/libs/jquery/dist/jquery.min.js') }}"></script>
