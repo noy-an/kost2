@@ -11,12 +11,7 @@ use App\Http\Controllers\KostController;
 use App\Http\Controllers\TagihanController;    
 use App\Http\Controllers\ContactController;
 
-//backend
-Route::resource('kost', KostController::class);
-Route::resource('booking', BookingController::class);
-Route::resource('kontak', KontakController::class);
-Route::resource('pembayaran', PembayaranController::class);
-Route::resource('tagihan', TagihanController::class);
+
 
 //front-end
 Route::resource('/', \App\Http\Controllers\HomeController::class);
@@ -32,7 +27,12 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
   Route::resource('admin', \App\Http\Controllers\AdminController::class);
-
+//backend
+Route::resource('kost', KostController::class);
+Route::resource('booking', BookingController::class);
+Route::resource('kontak', KontakController::class);
+Route::resource('pembayaran', PembayaranController::class);
+Route::resource('tagihan', TagihanController::class);
 
 });
 
