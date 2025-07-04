@@ -135,23 +135,33 @@
                     </div>
                     <div class="col-lg-10">
                         <div class="nav-menu">
-                            <nav class="mainmenu">
-    <ul>
-        <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
-            <a href="{{ route('home.index') }}">Home</a>
-        </li>
-        <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
-            <a href="{{ route('kamar.index') }}">Kamar Kost</a>
-        </li>
-        <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
-            <a href="{{ route('about.index') }}">About Us</a>
-        </li>
-        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
-            <a href="{{ route('contact.index') }}">Contact</a>
-        </li>
-    </ul>
-</nav>
+                                <nav class="mainmenu">
+                                    <ul>
+                                        <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+                                            <a href="{{ route('home.index') }}">Home</a>
+                                        </li>
+                                        <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+                                            <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+                                        </li>
+                                        <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+                                            <a href="{{ route('about.index') }}">About Us</a>
+                                        </li>
+                                        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
+                                            <a href="{{ route('contact.index') }}">Contact</a>
+                                        </li>
 
+                                        @auth
+                                        <li>
+                                            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" style="background:none;border:none;color:#fff;font-weight:bold;padding: 10px 15px;">
+                                                    Logout
+                                                </button>
+                                            </form>
+                                        </li>
+                                        @endauth
+                                    </ul>
+                                </nav>
                             <div class="nav-right search-switch">
                                 <i class="icon_search"></i>
                             </div>
