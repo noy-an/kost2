@@ -4,9 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\AdminController;
-Route::get('/', function () {
-    return view('welcome');
-});
 
 
 //front-end
@@ -14,7 +11,11 @@ Route::resource('/', \App\Http\Controllers\HomeController::class);
 Route::resource('/home', \App\Http\Controllers\HomeController::class);
 Route::resource('/kost', \App\Http\Controllers\KostController::class);
 Route::resource('/about', \App\Http\Controllers\AboutController::class);
-Route::resource('/contact', \App\Http\Controllers\ContactController::class);
+// Route::resource('/contact', \App\Http\Controllers\ContactController::class);
+use App\Http\Controllers\ContactController;
+
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 
 Route::resource('/admin', \App\Http\Controllers\AdminController::class);
