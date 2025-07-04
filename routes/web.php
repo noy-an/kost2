@@ -9,7 +9,7 @@ use App\Http\Controllers\AdminController;
 //front-end
 Route::resource('/', \App\Http\Controllers\HomeController::class);
 Route::resource('/home', \App\Http\Controllers\HomeController::class);
-Route::resource('/kost', \App\Http\Controllers\KostController::class);
+Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 Route::resource('/about', \App\Http\Controllers\AboutController::class);
 // Route::resource('/contact', \App\Http\Controllers\ContactController::class);
 use App\Http\Controllers\ContactController;

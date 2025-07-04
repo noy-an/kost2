@@ -140,8 +140,8 @@
         <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
             <a href="{{ route('home.index') }}">Home</a>
         </li>
-        <li class="{{ Request::routeIs('kost.index') ? 'active' : '' }}">
-            <a href="{{ route('kost.index') }}">Kost</a>
+        <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+            <a href="{{ route('kamar.index') }}">Kamar Kost</a>
         </li>
         <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
             <a href="{{ route('about.index') }}">About Us</a>
