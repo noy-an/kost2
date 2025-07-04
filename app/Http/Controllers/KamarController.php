@@ -3,16 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Kost;
 class KamarController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+ public function index(Request $request)
     {
-        return view('kamar.index',[
-            'title' => 'Kamar Kost'
+        $search = $request->input('search');
+
+        $query = Kost::query();
+
+        if ($search) {
+            $query->where('nomor_kamar', 'like', '%' . $search . '%');
+        }
+
+        $kosts = $query->where('status', 'kosong')->paginate(9); // hanya kost kosong
+
+        return view('kamar.index', [
+            'title' => 'Daftar Kost',
+            'kosts' => $kosts
         ]);
     }
 

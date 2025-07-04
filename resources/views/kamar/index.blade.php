@@ -1,198 +1,60 @@
 @extends('fe.master')
+
 @section('content')
-<!-- Rooms Section Begin -->
-    <section class="rooms-section spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6">
-                    <div class="room-item">
-                        <img src="{{asset ('front-end/img/room/room-1.jpg') }}" alt="">
-                        <div class="ri-text">
-                            <h4>Premium King Room</h4>
-                            <h3>159$<span>/Pernight</span></h3>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td class="r-o">Size:</td>
-                                        <td>30 ft</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Capacity:</td>
-                                        <td>Max persion 3</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Bed:</td>
-                                        <td>King Beds</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Services:</td>
-                                        <td>Wifi, Television, Bathroom,...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="room-item">
-                        <img src="{{asset ('front-end/img/room/room-2.jpg') }}" alt="">
-                        <div class="ri-text">
-                            <h4>Deluxe Room</h4>
-                            <h3>159$<span>/Pernight</span></h3>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td class="r-o">Size:</td>
-                                        <td>30 ft</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Capacity:</td>
-                                        <td>Max persion 5</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Bed:</td>
-                                        <td>King Beds</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Services:</td>
-                                        <td>Wifi, Television, Bathroom,...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="room-item">
-                        <img src="{{asset ('front-end/img/room/room-3.jpg') }}" alt="">
-                        <div class="ri-text">
-                            <h4>Double Room</h4>
-                            <h3>159$<span>/Pernight</span></h3>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td class="r-o">Size:</td>
-                                        <td>30 ft</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Capacity:</td>
-                                        <td>Max persion 2</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Bed:</td>
-                                        <td>King Beds</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Services:</td>
-                                        <td>Wifi, Television, Bathroom,...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="room-item">
-                        <img src="{{asset ('front-end/img/room/room-4.jpg') }}" alt="">
-                        <div class="ri-text">
-                            <h4>Luxury Room</h4>
-                            <h3>159$<span>/Pernight</span></h3>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td class="r-o">Size:</td>
-                                        <td>30 ft</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Capacity:</td>
-                                        <td>Max persion 1</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Bed:</td>
-                                        <td>King Beds</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Services:</td>
-                                        <td>Wifi, Television, Bathroom,...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="room-item">
-                        <img src="{{asset ('front-end/img/room/room-5.jpg') }}" alt="">
-                        <div class="ri-text">
-                            <h4>Room With View</h4>
-                            <h3>159$<span>/Pernight</span></h3>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td class="r-o">Size:</td>
-                                        <td>30 ft</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Capacity:</td>
-                                        <td>Max persion 1</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Bed:</td>
-                                        <td>King Beds</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Services:</td>
-                                        <td>Wifi, Television, Bathroom,...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="room-item">
-                        <img src="{{asset ('front-end/img/room/room-6.jpg') }}" alt="">
-                        <div class="ri-text">
-                            <h4>Small View</h4>
-                            <h3>159$<span>/Pernight</span></h3>
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td class="r-o">Size:</td>
-                                        <td>30 ft</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Capacity:</td>
-                                        <td>Max persion 2</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Bed:</td>
-                                        <td>King Beds</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="r-o">Services:</td>
-                                        <td>Wifi, Television, Bathroom,...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-12">
-                    <div class="room-pagination">
-                        <a href="#">1</a>
-                        <a href="#">2</a>
-                        <a href="#">Next <i class="fa fa-long-arrow-right"></i></a>
-                    </div>
-                </div>
+<section class="ftco-section bg-light">
+    <div class="container">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-10">
+                <form action="{{ route('kamar.index') }}" method="GET" class="d-flex">
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari nomor kamar..."
+                        class="form-control me-2 p-3 rounded-start border" style="flex: 1;">
+                    <button type="submit" class="btn btn-primary px-4 rounded-end">Cari</button>
+                </form>
             </div>
         </div>
-    </section>
-    <!-- Rooms Section End -->
+
+        <div class="row">
+            @if($kosts->isEmpty())
+                <div class="col-12 text-center">
+                    <h5>Kost tidak ditemukan.</h5>
+                </div>
+            @else
+                @foreach($kosts as $kost)
+                    <div class="col-sm-12 col-md-6 col-lg-4 ftco-animate d-flex">
+                        <div class="product d-flex flex-column">
+                            <a href="#" class="img-prod">
+                                <img class="img-fluid uniform-img" src="{{ asset('storage/' . $kost->foto1) }}" alt="Kamar {{ $kost->nomor_kamar }}">
+                                <div class="overlay"></div>
+                            </a>
+                            <div class="text py-3 pb-4 px-3">
+                                <h3>Kamar No {{ $kost->nomor_kamar }}</h3>
+                                <p>Lantai: {{ $kost->nomor_lantai }} | Status: {{ ucfirst($kost->status) }}</p>
+                                <p>{{ $kost->fasilitas }}</p>
+                                <div class="pricing">
+                                    <p class="price"><span>{{ 'Rp ' . number_format($kost->harga, 0, ',', '.') }}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
+        </div>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-auto">
+                {{ $kosts->links() }}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.uniform-img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: center;
+}
+</style>
 @endsection
