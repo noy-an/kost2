@@ -3,15 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ResetPasswordController;
-<<<<<<< HEAD
 use App\Http\Controllers\AdminController;
 Route::get('/', function () {
     return view('welcome');
 });
-=======
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
 
 //front-end
@@ -20,8 +15,7 @@ Route::resource('/home', \App\Http\Controllers\HomeController::class);
 Route::resource('/kost', \App\Http\Controllers\KostController::class);
 Route::resource('/about', \App\Http\Controllers\AboutController::class);
 Route::resource('/contact', \App\Http\Controllers\ContactController::class);
-//front-end
->>>>>>> 6343707c34b9aca2ebdbe2c8ec9e8a6615ec83e5
+
 
 Route::resource('/admin', \App\Http\Controllers\AdminController::class);
 
