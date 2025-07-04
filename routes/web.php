@@ -3,11 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\AdminController;
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('admin', \App\Http\Controllers\AdminController::class);
+Route::resource('/admin', \App\Http\Controllers\AdminController::class);
 
 Route::get('/registrasi/pelanggan', [AuthController::class, 'registrasiPelanggan'])->name('registrasipelanggan');
 Route::post('/registrasi/pelanggan/submit', [AuthController::class, 'submitRegistrasiPelanggan'])->name('registrasipelanggan.submit');
