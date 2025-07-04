@@ -150,18 +150,30 @@
                                             <a href="{{ route('contact.index') }}">Contact</a>
                                         </li>
 
-                                        @auth
-                                        <li>
-                                            <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                <button type="submit" style="background:none;border:none;color:#fff;font-weight:bold;padding: 10px 15px;">
-                                                    Logout
-                                                </button>
-                                            </form>
-                                        </li>
-                                        @endauth
-                                    </ul>
-                                </nav>
+        {{--  Tampilkan tombol login/register jika belum login --}}
+        @guest
+            <li>
+                <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
+            </li>
+            <li>
+                <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
+            </li>
+        @endguest
+
+        {{-- Tampilkan tombol logout jika sudah login --}}
+        @auth
+            <li>
+                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
+                        Logout
+                    </button>
+                </form>
+            </li>
+        @endauth
+    </ul>
+</nav>
+
                             <div class="nav-right search-switch">
                                 <i class="icon_search"></i>
                             </div>
