@@ -22,7 +22,7 @@ Route::get('/registrasi/pelanggan', [AuthController::class, 'registrasiPelanggan
 Route::post('/registrasi/pelanggan/submit', [AuthController::class, 'submitRegistrasiPelanggan'])->name('registrasipelanggan.submit');
 Route::get('/registrasi', [AuthController::class, 'Registrasi'])->name('registrasi');
 Route::post('/registrasi/submit', [AuthController::class, 'submitRegistrasi'])->name('registrasi.submit');
-Route::get('/login', [AuthController::class, 'Login'])->middleware(['guest'])->name('login');
+Route::get('/login', [AuthController::class, 'Login'])->name('login');
 Route::post('/login/submit', [AuthController::class, 'submitLogin'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
