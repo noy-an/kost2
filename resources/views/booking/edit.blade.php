@@ -60,7 +60,7 @@
 
         <div class="col-md-6 mb-3">
           <label for="tgl_booking" class="form-label">Tanggal Booking</label>
-          <input type="date" class="form-control" name="tgl_booking" value="{{ old('tgl_booking', $booking->tgl_booking->format('Y-m-d')) }}" >
+          <input type="date" class="form-control" name="tgl_booking" value="{{ old('tgl_booking', $booking->tgl_booking )}}" >
         </div>
 
         <div class="col-md-6 mb-3">
