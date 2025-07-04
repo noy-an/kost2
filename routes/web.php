@@ -20,22 +20,24 @@ Route::resource('tagihan', TagihanController::class);
 
 //front-end
 Route::resource('/', \App\Http\Controllers\HomeController::class);
-Route::resource('home', \App\Http\Controllers\HomeController::class);
-Route::resource('about', \App\Http\Controllers\AboutController::class);
-// Route::resource('contact', ContactController::class); // kamu pakai route manual dibawah
+Route::resource('/home', \App\Http\Controllers\HomeController::class);
+Route::resource('/kost', \App\Http\Controllers\KostController::class);
+Route::resource('/about', \App\Http\Controllers\AboutController::class);
+// Route::resource('/contact', \App\Http\Controllers\ContactController::class);
 
-Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
-Route::post('contact', [ContactController::class, 'store'])->name('contact.store');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-Route::resource('admin', AdminController::class);
 
-Route::get('registrasi/pelanggan', [AuthController::class, 'registrasiPelanggan'])->name('registrasipelanggan');
-Route::post('registrasi/pelanggan/submit', [AuthController::class, 'submitRegistrasiPelanggan'])->name('registrasipelanggan.submit');
-Route::get('registrasi', [AuthController::class, 'Registrasi'])->name('registrasi');
-Route::post('registrasi/submit', [AuthController::class, 'submitRegistrasi'])->name('registrasi.submit');
-Route::get('login', [AuthController::class, 'Login'])->name('login');
-Route::post('login/submit', [AuthController::class, 'submitLogin'])->name('login.submit');
-Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+Route::resource('/admin', \App\Http\Controllers\AdminController::class);
+
+Route::get('/registrasi/pelanggan', [AuthController::class, 'registrasiPelanggan'])->name('registrasipelanggan');
+Route::post('/registrasi/pelanggan/submit', [AuthController::class, 'submitRegistrasiPelanggan'])->name('registrasipelanggan.submit');
+Route::get('/registrasi', [AuthController::class, 'Registrasi'])->name('registrasi');
+Route::post('/registrasi/submit', [AuthController::class, 'submitRegistrasi'])->name('registrasi.submit');
+Route::get('/login', [AuthController::class, 'Login'])->name('login');
+Route::post('/login/submit', [AuthController::class, 'submitLogin'])->name('login.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('lupa-password', [ResetPasswordController::class, 'showForgetForm'])->name('password.request');
 

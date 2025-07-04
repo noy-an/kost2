@@ -13,9 +13,13 @@ class KostController extends Controller
      */
     public function index()
     {
+
         return view('kost.index', [
             'title' => 'Kost',
             'kost' => Kost::latest()->paginate(10)
+
+           
+
         ]);
     }
 
