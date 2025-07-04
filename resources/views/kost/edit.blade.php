@@ -31,22 +31,22 @@
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="nomor_kamar" class="form-label">Nomor Kamar</label>
-          <input type="number" class="form-control" name="nomor_kamar" value="{{ old('nomor_kamar', $kost->nomor_kamar) }}" required>
+          <input type="number" class="form-control" name="nomor_kamar" value="{{ old('nomor_kamar', $kost->nomor_kamar) }}" >
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="nomor_lantai" class="form-label">Nomor Lantai</label>
-          <input type="number" class="form-control" name="nomor_lantai" value="{{ old('nomor_lantai', $kost->nomor_lantai) }}" required>
+          <input type="number" class="form-control" name="nomor_lantai" value="{{ old('nomor_lantai', $kost->nomor_lantai) }}" >
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="harga" class="form-label">Harga (Rp)</label>
-          <input type="number" class="form-control" name="harga" value="{{ old('harga', $kost->harga) }}" required>
+          <input type="number" class="form-control" name="harga" value="{{ old('harga', $kost->harga) }}" >
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="status" class="form-label">Status</label>
-          <select class="form-select" name="status" required>
+          <select class="form-select" name="status" >
             <option value="">-- Pilih Status --</option>
             <option value="kosong" {{ old('status', $kost->status) === 'kosong' ? 'selected' : '' }}>Kosong</option>
             <option value="terisi" {{ old('status', $kost->status) === 'terisi' ? 'selected' : '' }}>Terisi</option>
