@@ -9,12 +9,23 @@ use Illuminate\Support\Facades\Storage;
 
 class PembayaranController extends Controller
 {
-    // Tampilkan daftar pembayaran
-    public function index()
-    {
-        $pembayarans = Pembayaran::with('booking.user', 'booking.kost')->paginate(10);
-        return view('pembayaran.index', compact('pembayarans'));
-    }
+    
+public function index(Request $request)
+{
+    $pembayarans = Pembayaran::with(['booking.user', 'booking.kost'])
+        ->when($request->search, function ($query) use ($request) {
+            $search = $request->search;
+            $query->whereHas('booking.user', fn($q) =>
+                $q->where('name', 'like', "%$search%")
+            )->orWhere('metode_bayar', 'like', "%$search%")
+             ->orWhere('tempat_bayar', 'like', "%$search%")
+             ->orWhere('status_bayar', 'like', "%$search%");
+        })
+        ->latest()
+        ->paginate(10);
+
+    return view('pembayaran.index', compact('pembayarans'));
+}
 
     // Tampilkan form tambah pembayaran
     public function create()

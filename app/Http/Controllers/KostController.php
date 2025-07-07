@@ -11,17 +11,18 @@ class KostController extends Controller
     /**
      * Tampilkan semua data kost
      */
-    public function index()
-    {
+  public function index(Request $request)
+{
+    $kost = Kost::query()
+        ->when($request->search, function ($query) use ($request) {
+            $query->where('nomor_kamar', 'like', '%' . $request->search . '%')
+                ->orWhere('status', 'like', '%' . $request->search . '%');
+        })
+        ->latest()
+        ->paginate(10);
 
-        return view('kost.index', [
-            'title' => 'Kost',
-            'kost' => Kost::latest()->paginate(10)
-
-           
-
-        ]);
-    }
+    return view('kost.index', compact('kost'));
+}
 
     /**
      * Tampilkan form tambah kost

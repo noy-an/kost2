@@ -1,115 +1,113 @@
+saat diputar di halaman malah
+Terjadi error. Coba lagi nanti. (ID Pemutaran: xgHdBFrvzNDGcGPF)
+Pelajari Lebih Lanjut
+
+halamannya
 @extends('fe.master')
+
 @section('content')
-<!-- About Us Page Section Begin -->
-<section class="aboutus-page-section spad">
+
+{{-- Hero Atas Halaman About --}}
+<section class="hero-section text-white d-flex align-items-center" style="background: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1950&q=80') center/cover no-repeat; height: 55vh;">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold">Tentang Kost Kami</h1>
+        <p class="lead mt-2">Tempat tinggal nyaman, aman, dan strategis untuk kamu yang butuh kost ideal.</p>
+    </div>
+</section>
+
+<!-- Tentang Kost Section Begin -->
+<section class="aboutus-page-section spad bg-light">
     <div class="container">
         <div class="about-page-text">
-            <div class="row">
+            <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="ap-title">
-                        <h2>Welcome To Sona.</h2>
-                        <p>Built in 1910 during the Belle Epoque period, this hotel is located in the center of
-                            Paris, with easy access to the city’s tourist attractions. It offers tastefully
-                            decorated rooms.</p>
+                        <h2 class="fw-bold">Selamat Datang di Kost Kita</h2>
+                        <p class="text-muted">
+                            Kost nyaman, aman, dan strategis untuk mahasiswa, pekerja, maupun keluarga. Kami hadir memberikan solusi tempat tinggal terbaik dengan berbagai pilihan kamar dan fasilitas yang lengkap.
+                        </p>
                     </div>
                 </div>
                 <div class="col-lg-5 offset-lg-1">
-                    <ul class="ap-services">
-                        <li><i class="icon_check"></i> 20% Off On Accommodation.</li>
-                        <li><i class="icon_check"></i> Complimentary Daily Breakfast</li>
-                        <li><i class="icon_check"></i> 3 Pcs Laundry Per Day</li>
-                        <li><i class="icon_check"></i> Free Wifi.</li>
-                        <li><i class="icon_check"></i> Discount 20% On F&B</li>
+                    <ul class="ap-services list-unstyled">
+                        <li><i class="icon_check text-success me-2"></i> Sarapan tersedia untuk penyewa bulanan.</li>
+                        <li><i class="icon_check text-success me-2"></i> Layanan laundry 3x dalam seminggu.</li>
+                        <li><i class="icon_check text-success me-2"></i> Internet Wifi gratis dan stabil.</li>
+                        <li><i class="icon_check text-success me-2"></i> Bonus menarik untuk penyewa tahunan.</li>
+                        <li><i class="icon_check text-success me-2"></i> Akses 24 jam dengan keamanan terjamin.</li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="about-page-services">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="ap-service-item set-bg" data-setbg="{{ asset('front-end/img/about/about-p1.jpg') }}">
-                        <div class="api-text">
-                            <h3>Restaurants Services</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="ap-service-item set-bg" data-setbg="{{ asset('front-end/img/about/about-p2.jpg') }}">
-                        <div class="api-text">
-                            <h3>Travel & Camping</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="ap-service-item set-bg" data-setbg="{{ asset('front-end/img/about/about-p3.jpg') }}">
-                        <div class="api-text">
-                            <h3>Event & Party</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- About Us Page Section End -->
 
-<!-- Video Section Begin -->
-<section class="video-section set-bg" data-setbg="{{ asset('front-end/img/video-bg.jpg') }}">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="video-text">
-                    <h2>Discover Our Hotel & Services.</h2>
-                    <p>It S Hurricane Season But We Are Visiting Hilton Head Island</p>
-                    <a href="https://www.youtube.com/watch?v=EzKkl64rRbM" class="play-btn video-popup">
-                        <img src="{{ asset('front-end/img/play.png') }}" alt="">
-                    </a>
+        <div class="about-page-services mt-5">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="ap-service-item set-bg rounded shadow-sm overflow-hidden" data-setbg="{{ asset('front-end/img/about1.webp') }}">
+                        <div class="api-text bg-dark bg-opacity-50 text-white text-center p-2">
+                            <h4 class="mb-0">Dapur Bersama</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="ap-service-item set-bg rounded shadow-sm overflow-hidden" data-setbg="{{ asset('front-end/img/about2.jpg') }}">
+                        <div class="api-text bg-dark bg-opacity-50 text-white text-center p-2">
+                            <h4 class="mb-0">Laundry & Parkiran</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="ap-service-item set-bg rounded shadow-sm overflow-hidden" data-setbg="{{ asset('front-end/img/about3.jpg') }}">
+                        <div class="api-text bg-dark bg-opacity-50 text-white text-center p-2">
+                            <h4 class="mb-0">Tempat Bersantai</h4>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-<!-- Video Section End -->
+<!-- Tentang Kost Section End -->
 
 <!-- Gallery Section Begin -->
 <section class="gallery-section spad">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
+        <div class="row mb-4">
+            <div class="col-lg-12 text-center">
                 <div class="section-title">
-                    <span>Our Gallery</span>
-                    <h2>Discover Our Work</h2>
+                    <span class="text-uppercase text-secondary">Galeri Kami</span>
+                    <h2 class="fw-bold">Suasana Kost & Fasilitas</h2>
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row g-3">
             <div class="col-lg-6">
-                <div class="gallery-item set-bg" data-setbg="{{ asset('front-end/img/gallery/gallery-1.jpg') }}">
-                    <div class="gi-text">
-                        <h3>Room Luxury</h3>
+                <div class="gallery-item set-bg rounded overflow-hidden" data-setbg="{{ asset('front-end/img/about6.jpg') }}">
+                    <div class="gi-text bg-dark bg-opacity-50 text-white p-2">
+                        <h5>Kamar Nyaman</h5>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row pt-3">
                     <div class="col-sm-6">
-                        <div class="gallery-item set-bg" data-setbg="{{ asset('front-end/img/gallery/gallery-3.jpg') }}">
-                            <div class="gi-text">
-                                <h3>Room Luxury</h3>
+                        <div class="gallery-item set-bg rounded overflow-hidden" data-setbg="{{ asset('front-end/img/about5.jpg') }}">
+                            <div class="gi-text bg-dark bg-opacity-50 text-white p-2">
+                                <h5>Kamar AC</h5>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <div class="gallery-item set-bg" data-setbg="{{ asset('front-end/img/gallery/gallery-4.jpg') }}">
-                            <div class="gi-text">
-                                <h3>Room Luxury</h3>
+                        <div class="gallery-item set-bg rounded overflow-hidden" data-setbg="{{ asset('front-end/img/about4.avif') }}">
+                            <div class="gi-text bg-dark bg-opacity-50 text-white p-2">
+                                <h5>Kamar Mandi Dalam</h5>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="gallery-item large-item set-bg" data-setbg="{{ asset('front-end/img/gallery/gallery-2.jpg') }}">
-                    <div class="gi-text">
-                        <h3>Room Luxury</h3>
+                <div class="gallery-item large-item set-bg rounded overflow-hidden" data-setbg="{{ asset('front-end/img/about4.jpg') }}">
+                    <div class="gi-text bg-dark bg-opacity-50 text-white p-2">
+                        <h5>Area Bersama</h5>
                     </div>
                 </div>
             </div>
@@ -117,4 +115,5 @@
     </div>
 </section>
 <!-- Gallery Section End -->
+
 @endsection
