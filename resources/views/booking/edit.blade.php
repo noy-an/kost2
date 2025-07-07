@@ -31,19 +31,21 @@
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="user_id" class="form-label">User</label>
-          <select class="form-select" name="user_id" >
+          <select class="form-select" name="user_id">
             <option value="">-- Pilih User --</option>
             @foreach($users as $user)
-              <option value="{{ $user->id }}" {{ (old('user_id', $booking->user_id) == $user->id) ? 'selected' : '' }}>
-                {{ $user->name }}
-              </option>
+              @if($user->role === 'pelanggan')
+                <option value="{{ $user->id }}" {{ (old('user_id', $booking->user_id) == $user->id) ? 'selected' : '' }}>
+                  {{ $user->name }}
+                </option>
+              @endif
             @endforeach
           </select>
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="kost_id" class="form-label">Kamar Kost</label>
-          <select class="form-select" name="kost_id" >
+          <select class="form-select" name="kost_id">
             <option value="">-- Pilih Kamar --</option>
             @foreach($kosts as $kost)
               <option value="{{ $kost->id }}" {{ (old('kost_id', $booking->kost_id) == $kost->id) ? 'selected' : '' }}>
@@ -55,17 +57,17 @@
 
         <div class="col-md-6 mb-3">
           <label for="dp" class="form-label">DP (Uang Muka)</label>
-          <input type="number" class="form-control" name="dp" value="{{ old('dp', $booking->dp) }}" >
+          <input type="number" class="form-control" name="dp" value="{{ old('dp', $booking->dp) }}">
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="tgl_booking" class="form-label">Tanggal Booking</label>
-          <input type="date" class="form-control" name="tgl_booking" value="{{ old('tgl_booking', $booking->tgl_booking )}}" >
+          <input type="date" class="form-control" name="tgl_booking" value="{{ old('tgl_booking', $booking->tgl_booking )}}">
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="status_booking" class="form-label">Status Booking</label>
-          <select class="form-select" name="status_booking" >
+          <select class="form-select" name="status_booking">
             <option value="pending" {{ old('status_booking', $booking->status_booking) == 'pending' ? 'selected' : '' }}>Pending</option>
             <option value="disetujui" {{ old('status_booking', $booking->status_booking) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
           </select>

@@ -5,14 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Customer Registration - Hotel Booking</title>
   <link rel="shortcut icon" type="image/png" href="{{asset('backend/assets/images/logos/favicon.png')}}" />
-  
-  <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <style>
     :root {
       --primary-color: #2563eb;
@@ -97,10 +93,6 @@
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
     }
 
-    .form-control.is-valid {
-      border-color: var(--success-color);
-    }
-
     .form-control.is-invalid {
       border-color: var(--error-color);
     }
@@ -112,10 +104,6 @@
       transform: translateY(-50%);
       color: var(--text-secondary);
       cursor: pointer;
-    }
-
-    .input-icon:hover {
-      color: var(--primary-color);
     }
 
     .file-upload-container {
@@ -159,15 +147,6 @@
       transition: all 0.2s ease;
     }
 
-    .btn-register:hover {
-      background-color: var(--primary-light);
-      transform: translateY(-2px);
-    }
-
-    .btn-register:active {
-      transform: translateY(0);
-    }
-
     .registration-footer {
       padding: 1.5rem;
       text-align: center;
@@ -186,21 +165,10 @@
       text-decoration: underline;
     }
 
-    @media (max-width: 576px) {
-      .registration-container {
-        border-radius: 8px;
-      }
-      
-      .registration-header {
-        padding: 1.5rem;
-      }
-      
-      .registration-body {
-        padding: 1.5rem;
-      }
+    .text-danger {
+      font-size: 0.875rem;
     }
 
-    /* Loading spinner */
     .spinner {
       animation: spin 1s linear infinite;
     }
@@ -213,79 +181,67 @@
 </head>
 
 <body>
-  <!-- Main Registration Container -->
   <div class="registration-container">
-    <!-- Header Section -->
     <div class="registration-header">
-      <div class="logo-icon">
-        <i class="fas fa-user-circle"></i>
-      </div>
+      <div class="logo-icon"><i class="fas fa-user-circle"></i></div>
       <h1 class="header-title">Create Your Account</h1>
       <p class="header-subtitle">Register to book kost with us</p>
     </div>
 
-    <!-- Form Section -->
     <div class="registration-body">
       <form class="form-horizontal form-material" id="registerForm" action="{{route('registrasipelanggan.submit')}}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="role" value="pelanggan" readonly>
 
-        <!-- Name Field -->
         <div class="form-group">
           <label for="name" class="form-label">Full Name</label>
-          <input type="text" class="form-control" name="name" id="name" placeholder="Enter your full name" required>
+          <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name" placeholder="Enter your full name" required>
+          @error('name') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
 
-        <!-- Email Field -->
-        <div class="form-group ">
+        <div class="form-group">
           <label for="email" class="form-label">Email Address</label>
-          <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email address" required>
+          <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" placeholder="Enter your email address" required>
+          @error('email') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
 
-        <!-- Password Field -->
         <div class="form-group">
           <label for="password" class="form-label">Password</label>
           <div class="position-relative">
-            <input type="password" class="form-control" name="password" id="password" placeholder="Create a password" required>
-            <span class="input-icon" id="togglePassword">
-              <i class="fas fa-eye"></i>
-            </span>
+            <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" placeholder="Create a password" required>
+            <span class="input-icon" id="togglePassword"><i class="fas fa-eye"></i></span>
           </div>
+          @error('password') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
 
-        <!-- Phone Field -->
         <div class="form-group">
           <label for="phone" class="form-label">Phone Number</label>
-          <input type="tel" class="form-control" name="phone" id="phone" placeholder="Enter your phone number" required>
+          <input type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone" id="phone" placeholder="Enter your phone number" required>
+          @error('phone') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
 
-        <!-- Profile Photo Field -->
         <div class="form-group">
           <label for="avatar" class="form-label">Profile Photo</label>
           <div class="file-upload-container" onclick="document.getElementById('avatar').click()">
-            <input type="file" class="d-none" name="avatar" id="avatar" accept="image/*" required>
-            <div class="file-upload-icon">
-              <i class="fas fa-cloud-upload-alt"></i>
-            </div>
+            <input type="file" class="d-none @error('avatar') is-invalid @enderror" name="avatar" id="avatar" accept="image/*">
+            <div class="file-upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
             <div class="file-upload-text">Click to upload your photo</div>
             <div class="file-upload-hint">PNG or JPG (max 5MB)</div>
           </div>
+          @error('avatar') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
 
-        <!-- ID Card Field -->
         <div class="form-group">
           <label for="id_card" class="form-label">ID Card</label>
           <div class="file-upload-container" onclick="document.getElementById('id_card').click()">
-            <input type="file" class="d-none" name="id_card" id="id_card" accept="image/*" required>
-            <div class="file-upload-icon">
-              <i class="fas fa-id-card"></i>
-            </div>
+            <input type="file" class="d-none @error('id_card') is-invalid @enderror" name="id_card" id="id_card" accept="image/*">
+            <div class="file-upload-icon"><i class="fas fa-id-card"></i></div>
             <div class="file-upload-text">Click to upload your ID card</div>
             <div class="file-upload-hint">PNG or JPG (max 5MB)</div>
           </div>
+          @error('id_card') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" class="btn btn-primary btn-register mt-3" id="submitBtn">
           <span id="submitText">Register</span>
           <i class="fas fa-spinner spinner d-none ms-2" id="spinner"></i>
@@ -293,43 +249,33 @@
       </form>
     </div>
 
-    <!-- Footer Section -->
     <div class="registration-footer">
       Already have an account? 
       <a href="{{route('login')}}" class="footer-link">Sign in</a>
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
+
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Password toggle
       const togglePassword = document.getElementById('togglePassword');
       const passwordField = document.getElementById('password');
-      
       togglePassword.addEventListener('click', function() {
         const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordField.setAttribute('type', type);
-        
-        // Toggle icon
-        const icon = this.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
+        this.querySelector('i').classList.toggle('fa-eye');
+        this.querySelector('i').classList.toggle('fa-eye-slash');
       });
 
-      // Form validation
       const form = document.getElementById('registerForm');
       const submitBtn = document.getElementById('submitBtn');
       const submitText = document.getElementById('submitText');
       const spinner = document.getElementById('spinner');
-      
-      // Phone number formatting
+
       const phoneField = document.getElementById('phone');
       phoneField.addEventListener('input', function() {
         let value = this.value.replace(/\D/g, '');
-        
         if (value.length >= 10) {
           if (value.startsWith('62')) {
             value = '+' + value;
@@ -339,64 +285,51 @@
             value = '+62' + value;
           }
         }
-        
         this.value = value;
       });
 
-      // File upload feedback
-      function setupFileUpload(fieldId, containerClass) {
+      const fileUploadFields = ['avatar', 'id_card'];
+      fileUploadFields.forEach(function(fieldId) {
         const field = document.getElementById(fieldId);
-        const container = field.closest('.' + containerClass);
-        
+        const container = field.closest('.file-upload-container');
         field.addEventListener('change', function() {
           if (this.files.length > 0) {
             const fileName = this.files[0].name;
             const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
-            
             container.querySelector('.file-upload-text').textContent = fileName;
             container.querySelector('.file-upload-hint').textContent = `${fileSize} MB`;
             container.style.borderColor = 'var(--success-color)';
           }
         });
-      }
-      
-      setupFileUpload('avatar', 'file-upload-container');
-      setupFileUpload('id_card', 'file-upload-container');
+      });
 
-      // Form submission
       form.addEventListener('submit', function(e) {
-        // Show loading state
         submitBtn.disabled = true;
         submitText.textContent = 'Processing...';
         spinner.classList.remove('d-none');
-        
-        // Simple validation
+
         let isValid = true;
-        const requiredFields = ['name', 'email', 'password', 'phone', 'avatar', 'id_card'];
-        
+        const requiredFields = ['name', 'email', 'password', 'phone'];
         requiredFields.forEach(fieldId => {
           const field = document.getElementById(fieldId);
-          if (!field.value.trim() || (field.type === 'file' && !field.files.length)) {
+          if (!field.value.trim()) {
             isValid = false;
             field.classList.add('is-invalid');
           }
         });
-        
+
         if (!isValid) {
           e.preventDefault();
           submitBtn.disabled = false;
           submitText.textContent = 'Register';
           spinner.classList.add('d-none');
-          
-          // Scroll to first invalid field
           const firstInvalid = document.querySelector('.is-invalid');
           if (firstInvalid) {
             firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         }
       });
-      
-      // Remove invalid class when user starts typing
+
       const inputs = form.querySelectorAll('input');
       inputs.forEach(input => {
         input.addEventListener('input', function() {
