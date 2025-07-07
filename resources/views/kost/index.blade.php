@@ -49,6 +49,7 @@
             <th>No. Kamar</th>
             <th>Lantai</th>
             <th>Harga</th>
+            <th>Ukuran</th>
             <th>Deskripsi</th>
             <th>Status</th>
             <th>Fasilitas</th>
@@ -65,6 +66,7 @@
             <td>{{ $item->nomor_kamar }}</td>
             <td>{{ $item->nomor_lantai }}</td>
             <td class="text-end">Rp{{ number_format($item->harga, 0, ',', '.') }}</td>
+            <td class="text-wrap text-start">{{ $item->ukuran_ruangan ?? '-' }}</td>
             <td class="text-wrap text-start">{{ $item->deskripsi ?? '-' }}</td>
             <td>
               <span class="badge 

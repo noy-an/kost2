@@ -37,6 +37,10 @@
           <label for="nomor_lantai" class="form-label">Nomor Lantai</label>
           <input type="number" class="form-control" name="nomor_lantai" value="{{ old('nomor_lantai') }}" >
         </div>
+        <div class="col-md-6 mb-3">
+          <label for="ukuran_ruangan" class="form-label">Ukuran Ruangan</label>
+          <input type="text" class="form-control" name="ukuran_ruangan" value="{{ old('ukuran_ruangan') }}" >
+        </div>
 
         <div class="col-md-6 mb-3">
           <label for="harga" class="form-label">Harga (Rp)</label>

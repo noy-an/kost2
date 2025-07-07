@@ -14,6 +14,7 @@ class Kost extends Model
         'harga',
         'deskripsi',
         'status',
+        'ukuran_ruangan',
         'fasilitas',
         'foto1',
         'foto2',

@@ -44,6 +44,11 @@
           <input type="number" class="form-control" name="harga" value="{{ old('harga', $kost->harga) }}" >
         </div>
 
+         <div class="col-md-6 mb-3">
+          <label for="ukuran_ruangan" class="form-label">Ukuran Ruangan</label>
+          <input type="text" class="form-control" name="ukuran_ruangan" value="{{ old('ukuran_ruangan') }}" >
+        </div>
+        
         <div class="col-md-6 mb-3">
           <label for="status" class="form-label">Status</label>
           <select class="form-select" name="status" >
