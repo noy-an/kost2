@@ -1,7 +1,18 @@
 @extends('fe.master')
 
 @section('content')
-<section class="py-5 bg-light">
+
+{{-- Hero Section --}}
+<section class="hero-section text-white d-flex align-items-center" style="background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.6)), url('https://images.unsplash.com/photo-1589136191257-d361937f0139?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat; height: 60vh;">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">Temukan Kost Nyaman & Strategis</h1>
+        <p class="lead">Pilihan kost terbaik dengan fasilitas lengkap, lokasi strategis, dan harga terjangkau.</p>
+        {{-- <a href="#list-kost" class="btn btn-primary px-4 py-2 mt-3">Lihat Kost Sekarang</a> --}}
+    </div>
+</section>
+
+{{-- List Section --}}
+<section class="py-5 bg-light" id="list-kost">
     <div class="container">
         {{-- Search --}}
         <div class="row justify-content-center mb-4">
@@ -47,7 +58,6 @@
                                    <a href="{{ route('kamar.show', $kost->id) }}" class="btn btn-sm btn-outline-primary">
                                         Lihat Detail
                                     </a>
-
                                 </div>
                             </div>
                         </div>
@@ -83,4 +93,5 @@
     transition: all 0.3s ease-in-out;
 }
 </style>
+
 @endsection
