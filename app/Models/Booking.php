@@ -25,6 +25,6 @@ class Booking extends Model
 
     public function kost()
     {
-        return $this->belongsTo(Kost::class);
+        return $this->belongsTo(Kost::class, 'kost_id', 'id');
     }
 }

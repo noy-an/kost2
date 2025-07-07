@@ -221,7 +221,7 @@
         <i class="fas fa-user-circle"></i>
       </div>
       <h1 class="header-title">Create Your Account</h1>
-      <p class="header-subtitle">Register to book hotels with us</p>
+      <p class="header-subtitle">Register to book kost with us</p>
     </div>
 
     <!-- Form Section -->
@@ -237,7 +237,7 @@
         </div>
 
         <!-- Email Field -->
-        <div class="form-group">
+        <div class="form-group ">
           <label for="email" class="form-label">Email Address</label>
           <input type="email" class="form-control" name="email" id="email" placeholder="Enter your email address" required>
         </div>

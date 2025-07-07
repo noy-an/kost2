@@ -37,7 +37,7 @@
                         </p>
 
                         @if($kosts->status === 'kosong')
-                            <a href="#" class="btn btn-primary mt-3">Booking Sekarang</a>
+                            <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" class="btn btn-primary mt-3">Booking Sekarang</a>
                         @endif
 
                         <div class="mt-4">

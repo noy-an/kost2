@@ -271,6 +271,9 @@
     <!-- Search model end -->
 
     <!-- Js Plugins -->
+
+    @yield('scripts')
+
     <script src="{{ asset('front-end/js/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ asset('front-end/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('front-end/js/jquery.magnific-popup.min.js') }}"></script>

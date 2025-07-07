@@ -11,6 +11,7 @@ use App\Http\Controllers\KostController;
 use App\Http\Controllers\TagihanController;    
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\BookingpelangganController;
 
 
 
@@ -26,6 +27,19 @@ Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+
+// In your web.php routes file
+// Pilih salah satu sesuai kebutuhan
+Route::get('/booking/create/{kost_id}', [BookingpelangganController::class, 'create'])
+    ->name('bookingpelanggan.create');
+Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])->name('bookingpelanggan.store');
+
+// Or if you prefer query parameters:
+Route::get('/bookingpelanggan/create', [BookingpelangganController::class, 'create'])->name('bookingpelanggan.form');
+
+// Then when linking to the form:
+// <a href="{{ route('bookingpelanggan.form', ['kost_id' => $kost->id]) }}">Book Now</a>
+// Or: <a href="{{ route('bookingpelanggan.form') }}?kost_id={{ $kost->id }}">Book Now</a>
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

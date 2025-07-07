@@ -20,4 +20,9 @@ class Kost extends Model
         'foto3',
     ];
 
+      public function booking()
+    {
+        return $this->hasOne(Booking::class, 'kost_id', 'id' );
+    }
+
 }
