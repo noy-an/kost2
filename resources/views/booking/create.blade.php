@@ -33,9 +33,11 @@
           <select class="form-select" name="user_id" >
             <option value="">-- Pilih User --</option>
             @foreach($users as $user)
-              <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                {{ $user->name }}
-              </option>
+              @if($user->role === 'pelanggan')
+                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                  {{ $user->name }}
+                </option>
+              @endif
             @endforeach
           </select>
         </div>
