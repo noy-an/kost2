@@ -1,8 +1,4 @@
-saat diputar di halaman malah
-Terjadi error. Coba lagi nanti. (ID Pemutaran: xgHdBFrvzNDGcGPF)
-Pelajari Lebih Lanjut
 
-halamannya
 @extends('fe.master')
 
 @section('content')
