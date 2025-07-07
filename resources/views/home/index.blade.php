@@ -6,50 +6,17 @@
         <div class="row">
             <div class="col-lg-6">
                 <div class="hero-text">
-                    <h1>Sona A Luxury Hotel</h1>
-                    <p>Here are the best hotel booking sites, including recommendations for international
-                        travel and for finding low-priced hotel rooms.</p>
-                    <a href="" class="primary-btn">Discover Now</a>
-                </div>
-            </div>
-            <div class="col-xl-4 col-lg-5 offset-xl-2 offset-lg-1">
-                <div class="booking-form">
-                    <h3>Booking Your Hotel</h3>
-                    <form action="#">
-                        <div class="check-date">
-                            <label for="date-in">Check In:</label>
-                            <input type="text" class="date-input" id="date-in">
-                            <i class="icon_calendar"></i>
-                        </div>
-                        <div class="check-date">
-                            <label for="date-out">Check Out:</label>
-                            <input type="text" class="date-input" id="date-out">
-                            <i class="icon_calendar"></i>
-                        </div>
-                        <div class="select-option">
-                            <label for="guest">Guests:</label>
-                            <select id="guest">
-                                <option value="">2 Adults</option>
-                                <option value="">3 Adults</option>
-                            </select>
-                        </div>
-                        <div class="select-option">
-                            <label for="room">Room:</label>
-                            <select id="room">
-                                <option value="">1 Room</option>
-                                <option value="">2 Room</option>
-                            </select>
-                        </div>
-                        <button type="submit">Check Availability</button>
-                    </form>
+                    <h1>Cari Kost Nyamanmu</h1>
+                    <p>Temukan kost terbaik dengan fasilitas lengkap dan lokasi strategis untuk kebutuhan tinggal harian, bulanan, maupun tahunan.</p>
+                    <a href="{{ route('kamar.index') }}" class="primary-btn">Cari Kost Sekarang</a>
                 </div>
             </div>
         </div>
     </div>
     <div class="hero-slider owl-carousel">
-        <div class="hs-item set-bg" data-setbg="{{ asset('front-end/img/hero/hero-1.jpg') }}"></div>
-        <div class="hs-item set-bg" data-setbg="{{ asset('front-end/img/hero/hero-2.jpg') }}"></div>
-        <div class="hs-item set-bg" data-setbg="{{ asset('front-end/img/hero/hero-3.jpg') }}"></div>
+        <div class="hs-item set-bg" data-setbg="{{ asset('front-end/img/home1.jpg') }}"></div>
+        <div class="hs-item set-bg" data-setbg="{{ asset('front-end/img/home2.jpg') }}"></div>
+        <div class="hs-item set-bg" data-setbg="{{ asset('front-end/img/home3.png') }}"></div>
     </div>
 </section>
 <!-- Hero Section End -->
@@ -61,25 +28,22 @@
             <div class="col-lg-6">
                 <div class="about-text">
                     <div class="section-title">
-                        <span>About Us</span>
-                        <h2>Intercontinental LA <br />Westlake Hotel</h2>
+                        <span>Tentang Kami</span>
+                        <h2>KostKuy<br />Platform Kost Modern</h2>
                     </div>
-                    <p class="f-para">Sona.com is a leading online accommodation site. We're passionate about
-                        travel. Every day, we inspire and reach millions of travelers across 90 local websites in 41
-                        languages.</p>
-                    <p class="s-para">So when it comes to booking the perfect hotel, vacation rental, resort,
-                        apartment, guest house, or tree house, we've got you covered.</p>
-                    <a href="#" class="primary-btn about-btn">Read More</a>
+                    <p class="f-para">KostKuy adalah platform pencarian kost terpercaya. Kami memudahkan kamu menemukan tempat tinggal yang nyaman dan sesuai dengan kebutuhanmu.</p>
+                    <p class="s-para">Dari kost putri, kost campur, hingga kost eksklusif dengan fasilitas lengkap, semua tersedia di sini.</p>
+                    {{-- <a href="#" class="primary-btn about-btn">Selengkapnya</a> --}}
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="about-pic">
                     <div class="row">
                         <div class="col-sm-6">
-                            <img src="{{ asset('front-end/img/about/about-1.jpg') }}" alt="">
+                            <img src="{{ asset('front-end/img/home4.jpg') }}" alt="">
                         </div>
                         <div class="col-sm-6">
-                            <img src="{{ asset('front-end/img/about/about-2.jpg') }}" alt="">
+                            <img src="{{ asset('front-end/img/home5.jpg') }}" alt="">
                         </div>
                     </div>
                 </div>
@@ -89,125 +53,90 @@
 </section>
 <!-- About Us Section End -->
 
-<!-- Services Section End -->
+<!-- Services Section Begin -->
 <section class="services-section spad">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title">
-                    <span>What We Do</span>
-                    <h2>Discover Our Services</h2>
+                    <span>Layanan Kami</span>
+                    <h2>Fasilitas dan Kemudahan</h2>
                 </div>
             </div>
         </div>
         <div class="row">
-            <!-- 6 service items here -->
-            <!-- Tidak perlu edit asset karena icon pakai font -->
+            <!-- Fitur layanan ditampilkan di sini -->
         </div>
     </div>
 </section>
 <!-- Services Section End -->
 
-<!-- Home Room Section Begin -->
-<section class="hp-room-section">
-    <div class="container-fluid">
-        <div class="hp-room-items">
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="hp-room-item set-bg" data-setbg="{{ asset('front-end/img/room/room-b1.jpg') }}">
-                        <div class="hr-text">
-                            <h3>Double Room</h3>
-                            <h2>199$<span>/Pernight</span></h2>
-                            <table>
-                                <tbody>
-                                    <tr><td class="r-o">Size:</td><td>30 ft</td></tr>
-                                    <tr><td class="r-o">Capacity:</td><td>Max persion 5</td></tr>
-                                    <tr><td class="r-o">Bed:</td><td>King Beds</td></tr>
-                                    <tr><td class="r-o">Services:</td><td>Wifi, Television, Bathroom,...</td></tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Ulangi blok yang sama untuk room-b2, room-b3, room-b4 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="hp-room-item set-bg" data-setbg="{{ asset('front-end/img/room/room-b2.jpg') }}">
-                        <div class="hr-text"><h3>Premium King Room</h3><h2>159$<span>/Pernight</span></h2>
-                            <table>
-                                <tbody>
-                                    <tr><td class="r-o">Size:</td><td>30 ft</td></tr>
-                                    <tr><td class="r-o">Capacity:</td><td>Max persion 5</td></tr>
-                                    <tr><td class="r-o">Bed:</td><td>King Beds</td></tr>
-                                    <tr><td class="r-o">Services:</td><td>Wifi, Television, Bathroom,...</td></tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- room-b3 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="hp-room-item set-bg" data-setbg="{{ asset('front-end/img/room/room-b3.jpg') }}">
-                        <div class="hr-text"><h3>Deluxe Room</h3><h2>198$<span>/Pernight</span></h2>
-                            <table>
-                                <tbody>
-                                    <tr><td class="r-o">Size:</td><td>30 ft</td></tr>
-                                    <tr><td class="r-o">Capacity:</td><td>Max persion 5</td></tr>
-                                    <tr><td class="r-o">Bed:</td><td>King Beds</td></tr>
-                                    <tr><td class="r-o">Services:</td><td>Wifi, Television, Bathroom,...</td></tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- room-b4 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="hp-room-item set-bg" data-setbg="{{ asset('front-end/img/room/room-b4.jpg') }}">
-                        <div class="hr-text"><h3>Family Room</h3><h2>299$<span>/Pernight</span></h2>
-                            <table>
-                                <tbody>
-                                    <tr><td class="r-o">Size:</td><td>30 ft</td></tr>
-                                    <tr><td class="r-o">Capacity:</td><td>Max persion 5</td></tr>
-                                    <tr><td class="r-o">Bed:</td><td>King Beds</td></tr>
-                                    <tr><td class="r-o">Services:</td><td>Wifi, Television, Bathroom,...</td></tr>
-                                </tbody>
-                            </table>
-                            <a href="#" class="primary-btn">More Details</a>
-                        </div>
-                    </div>
-                </div>
+<!-- Home Room Section End -->
+<div class="container">
+        {{-- <div class="row"><div class="col-lg-12"><div class="section-title"><span>Tips & Info</span><h2>Artikel Seputar Kost</h2></div></div></div> --}}
+       <div class="row">
+    <div class="col-lg-4">
+        <div class="blog-item set-bg" data-setbg="{{ asset('front-end/img/h1.jpg') }}">
+            <div class="bi-text" style="background: rgba(0, 0, 0, 0.5); padding: 20px; color: #ffffff;">
+                <span class="b-tag" style="color: white;">Fasilitas Kost</span>
+                <h4><a href="#" style="color: #ffffff;">Kost Nyaman dan Bersih</a></h4>
+                <p style="color:white;" >Kost eksklusif dengan kamar luas, tempat tidur nyaman, dan pencahayaan alami.</p>
+                {{-- <div class="b-time"><i class="icon_clock_alt"></i> 10 Juli, 2025</div> --}}
+                <a href="{{ route('kamar.index') }}" class="btn btn-sm" style="background-color: #004085; color: #ffffff; margin-top: 10px;">Cek Kost</a>
             </div>
         </div>
     </div>
-</section>
-<!-- Home Room Section End -->
 
+    <div class="col-lg-4">
+        <div class="blog-item set-bg" data-setbg="{{ asset('front-end/img/h2.webp') }}">
+            <div class="bi-text" style="background: rgba(0, 0, 0, 0.5); padding: 20px; color: #ffffff;">
+                <span class="b-tag" style="color: white;">Fasilitas Umum</span>
+                <h4><a href="#" style="color: #ffffff;">Dapur, Laundry & Area Bersama</a></h4>
+                <p style="color:white;">Tersedia dapur bersama, mesin cuci, area makan dan ruang santai yang nyaman.</p>
+                {{-- <div class="b-time"><i class="icon_clock_alt"></i> 8 Juli, 2025</div> --}}
+                <a href="{{ route('kamar.index') }}" class="btn btn-sm" style="background-color: #004085; color: #ffffff; margin-top: 10px;">Cek Kost</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="blog-item set-bg" data-setbg="{{ asset('front-end/img/h3.webp') }}">
+            <div class="bi-text" style="background: rgba(0, 0, 0, 0.5); padding: 20px; color: #ffffff;">
+                <span class="b-tag" style="color: white;">Akses Lokasi</span>
+                <h4><a href="#" style="color: #ffffff;">Dekat Kampus dan Transportasi Umum</a></h4>
+                <p style="color:white;">Lokasi strategis, dekat kampus, halte bus, minimarket, dan tempat makan.</p>
+                {{-- <div class="b-time"><i class="icon_clock_alt"></i> 5 Juli, 2025</div> --}}
+                <a href="{{ route('kamar.index') }}" class="btn btn-sm" style="background-color: #004085; color: #ffffff; margin-top: 10px;">Cek Kost</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
 <!-- Testimonial Section Begin -->
 <section class="testimonial-section spad">
     <div class="container">
-        <div class="row"><div class="col-lg-12"><div class="section-title"><span>Testimonials</span><h2>What Customers Say?</h2></div></div></div>
+        <div class="row"><div class="col-lg-12"><div class="section-title"><span>Testimoni</span><h2>Kata Pengguna Kost</h2></div></div></div>
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
                 <div class="testimonial-slider owl-carousel">
                     <div class="ts-item">
-                        <p>After a construction project took longer than expected...</p>
+                        <p>Kost ini sangat nyaman dan bersih. Lokasinya strategis dekat kampus dan warung makan.</p>
                         <div class="ti-author">
                             <div class="rating">
                                 <i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star-half_alt"></i>
                             </div>
-                            <h5> - Alexander Vasquez</h5>
+                            <h5> - Dinda Rahma</h5>
                         </div>
                         <img src="{{ asset('front-end/img/testimonial-logo.png') }}" alt="">
                     </div>
                     <div class="ts-item">
-                        <p>After a construction project took longer than expected...</p>
+                        <p>Saya sangat puas dengan layanan dan respon cepat pemilik kost. Terima kasih KostKuy!</p>
                         <div class="ti-author">
                             <div class="rating">
                                 <i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star-half_alt"></i>
                             </div>
-                            <h5> - Alexander Vasquez</h5>
+                            <h5> - Raka Prasetyo</h5>
                         </div>
                         <img src="{{ asset('front-end/img/testimonial-logo.png') }}" alt="">
                     </div>
@@ -219,57 +148,6 @@
 <!-- Testimonial Section End -->
 
 <!-- Blog Section Begin -->
-<section class="blog-section spad">
-    <div class="container">
-        <div class="row"><div class="col-lg-12"><div class="section-title"><span>Hotel News</span><h2>Our Blog & Event</h2></div></div></div>
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="blog-item set-bg" data-setbg="{{ asset('front-end/img/blog/blog-1.jpg') }}">
-                    <div class="bi-text">
-                        <span class="b-tag">Travel Trip</span>
-                        <h4><a href="#">Tremblant In Canada</a></h4>
-                        <div class="b-time"><i class="icon_clock_alt"></i> 15th April, 2019</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="blog-item set-bg" data-setbg="{{ asset('front-end/img/blog/blog-2.jpg') }}">
-                    <div class="bi-text">
-                        <span class="b-tag">Camping</span>
-                        <h4><a href="#">Choosing A Static Caravan</a></h4>
-                        <div class="b-time"><i class="icon_clock_alt"></i> 15th April, 2019</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="blog-item set-bg" data-setbg="{{ asset('front-end/img/blog/blog-3.jpg') }}">
-                    <div class="bi-text">
-                        <span class="b-tag">Event</span>
-                        <h4><a href="#">Copper Canyon</a></h4>
-                        <div class="b-time"><i class="icon_clock_alt"></i> 21th April, 2019</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-8">
-                <div class="blog-item small-size set-bg" data-setbg="{{ asset('front-end/img/blog/blog-wide.jpg') }}">
-                    <div class="bi-text">
-                        <span class="b-tag">Event</span>
-                        <h4><a href="#">Trip To Iqaluit In Nunavut A Canadian Arctic City</a></h4>
-                        <div class="b-time"><i class="icon_clock_alt"></i> 08th April, 2019</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="blog-item small-size set-bg" data-setbg="{{ asset('front-end/img/blog/blog-10.jpg') }}">
-                    <div class="bi-text">
-                        <span class="b-tag">Travel</span>
-                        <h4><a href="#">Traveling To Barcelona</a></h4>
-                        <div class="b-time"><i class="icon_clock_alt"></i> 12th April, 2019</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 <!-- Blog Section End -->
 @endsection
