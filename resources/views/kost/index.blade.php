@@ -28,7 +28,7 @@
           <i class="ti ti-search text-secondary"></i>
         </span>
         <input type="text" name="search" class="form-control border-start-0"
-               placeholder="Cari nomor kamar / lantai / status..." value="{{ request('search') }}">
+               placeholder="Cari nomor kamar / status..." value="{{ request('search') }}">
         <button class="btn btn-outline-secondary" type="submit">
           Cari
         </button>

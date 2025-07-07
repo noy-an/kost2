@@ -16,7 +16,6 @@ class KostController extends Controller
     $kost = Kost::query()
         ->when($request->search, function ($query) use ($request) {
             $query->where('nomor_kamar', 'like', '%' . $request->search . '%')
-                ->orWhere('nomor_lantai', 'like', '%' . $request->search . '%')
                 ->orWhere('status', 'like', '%' . $request->search . '%');
         })
         ->latest()
