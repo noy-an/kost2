@@ -7,29 +7,33 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingpelangganController extends Controller
 {
-    public function create(Request $request)
+    
+    public function create($kost_id)
     {
-        $kost_id = $request->input('kost_id');
-        
-       
-        
-        // Find the kost or fail
+      
         $kost = Kost::find($kost_id);
+
         
-       
+        if (!$kost) {
+            return redirect()->route('kamar.index')->with('error', 'Kost tidak ditemukan.');
+        }
+                
+        if ($kost->status !== 'kosong') {
+            return redirect()->route('kamar.index')->with('error', 'Kost sudah tidak tersedia.');
+        }
         
         // Hitung nominal untuk setiap persentase
-        $nominal_pembayaran = [
-            '30' => $kost->harga * 0.3,
-            '40' => $kost->harga * 0.4,
-            '50' => $kost->harga * 0.5,
-            '100' => $kost->harga
+        $harga_calculations = [
+            'dp_30' => $kost->harga * 0.3,
+            'dp_40' => $kost->harga * 0.4,
+            'dp_50' => $kost->harga * 0.5,
+            'bayar_penuh' => $kost->harga,
         ];
         
         return view('bookingpelanggan.form', [
             'title' => 'Bookingpelanggan',
             'kost' => $kost,
-            'nominal_pembayaran' => $nominal_pembayaran,
+            'harga_calculations' => $harga_calculations,
         ]);
     }
     
@@ -43,6 +47,12 @@ class BookingpelangganController extends Controller
         
         $kost = Kost::findOrFail($request->kost_id);
         $persentase = $request->persentase_pembayaran;
+        
+        // Check if kost is still available
+        if ($kost->status !== 'kosong') {
+            return redirect()->route('bookingpelanggan.form', $kost->id)
+                ->with('error', 'Maaf, kost sudah tidak tersedia.');
+        }
         
         // Hitung nominal pembayaran berdasarkan persentase
         $nominal_pembayaran = $kost->harga * ($persentase / 100);
@@ -65,6 +75,7 @@ class BookingpelangganController extends Controller
             ? 'Booking dengan pembayaran penuh berhasil dikirim!' 
             : "Booking dengan DP {$persentase}% berhasil dikirim!";
         
-        return redirect()->route('home.index')->with('success', $pesan);
+        // Fix: Redirect back to the same form with the kost_id parameter
+        return redirect()->route('bookingpelanggan.form', $kost->id)->with('success', $pesan);
     }
 }

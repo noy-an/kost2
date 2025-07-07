@@ -13,8 +13,6 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\BookingpelangganController;
 
-
-
 //front-end
 Route::resource('/', \App\Http\Controllers\HomeController::class);
 Route::resource('/home', \App\Http\Controllers\HomeController::class);
@@ -22,35 +20,27 @@ Route::resource('/kost', \App\Http\Controllers\KostController::class);
 Route::resource('/about', \App\Http\Controllers\AboutController::class);
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 
-// Route::resource('/contact', \App\Http\Controllers\ContactController::class);
-
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+// Fix: Change the route to accept kost_id as URL parameter
+Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::class, 'create'])
+    ->name('bookingpelanggan.form');
 
-// In your web.php routes file
-// Pilih salah satu sesuai kebutuhan
-Route::get('/booking/create/{kost_id}', [BookingpelangganController::class, 'create'])
-    ->name('bookingpelanggan.create');
-Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])->name('bookingpelanggan.store');
+Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
+    ->name('bookingpelanggan.store');
 
-// Or if you prefer query parameters:
-Route::get('/bookingpelanggan/create', [BookingpelangganController::class, 'create'])->name('bookingpelanggan.form');
-
-// Then when linking to the form:
-// <a href="{{ route('bookingpelanggan.form', ['kost_id' => $kost->id]) }}">Book Now</a>
-// Or: <a href="{{ route('bookingpelanggan.form') }}?kost_id={{ $kost->id }}">Book Now</a>
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-  Route::resource('admin', \App\Http\Controllers\AdminController::class);
-//backend
-Route::resource('kost', KostController::class);
-Route::resource('booking', BookingController::class);
-Route::resource('kontak', KontakController::class);
-Route::resource('pembayaran', PembayaranController::class);
-Route::resource('tagihan', TagihanController::class);
-Route::resource('pengguna', PenggunaController::class);
+    Route::resource('admin', \App\Http\Controllers\AdminController::class);
+    //backend
+    Route::resource('kost', KostController::class);
+    Route::resource('booking', BookingController::class);
+    Route::resource('kontak', KontakController::class);
+    Route::resource('pembayaran', PembayaranController::class);
+    Route::resource('tagihan', TagihanController::class);
+    Route::resource('pengguna', PenggunaController::class);
 });
 
 Route::get('/registrasi/pelanggan', [AuthController::class, 'registrasiPelanggan'])->name('registrasipelanggan');
@@ -62,12 +52,6 @@ Route::post('/login/submit', [AuthController::class, 'submitLogin'])->name('logi
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('lupa-password', [ResetPasswordController::class, 'showForgetForm'])->name('password.request');
-
-// Kirim email token reset
 Route::post('lupa-password', [ResetPasswordController::class, 'sendResetLink'])->name('password.email');
-
-// Form reset password
 Route::get('reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-
-// Proses reset password
 Route::post('reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');

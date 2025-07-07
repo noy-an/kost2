@@ -15,67 +15,79 @@
                     @if(session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
+                    
                     @if(isset($kost) && $kost)
-                    <form method="POST" action="{{ route('bookingpelanggan.store',['kost_id' => $kost->id]) }}">
+                    <form method="POST" action="{{ route('bookingpelanggan.store') }}">
                         @csrf
-                      <!-- Simpan ID kost secara tersembunyi -->
+                        <!-- Simpan ID kost secara tersembunyi -->
                         <input type="hidden" name="kost_id" id="kost_id" value="{{ $kost->id }}">
+                        
                         <!-- Tampilkan Info Kamar -->
                         <div class="mb-3">
                             <label class="form-label">Kamar Kost</label>
                             <input type="text" class="form-control" value="Kamar {{ $kost->nomor_kamar }} (Lantai {{ $kost->nomor_lantai }})" disabled>
                         </div>
+                        
                         <!-- Harga Kost -->
                         <div class="mb-3">
                             <label class="form-label">Harga Kost</label>
                             <input type="text" class="form-control" id="harga_kost" value="Rp {{ number_format($kost->harga, 0, ',', '.') }}" disabled>
                         </div>
+                        
                         <!-- Pilihan Persentase Pembayaran -->
                         <div class="mb-3">
                             <label class="form-label">Pilihan Pembayaran</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp30" value="30" checked>
+                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp30" value="30" checked 
+                                       data-nominal="{{ $harga_calculations['dp_30'] }}">
                                 <label class="form-check-label" for="dp30">
-                                    DP 30% - <span id="nominal_30">Rp {{ number_format($nominal_pembayaran['30'], 0, ',', '.') }}</span>
+                                    DP 30% - <span>Rp {{ number_format($harga_calculations['dp_30'], 0, ',', '.') }}</span>
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp40" value="40">
+                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp40" value="40"
+                                       data-nominal="{{ $harga_calculations['dp_40'] }}">
                                 <label class="form-check-label" for="dp40">
-                                    DP 40% - <span id="nominal_40">Rp {{ number_format($nominal_pembayaran['40'], 0, ',', '.') }}</span>
+                                    DP 40% - <span>Rp {{ number_format($harga_calculations['dp_40'], 0, ',', '.') }}</span>
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp50" value="50">
+                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp50" value="50"
+                                       data-nominal="{{ $harga_calculations['dp_50'] }}">
                                 <label class="form-check-label" for="dp50">
-                                    DP 50% - <span id="nominal_50">Rp {{ number_format($nominal_pembayaran['50'], 0, ',', '.') }}</span>
+                                    DP 50% - <span>Rp {{ number_format($harga_calculations['dp_50'], 0, ',', '.') }}</span>
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="bayar_penuh" value="100">
+                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="bayar_penuh" value="100"
+                                       data-nominal="{{ $harga_calculations['bayar_penuh'] }}">
                                 <label class="form-check-label" for="bayar_penuh">
-                                    Bayar Penuh - <span id="nominal_100">Rp {{ number_format($nominal_pembayaran['100'], 0, ',', '.') }}</span>
+                                    Bayar Penuh - <span>Rp {{ number_format($harga_calculations['bayar_penuh'], 0, ',', '.') }}</span>
                                 </label>
                             </div>
                         </div>
+                        
                         <!-- Nominal yang akan dibayar -->
                         <div class="mb-3">
                             <label class="form-label">Nominal yang akan dibayar</label>
-                            <input type="text" class="form-control bg-light" id="nominal_bayar" value="Rp {{ number_format($nominal_pembayaran['30'], 0, ',', '.') }}" disabled>
+                            <input type="text" class="form-control bg-light" id="nominal_bayar" value="Rp {{ number_format($harga_calculations['dp_30'], 0, ',', '.') }}" disabled>
                         </div>
+                        
                         <div class="mb-3">
                             <label for="tgl_booking" class="form-label">Tanggal Booking</label>
                             <input type="date" class="form-control" id="tgl_booking" name="tgl_booking" required>
                         </div>
-                        <div class="d-grid">
+                        
+                        <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success">Kirim Booking</button>
+                            <a href="{{ route('kamar.show', $kost->id) }}" class="btn btn-outline-secondary">Kembali ke Detail Kost</a>
                         </div>
                     </form>
                     @else
                     <div class="alert alert-warning">
                         <h5>Data Kost Tidak Ditemukan</h5>
                         <p>Silakan pilih kost terlebih dahulu sebelum melakukan booking.</p>
-                        <a href="{{ route('home.index') }}" class="btn btn-primary">Kembali ke Beranda</a>
+                        <a href="{{ route('kamar.index') }}" class="btn btn-primary">Kembali ke Daftar Kamar</a>
                     </div>
                     @endif
                 </div>
@@ -85,24 +97,22 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const radioButtons = document.querySelectorAll('input[name="persentase_pembayaran"]');
     const nominalBayar = document.getElementById('nominal_bayar');
-    
-    // Data nominal dari PHP
-    const nominalData = {
-        '30': 'Rp {{ number_format($nominal_pembayaran["30"], 0, ",", ".") }}',
-        '40': 'Rp {{ number_format($nominal_pembayaran["40"], 0, ",", ".") }}',
-        '50': 'Rp {{ number_format($nominal_pembayaran["50"], 0, ",", ".") }}',
-        '100': 'Rp {{ number_format($nominal_pembayaran["100"], 0, ",", ".") }}'
-    };
-    
+
     radioButtons.forEach(radio => {
-        radio.addEventListener('change', function() {
-            const persentase = this.value;
-            nominalBayar.value = nominalData[persentase];
+        radio.addEventListener('change', function () {
+            // Ambil nominal yang sudah dihitung dari controller
+            const nominal = parseFloat(this.getAttribute('data-nominal'));
+            nominalBayar.value = 'Rp ' + nominal.toLocaleString('id-ID');
         });
     });
+
+    // Set tanggal booking minimal hari ini
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('tgl_booking').setAttribute('min', today);
 });
 </script>
+
 @endsection
