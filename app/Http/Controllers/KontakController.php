@@ -7,12 +7,19 @@ use Illuminate\Http\Request;
 
 class KontakController extends Controller
 {
-    // Tampilkan daftar kontak
-    public function index()
-    {
-        $kontaks = Kontak::latest()->paginate(10);
-        return view('kontak.index', compact('kontaks'));
-    }
+    public function index(Request $request)
+{
+    $kontaks = Kontak::query()
+        ->when($request->search, function ($query) use ($request) {
+            $query->where('nama', 'like', '%' . $request->search . '%')
+                ->orWhere('email', 'like', '%' . $request->search . '%')
+                ->orWhere('subjek', 'like', '%' . $request->search . '%');
+        })
+        ->latest()
+        ->paginate(10);
+
+    return view('kontak.index', compact('kontaks'));
+}
 
     // Tampilkan form tambah kontak
     public function create()

@@ -8,12 +8,18 @@ use Illuminate\Support\Facades\Hash;
 
 class PenggunaController extends Controller
 {
-    public function index()
-{
-    $users = User::paginate(10);
-    return view('pengguna.index', compact('users'));
-}
+    public function index(Request $request)
+    {
+        $users = User::query()
+            ->when($request->search, function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                      ->orWhere('email', 'like', '%' . $request->search . '%');
+            })
+            ->latest()
+            ->paginate(10);
 
+        return view('pengguna.index', compact('users'));
+    }
 
     public function create()
     {

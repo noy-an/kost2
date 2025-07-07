@@ -12,13 +12,23 @@ class BookingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        // Ambil semua booking dengan data relasi user dan kost
-        $bookings = Booking::with(['user', 'kost'])->latest()->paginate(10);
+public function index(Request $request)
+{
+    $bookings = \App\Models\Booking::with(['user', 'kost'])
+        ->when($request->search, function ($query) use ($request) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            })->orWhereHas('kost', function ($q) use ($request) {
+                $q->where('nomor_kamar', 'like', '%' . $request->search . '%');
+            });
+        })
+        ->latest()
+        ->paginate(10);
 
-        return view('booking.index', compact('bookings'));
-    }
+    return view('booking.index', compact('bookings'));
+}
+
+
 
     /**
      * Show the form for creating a new resource.
