@@ -13,7 +13,6 @@
 @section('content')
 <div class="card shadow-sm rounded-3 border-0">
   <div class="card-body">
-    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
       <h4 class="fw-bold text-dark mb-0">🏠 Data Kamar Kost</h4>
       <a href="{{ route('kost.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
@@ -21,7 +20,6 @@
       </a>
     </div>
 
-    <!-- Search Form -->
     <form action="{{ route('kost.index') }}" method="GET" class="mb-4">
       <div class="input-group">
         <span class="input-group-text bg-light border-end-0">
@@ -29,9 +27,7 @@
         </span>
         <input type="text" name="search" class="form-control border-start-0"
                placeholder="Cari nomor kamar / status..." value="{{ request('search') }}">
-        <button class="btn btn-outline-secondary" type="submit">
-          Cari
-        </button>
+        <button class="btn btn-outline-secondary" type="submit">Cari</button>
         @if(request('search'))
         <a href="{{ route('kost.index') }}" class="btn btn-outline-danger">
           <i class="ti ti-x"></i> Reset
@@ -40,12 +36,11 @@
       </div>
     </form>
 
-    <!-- Table -->
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
           <tr class="text-nowrap">
-            <th>ID</th>
+            <th>No</th>
             <th>No. Kamar</th>
             <th>Lantai</th>
             <th>Harga</th>
@@ -60,9 +55,9 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($kost as $item)
+          @forelse($kost as $index => $item)
           <tr>
-            <td>{{ $item->id }}</td>
+            <td>{{ $index + $kost->firstItem() }}</td>
             <td>{{ $item->nomor_kamar }}</td>
             <td>{{ $item->nomor_lantai }}</td>
             <td class="text-end">Rp{{ number_format($item->harga, 0, ',', '.') }}</td>
@@ -79,32 +74,71 @@
             </td>
             <td class="text-wrap text-start">{{ $item->fasilitas ?? '-' }}</td>
             <td>
-              <img src="{{ asset('storage/' . $item->foto1) }}" alt="Foto 1" width="50" height="50" class="rounded object-fit-cover">
+              <img src="{{ asset('storage/' . $item->foto1) }}" alt="Foto 1" width="50" height="50"
+                   class="rounded object-fit-cover" data-bs-toggle="modal" data-bs-target="#foto1Modal{{ $item->id }}">
+              <div class="modal fade" id="foto1Modal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content text-center">
+                    <div class="modal-body p-3">
+                      <img src="{{ asset('storage/' . $item->foto1) }}" class="img-fluid rounded" style="max-height: 400px;" alt="Foto 1">
+                    </div>
+                    <div class="modal-footer border-0">
+                      <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </td>
             <td>
-              <img src="{{ asset('storage/' . $item->foto2) }}" alt="Foto 2" width="50" height="50" class="rounded object-fit-cover">
+              <img src="{{ asset('storage/' . $item->foto2) }}" alt="Foto 2" width="50" height="50"
+                   class="rounded object-fit-cover" data-bs-toggle="modal" data-bs-target="#foto2Modal{{ $item->id }}">
+              <div class="modal fade" id="foto2Modal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content text-center">
+                    <div class="modal-body p-3">
+                      <img src="{{ asset('storage/' . $item->foto2) }}" class="img-fluid rounded" style="max-height: 400px;" alt="Foto 2">
+                    </div>
+                    <div class="modal-footer border-0">
+                      <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </td>
             <td>
-              <img src="{{ asset('storage/' . $item->foto3) }}" alt="Foto 3" width="50" height="50" class="rounded object-fit-cover">
+              <img src="{{ asset('storage/' . $item->foto3) }}" alt="Foto 3" width="50" height="50"
+                   class="rounded object-fit-cover" data-bs-toggle="modal" data-bs-target="#foto3Modal{{ $item->id }}">
+              <div class="modal fade" id="foto3Modal{{ $item->id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content text-center">
+                    <div class="modal-body p-3">
+                      <img src="{{ asset('storage/' . $item->foto3) }}" class="img-fluid rounded" style="max-height: 400px;" alt="Foto 3">
+                    </div>
+                    <div class="modal-footer border-0">
+                      <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </td>
             <td>
               <div class="d-flex justify-content-center gap-1">
                 <a href="{{ route('kost.edit', $item->id) }}" class="btn btn-sm btn-warning" title="Edit">
                   <i class="ti ti-edit"></i>
                 </a>
-              <form action="{{ route('kost.destroy', $item->id) }}" method="POST" class="d-inline form-delete">
-  @csrf
-  @method('DELETE')
-  <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="{{ $item->id }}">
-    <i class="ti ti-trash"></i>
-  </button>
-</form>
+                <form action="{{ route('kost.destroy', $item->id) }}" method="POST" class="d-inline form-delete">
+                  @csrf
+                  @method('DELETE')
+                  <button type="button" class="btn btn-sm btn-danger btn-delete" data-id="{{ $item->id }}">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </form>
               </div>
             </td>
           </tr>
           @empty
           <tr>
-            <td colspan="11" class="text-center text-muted py-4">
+            <td colspan="12" class="text-center text-muted py-4">
               <i class="ti ti-info-circle"></i> Tidak ada data kost tersedia.
             </td>
           </tr>
@@ -113,11 +147,36 @@
       </table>
     </div>
 
-    <!-- Pagination -->
     <div class="d-flex justify-content-end mt-3">
       {{ $kost->appends(request()->query())->links('pagination::bootstrap-5') }}
     </div>
   </div>
 </div>
 
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const form = this.closest('form');
+        Swal.fire({
+          title: 'Yakin ingin menghapus data ini?',
+          text: "Data kost akan dihapus permanen.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Hapus',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
+  });
+</script>
 @endsection
