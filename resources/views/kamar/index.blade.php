@@ -44,9 +44,10 @@
                                     <strong class="text-primary fs-5">
                                         {{ 'Rp ' . number_format($kost->harga, 0, ',', '.') }}
                                     </strong>
-                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                   <a href="{{ route('kamar.show', $kost->id) }}" class="btn btn-sm btn-outline-primary">
                                         Lihat Detail
                                     </a>
+
                                 </div>
                             </div>
                         </div>

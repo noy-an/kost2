@@ -46,10 +46,17 @@ class KamarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+public function show(string $id)
+{
+    $kosts = \App\Models\Kost::findOrFail($id); // ubah jadi $kosts
+
+    return view('kamar.show', [
+        'title' => 'Detail Kamar',
+        'kosts' => $kosts
+    ]);
+}
+
+
 
     /**
      * Show the form for editing the specified resource.
