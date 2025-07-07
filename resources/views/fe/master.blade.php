@@ -33,65 +33,98 @@
     </div>
 
     <!-- Offcanvas Menu Section Begin -->
+    <div class="offcanvas-menu-overlay"></div>
+    <div class="offcanvas-menu-wrapper">
+        <div class="canvas-close">
+            <span class="icon_close"></span>
+        </div>
+        <nav class="mainmenu mobile-menu">
+            <ul>
+                <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+                    <a href="{{ route('home.index') }}">Home</a>
+                </li>
+                <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+                    <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+                </li>
+                <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+                    <a href="{{ route('about.index') }}">About Us</a>
+                </li>
+                <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
+                    <a href="{{ route('contact.index') }}">Contact</a>
+                </li>
+                @guest
+                    <li><a href="{{ route('login') }}">Login</a></li>
+                    <li><a href="{{ route('registrasipelanggan') }}">Register</a></li>
+                @endguest
+                @auth
+                    <li>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" style="background:none; border:none; color:white;">Logout</button>
+                        </form>
+                    </li>
+                @endauth
+            </ul>
+        </nav>
+    </div>
+    <div class="canvas-open">
+        <i class="fa fa-bars"></i>
+    </div>
     <!-- Offcanvas Menu Section End -->
 
-        <div class="menu-item">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-2">
-                        <div class="logo">
-                            <a href="./index.html">
-                                <img src="{{ asset('front-end/img/logo.png') }}" alt="">
-                            </a>
-                        </div>
+    <div class="menu-item">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="logo">
+                        <a href="./index.html">
+                            <img src="{{ asset('front-end/img/logo.png') }}" alt="">
+                        </a>
                     </div>
-                    <div class="col-lg-10">
-                        <div class="nav-menu">
-                                <nav class="mainmenu">
-                                    <ul>
-                                        <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
-                                            <a href="{{ route('home.index') }}">Home</a>
-                                        </li>
-                                        <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
-                                            <a href="{{ route('kamar.index') }}">Kamar Kost</a>
-                                        </li>
-                                        <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
-                                            <a href="{{ route('about.index') }}">About Us</a>
-                                        </li>
-                                        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
-                                            <a href="{{ route('contact.index') }}">Contact</a>
-                                        </li>
+                </div>
+                <div class="col-lg-10">
+                    <div class="nav-menu">
+                        <nav class="mainmenu" id="mobile-menu">
+                            <ul>
+                                <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+                                    <a href="{{ route('home.index') }}">Home</a>
+                                </li>
+                                <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+                                    <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+                                </li>
+                                <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+                                    <a href="{{ route('about.index') }}">About Us</a>
+                                </li>
+                                <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
+                                    <a href="{{ route('contact.index') }}">Contact</a>
+                                </li>
 
-        {{--  Tampilkan tombol login/register jika belum login --}}
-        @guest
-            <li>
-                <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
-            </li>
-            <li>
-                <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
-            </li>
-        @endguest
+                                @guest
+                                    <li>
+                                        <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
+                                    </li>
+                                @endguest
 
-        {{-- Tampilkan tombol logout jika sudah login --}}
-        @auth
-            <li>
-                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
-                        Logout
-                    </button>
-                </form>
-            </li>
-        @endauth
-    </ul>
-</nav>
-                        </div>
+                                @auth
+                                    <li>
+                                        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
+                                                Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endauth
+                            </ul>
+                        </nav>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
-    <!-- Header End -->
+    </div>
 
     @yield('content')
 
@@ -178,10 +211,9 @@
     </div>
     <!-- Search model end -->
 
-    <!-- Js Plugins -->
-
     @yield('scripts')
 
+    <!-- Js Plugins -->
     <script src="{{ asset('front-end/js/jquery-3.3.1.min.js') }}"></script>
     <script src="{{ asset('front-end/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('front-end/js/jquery.magnific-popup.min.js') }}"></script>
@@ -190,6 +222,27 @@
     <script src="{{ asset('front-end/js/jquery.slicknav.js') }}"></script>
     <script src="{{ asset('front-end/js/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('front-end/js/main.js') }}"></script>
+
+    <!-- Init Hamburger Menu -->
+    <script>
+        $(document).ready(function () {
+            $("#mobile-menu").slicknav({
+                prependTo: '.offcanvas-menu-wrapper',
+                allowParentLinks: true,
+                label: ''
+            });
+
+            $(".canvas-open").on('click', function () {
+                $(".offcanvas-menu-wrapper").addClass("active");
+                $(".offcanvas-menu-overlay").addClass("active");
+            });
+
+            $(".canvas-close, .offcanvas-menu-overlay").on('click', function () {
+                $(".offcanvas-menu-wrapper").removeClass("active");
+                $(".offcanvas-menu-overlay").removeClass("active");
+            });
+        });
+    </script>
 </body>
 
 </html>
