@@ -46,8 +46,7 @@
 </head>
 <body>
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical"
-       data-navbarbg="skin6" data-sidebartype="full"
-       data-sidebar-position="fixed" data-header-position="fixed">
+      >
 
     @include('backend.sidebar')
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
@@ -74,7 +73,7 @@
       Swal.fire({
         icon: 'success',
         title: 'Berhasil!',
-        text: '{{ session('success') }}',
+        text: 'Succes',
         showConfirmButton: false,
         timer: 2000
       });

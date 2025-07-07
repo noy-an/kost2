@@ -21,8 +21,7 @@ class BookingpelangganController extends Controller
         if ($kost->status !== 'kosong') {
             return redirect()->route('kamar.index')->with('error', 'Kost sudah tidak tersedia.');
         }
-        
-        // Hitung nominal untuk setiap persentase
+       
         $harga_calculations = [
             'dp_30' => $kost->harga * 0.3,
             'dp_40' => $kost->harga * 0.4,
@@ -48,16 +47,16 @@ class BookingpelangganController extends Controller
         $kost = Kost::findOrFail($request->kost_id);
         $persentase = $request->persentase_pembayaran;
         
-        // Check if kost is still available
+        
         if ($kost->status !== 'kosong') {
             return redirect()->route('bookingpelanggan.form', $kost->id)
                 ->with('error', 'Maaf, kost sudah tidak tersedia.');
         }
         
-        // Hitung nominal pembayaran berdasarkan persentase
+     
         $nominal_pembayaran = $kost->harga * ($persentase / 100);
         
-        // Tentukan status dan jenis pembayaran
+       
         $jenis_pembayaran = $persentase == 100 ? 'bayar_penuh' : 'dp';
         $status_booking = 'pending';
         
@@ -75,7 +74,7 @@ class BookingpelangganController extends Controller
             ? 'Booking dengan pembayaran penuh berhasil dikirim!' 
             : "Booking dengan DP {$persentase}% berhasil dikirim!";
         
-        // Fix: Redirect back to the same form with the kost_id parameter
+       
         return redirect()->route('bookingpelanggan.form', $kost->id)->with('success', $pesan);
     }
 }
