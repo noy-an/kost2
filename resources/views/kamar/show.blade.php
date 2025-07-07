@@ -37,13 +37,13 @@
                         </p>
 
                         @if($kosts->status === 'kosong')
-                            @if(session()->has('pelanggan_login'))
+                            @auth('web')
                                 {{-- Jika sudah login sebagai pelanggan --}}
                                 <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" class="btn btn-primary mt-3">Booking Sekarang</a>
-                            @else
+                              @else
                                 {{-- Jika belum login --}}
                                 <button onclick="showLoginAlert()" class="btn btn-primary mt-3">Booking Sekarang</button>
-                            @endif
+                             @endauth
                         @endif
 
                         <div class="mt-4">
