@@ -40,7 +40,7 @@
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
           <tr class="text-nowrap">
-            <th>ID</th>
+            <th>No</th>
             <th>Nama</th>
             <th>Email</th>
             <th>Role</th>
@@ -51,9 +51,9 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($users as $user)
+          @forelse($users as $index => $user)
           <tr>
-            <td>{{ $user->id }}</td>
+            <td>{{ $index + $users->firstItem() }}</td>
             <td>{{ $user->name }}</td>
             <td>{{ $user->email }}</td>
             <td>
@@ -69,31 +69,54 @@
             <td>{{ $user->phone }}</td>
             <td>
               @if($user->avatar)
-                <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" width="40" height="40" class="rounded-circle object-fit-cover">
+                <img src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar" width="40" height="40" class="rounded-circle object-fit-cover" data-bs-toggle="modal" data-bs-target="#avatarModal{{ $user->id }}">
+                
+                <!-- Avatar Modal -->
+                <div class="modal fade" id="avatarModal{{ $user->id }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content text-center">
+                      <div class="modal-body p-4">
+                        <img src="{{ asset('storage/' . $user->avatar) }}" class="img-fluid rounded shadow-sm" style="max-height: 400px;" alt="Avatar">
+                      </div>
+                      <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               @else
                 <span class="text-muted">-</span>
               @endif
             </td>
             <td>
               @if($user->id_card)
-                <img src="{{ asset('storage/' . $user->id_card) }}" alt="ID Card" width="40" height="40" class="rounded object-fit-cover">
+                <img src="{{ asset('storage/' . $user->id_card) }}" alt="ID Card" width="40" height="40" class="rounded object-fit-cover" data-bs-toggle="modal" data-bs-target="#idcardModal{{ $user->id }}">
+                
+                <!-- ID Card Modal -->
+                <div class="modal fade" id="idcardModal{{ $user->id }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content text-center">
+                      <div class="modal-body p-4">
+                        <img src="{{ asset('storage/' . $user->id_card) }}" class="img-fluid rounded shadow-sm" style="max-height: 400px;" alt="ID Card">
+                      </div>
+                      <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               @else
                 <span class="text-muted">-</span>
               @endif
             </td>
             <td>
-              <div class="d-flex justify-content-center gap-1">
-                <a href="{{ route('pengguna.edit', $user->id) }}" class="btn btn-sm btn-warning" title="Edit">
-                  <i class="ti ti-edit"></i>
-                </a>
-       <form action="{{ route('pengguna.destroy', $user->id) }}" method="POST" class="d-inline form-delete">
-  @csrf
-  @method('DELETE')
-  <button type="button" class="btn btn-sm btn-danger btn-delete">
-    <i class="ti ti-trash"></i>
-  </button>
-</form>
-              </div>
+              <form action="{{ route('pengguna.destroy', $user->id) }}" method="POST" class="d-inline form-delete">
+                @csrf
+                @method('DELETE')
+                <button type="button" class="btn btn-sm btn-danger btn-delete" data-name="{{ $user->name }}">
+                  <i class="ti ti-trash"></i>
+                </button>
+              </form>
             </td>
           </tr>
           @empty
@@ -113,4 +136,34 @@
     </div>
   </div>
 </div>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const form = this.closest('form');
+        const name = this.dataset.name;
+
+        Swal.fire({
+          title: 'Yakin ingin menghapus?',
+          text: `Data pengguna ${name} akan dihapus permanen.`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Hapus',
+          cancelButtonText: 'Batal'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+      });
+    });
+  });
+</script>
 @endsection
