@@ -44,7 +44,8 @@ class TagihanpelangganController extends Controller
         $booking = Booking::findOrFail($booking_id);
 
         return view('tagihanpelanggan.form', [
-            'booking' => $booking
+            'booking' => $booking,
+            'title' => 'Tagihanpelanggan'
         ]);
     }
 
