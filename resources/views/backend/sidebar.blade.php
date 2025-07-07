@@ -1,102 +1,37 @@
-<!-- Sidebar Start -->
 <aside class="left-sidebar">
-  <!-- Sidebar scroll-->
   <div>
-    <!-- Logo -->
-    <div class="brand-logo d-flex align-items-center justify-content-between">
+    <div class="brand-logo d-flex align-items-center justify-content-between px-3 py-2">
       <a href="{{ route('home.index') }}" class="text-nowrap logo-img">
         <img src="{{ asset('backend/assets/images/logos/dark-logo.svg') }}" width="180" alt="logo" />
       </a>
-      <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+      <div class="close-btn d-xl-none d-block cursor-pointer" id="sidebarClose">
         <i class="ti ti-x fs-8"></i>
       </div>
     </div>
 
-    <!-- Sidebar navigation-->
-    <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+    <nav class="sidebar-nav scroll-sidebar" data-simplebar>
       <ul id="sidebarnav">
-
-        <!-- Section Title -->
-        <li class="nav-small-cap">
-          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-          <span class="hide-menu">MAIN MENU</span>
-        </li>
-
-        <!-- Home -->
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="{{ route('admin.index') }}" aria-expanded="false">
-            <span><i class="ti ti-home"></i></span>
-            <span class="hide-menu">Home</span>
-          </a>
-        </li>
-
-        <!-- Kost -->
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="{{ route('kost.index') }}" aria-expanded="false">
-            <span><i class="ti ti-building-community"></i></span>
-            <span class="hide-menu">Kost</span>
-          </a>
-        </li>
-
-        <!-- Booking -->
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="{{ route('booking.index') }}" aria-expanded="false">
-            <span><i class="ti ti-calendar-event"></i></span>
-            <span class="hide-menu">Booking</span>
-          </a>
-        </li>
-
-        <!-- Tagihan -->
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="{{ route('tagihan.index') }}" aria-expanded="false">
-            <span><i class="ti ti-file-invoice"></i></span>
-            <span class="hide-menu">Tagihan</span>
-          </a>
-        </li>
-
-        <!-- Pembayaran -->
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="{{ route('pembayaran.index') }}" aria-expanded="false">
-            <span><i class="ti ti-credit-card"></i></span>
-            <span class="hide-menu">Pembayaran</span>
-          </a>
-        </li>
-
-        <!-- Pengguna -->
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="{{ route('pengguna.index') }}" aria-expanded="false">
-            <span><i class="ti ti-users"></i></span>
-            <span class="hide-menu">Pengguna</span>
-          </a>
-        </li>
-
-        <!-- Kontak -->
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="{{ route('kontak.index') }}" aria-expanded="false">
-            <span><i class="ti ti-mail"></i></span>
-            <span class="hide-menu">Kontak</span>
-          </a>
-        </li>
-
+        <li class="nav-small-cap"><i class="ti ti-dots nav-small-cap-icon fs-4"></i><span class="hide-menu">MAIN MENU</span></li>
+        <li class="sidebar-item"><a class="sidebar-link" href="{{ route('admin.index') }}"><i class="ti ti-home"></i><span class="hide-menu">Home</span></a></li>
+        <li class="sidebar-item"><a class="sidebar-link" href="{{ route('kost.index') }}"><i class="ti ti-building-community"></i><span class="hide-menu">Kost</span></a></li>
+        <li class="sidebar-item"><a class="sidebar-link" href="{{ route('booking.index') }}"><i class="ti ti-calendar-event"></i><span class="hide-menu">Booking</span></a></li>
+        <li class="sidebar-item"><a class="sidebar-link" href="{{ route('tagihan.index') }}"><i class="ti ti-file-invoice"></i><span class="hide-menu">Tagihan</span></a></li>
+        <li class="sidebar-item"><a class="sidebar-link" href="{{ route('pembayaran.index') }}"><i class="ti ti-credit-card"></i><span class="hide-menu">Pembayaran</span></a></li>
+        <li class="sidebar-item"><a class="sidebar-link" href="{{ route('pengguna.index') }}"><i class="ti ti-users"></i><span class="hide-menu">Pengguna</span></a></li>
+        <li class="sidebar-item"><a class="sidebar-link" href="{{ route('kontak.index') }}"><i class="ti ti-mail"></i><span class="hide-menu">Kontak</span></a></li>
       </ul>
 
-      <!-- Promo / Upgrade -->
-      <div class="unlimited-access hide-menu bg-light-primary position-relative mb-7 mt-5 rounded">
+      <div class="unlimited-access hide-menu bg-light-primary position-relative mt-5 rounded mx-3 mb-4">
         <div class="d-flex">
           <div class="unlimited-access-title me-3">
-            <h6 class="fw-semibold fs-4 mb-6 text-dark w-85">Upgrade to Pro</h6>
-            <a href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/" 
-               target="_blank" 
-               class="btn btn-primary fs-2 fw-semibold lh-sm">Buy Pro</a>
+            <h6 class="fw-semibold fs-4 mb-2 text-dark w-85">Upgrade to Pro</h6>
+            <a href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/" target="_blank" class="btn btn-primary fs-2 fw-semibold">Buy Pro</a>
           </div>
           <div class="unlimited-access-img">
-            <img src="{{ asset('backend/assets/images/backgrounds/rocket.png') }}" alt="" class="img-fluid">
+            <img src="{{ asset('backend/assets/images/backgrounds/rocket.png') }}" class="img-fluid" alt="">
           </div>
         </div>
       </div>
     </nav>
-    <!-- End Sidebar navigation -->
   </div>
-  <!-- End Sidebar scroll-->
 </aside>
-<!-- Sidebar End -->

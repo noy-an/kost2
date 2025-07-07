@@ -1,20 +1,47 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>@yield('title', 'Dashboard')</title>
 
-  <!-- Favicon -->
   <link rel="shortcut icon" type="image/png" href="{{ asset('backend/assets/images/logos/favicon.png') }}" />
-
-  <!-- Core CSS -->
   <link rel="stylesheet" href="{{ asset('backend/assets/css/styles.min.css') }}" />
-
-  <!-- SweetAlert2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 
-  <!-- Optional CSS Stack -->
+  <style>
+    @media (max-width: 1199.98px) {
+      #main-wrapper .left-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        position: fixed;
+        z-index: 1030;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        background-color: #fff;
+        width: 280px;
+      }
+
+      #main-wrapper.show-sidebar .left-sidebar {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        display: none;
+      }
+
+      #main-wrapper.show-sidebar .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1020;
+        cursor: pointer;
+      }
+    }
+  </style>
+
   @stack('styles')
 </head>
 <body>
@@ -22,21 +49,17 @@
        data-navbarbg="skin6" data-sidebartype="full"
        data-sidebar-position="fixed" data-header-position="fixed">
 
-    {{-- Sidebar --}}
-    @yield('sidebar')
+    @include('backend.sidebar')
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Main Wrapper -->
     <div class="body-wrapper">
-      {{-- Navbar --}}
-      @yield('navbar')
-
-      <div class="container-fluid">
+      @include('backend.navbar')
+      <div class="container-fluid py-3">
         @yield('content')
       </div>
     </div>
   </div>
 
-  <!-- Core JS -->
   <script src="{{ asset('backend/assets/libs/jquery/dist/jquery.min.js') }}"></script>
   <script src="{{ asset('backend/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ asset('backend/assets/js/sidebarmenu.js') }}"></script>
@@ -45,7 +68,6 @@
   <script src="{{ asset('backend/assets/libs/simplebar/dist/simplebar.js') }}"></script>
   <script src="{{ asset('backend/assets/js/dashboard.js') }}"></script>
 
-  <!-- SweetAlert: session success -->
   @if(session('success'))
   <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -60,37 +82,33 @@
   </script>
   @endif
 
-  <!-- SweetAlert: konfirmasi delete -->
- <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const deleteButtons = document.querySelectorAll(".btn-delete");
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const openBtn = document.getElementById("headerCollapse");
+      const closeBtn = document.getElementById("sidebarClose");
+      const overlay = document.getElementById("sidebarOverlay");
+      const wrapper = document.getElementById("main-wrapper");
 
-    deleteButtons.forEach(function (button) {
-      button.addEventListener("click", function (e) {
-        e.preventDefault();
-        const form = button.closest("form");
-
-        Swal.fire({
-          title: 'Yakin ingin menghapus?',
-          text: "Data akan dihapus secara permanen!",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: 'Ya, hapus!',
-          cancelButtonText: 'Batal'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            form.submit();
-          }
+      if (openBtn) {
+        openBtn.addEventListener("click", function () {
+          wrapper.classList.add("show-sidebar");
         });
-      });
+      }
+
+      if (closeBtn) {
+        closeBtn.addEventListener("click", function () {
+          wrapper.classList.remove("show-sidebar");
+        });
+      }
+
+      if (overlay) {
+        overlay.addEventListener("click", function () {
+          wrapper.classList.remove("show-sidebar");
+        });
+      }
     });
-  });
-</script>
+  </script>
 
-
-  <!-- Optional JS Stack -->
   @stack('scripts')
 </body>
 </html>

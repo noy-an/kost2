@@ -3,6 +3,7 @@
 @section('sidebar')
   @include('backend.sidebar')
 @endsection
+
 @section('navbar')
   @include('backend.navbar')
 @endsection
@@ -10,97 +11,36 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="row g-4">
-        <!-- Kost -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body d-flex align-items-center">
-                    <div class="bg-primary text-white rounded-circle p-3 me-3">
-                        <i class="ti ti-building-community fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-1">Total Kamar Kost</h6>
-                        <h4 class="fw-bold">{{ $kostCount }}</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="container-fluid py-4 mt-5"> {{-- mt-5 = ruang untuk navbar fixed --}}
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
 
-        <!-- Booking -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body d-flex align-items-center">
-                    <div class="bg-warning text-white rounded-circle p-3 me-3">
-                        <i class="ti ti-calendar-event fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-1">Total Booking</h6>
-                        <h4 class="fw-bold">{{ $bookingCount }}</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
+    @php
+      $cards = [
+        ['title' => 'Total Kamar Kost', 'count' => $kostCount, 'icon' => 'ti-building-community', 'color' => 'primary'],
+        ['title' => 'Total Booking', 'count' => $bookingCount, 'icon' => 'ti-calendar-event', 'color' => 'warning'],
+        ['title' => 'Total Tagihan', 'count' => $tagihanCount, 'icon' => 'ti-file-invoice', 'color' => 'info'],
+        ['title' => 'Total Pembayaran', 'count' => $pembayaranCount, 'icon' => 'ti-credit-card', 'color' => 'success'],
+        ['title' => 'Total Pengguna', 'count' => $userCount, 'icon' => 'ti-users', 'color' => 'dark'],
+        ['title' => 'Pesan Kontak', 'count' => $kontakCount, 'icon' => 'ti-mail', 'color' => 'danger'],
+      ];
+    @endphp
 
-        <!-- Tagihan -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body d-flex align-items-center">
-                    <div class="bg-info text-white rounded-circle p-3 me-3">
-                        <i class="ti ti-file-invoice fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-1">Total Tagihan</h6>
-                        <h4 class="fw-bold">{{ $tagihanCount }}</h4>
-                    </div>
-                </div>
-            </div>
+    @foreach ($cards as $card)
+    <div class="col">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body d-flex align-items-center">
+          <div class="bg-{{ $card['color'] }} text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+            <i class="ti {{ $card['icon'] }} fs-5"></i>
+          </div>
+          <div>
+            <small class="text-muted">{{ $card['title'] }}</small>
+            <h4 class="mb-0">{{ $card['count'] }}</h4>
+          </div>
         </div>
-
-        <!-- Pembayaran -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body d-flex align-items-center">
-                    <div class="bg-success text-white rounded-circle p-3 me-3">
-                        <i class="ti ti-credit-card fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-1">Total Pembayaran</h6>
-                        <h4 class="fw-bold">{{ $pembayaranCount }}</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pengguna -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body d-flex align-items-center">
-                    <div class="bg-dark text-white rounded-circle p-3 me-3">
-                        <i class="ti ti-users fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-1">Total Pengguna</h6>
-                        <h4 class="fw-bold">{{ $userCount }}</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Kontak Masuk -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body d-flex align-items-center">
-                    <div class="bg-danger text-white rounded-circle p-3 me-3">
-                        <i class="ti ti-mail fs-4"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-1">Pesan Kontak</h6>
-                        <h4 class="fw-bold">{{ $kontakCount }}</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+    @endforeach
+
+  </div>
 </div>
 @endsection
