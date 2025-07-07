@@ -56,14 +56,20 @@
                     <li><a href="{{ route('login') }}">Login</a></li>
                     <li><a href="{{ route('registrasipelanggan') }}">Register</a></li>
                 @endguest
-                @auth
-                    <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" style="background:none; border:none; color:white;">Logout</button>
-                        </form>
-                    </li>
-                @endauth
+           @auth
+    @if (Auth::user()->role === 'pelanggan')
+        <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
+            <a href="{{ route('profile.index') }}">Profil Saya</a>
+        </li>
+    @endif
+    <li>
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" style="background:none; border:none; color:white;">Logout</button>
+        </form>
+    </li>
+@endauth
+
             </ul>
         </nav>
     </div>
@@ -109,7 +115,12 @@
                                 @endguest
 
                                 @auth
-                                    <li>
+                                @if (Auth::user()->role === 'pelanggan')
+                            <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
+                                <a href="{{ route('profile.index') }}">Profil Saya</a>
+                            </li>
+                        @endif
+                                                        <li>
                                         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                                             @csrf
                                             <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">

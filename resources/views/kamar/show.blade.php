@@ -37,7 +37,13 @@
                         </p>
 
                         @if($kosts->status === 'kosong')
-                            <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" class="btn btn-primary mt-3">Booking Sekarang</a>
+                            @if(session()->has('pelanggan_login'))
+                                {{-- Jika sudah login sebagai pelanggan --}}
+                                <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" class="btn btn-primary mt-3">Booking Sekarang</a>
+                            @else
+                                {{-- Jika belum login --}}
+                                <button onclick="showLoginAlert()" class="btn btn-primary mt-3">Booking Sekarang</button>
+                            @endif
                         @endif
 
                         <div class="mt-4">
@@ -50,4 +56,31 @@
         </div>
     </div>
 </section>
+@endsection
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function showLoginAlert() {
+        Swal.fire({
+            title: 'Silakan Login atau Register',
+            text: 'Untuk booking kamar, Anda harus login sebagai pelanggan terlebih dahulu.',
+            icon: 'warning',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Login',
+            denyButtonText: 'Register',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Arahkan ke halaman login
+                window.location.href = '{{ route("login") }}';
+            } else if (result.isDenied) {
+                // Arahkan ke halaman registrasi pelanggan
+                window.location.href = '{{ route("registrasipelanggan") }}';
+            }
+            // Jika cancel, swal hanya tertutup (tidak perlu action)
+        });
+    }
+</script>
 @endsection

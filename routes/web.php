@@ -31,6 +31,17 @@ Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'stor
     ->name('bookingpelanggan.store');
 
 
+    
+use App\Http\Controllers\ProfilePelangganController;
+
+Route::middleware(['auth', 'role:pelanggan'])->group(function () {
+    Route::get('/profile', [ProfilePelangganController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfilePelangganController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');
+});
+
+
+//BATAS FRONT END
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('admin', \App\Http\Controllers\AdminController::class);
