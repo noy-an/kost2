@@ -1,5 +1,6 @@
 @extends('fe.master')
 @section('content')
+
 <!-- Hero Section Begin -->
 <section class="hero-section">
     <div class="container">

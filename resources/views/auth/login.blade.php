@@ -425,6 +425,16 @@
       initKeyboardNavigation();
     });
   </script>
+  
+  @if(session('sukses'))
+  <div class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 mt-3 me-3 z-3" role="alert" style="min-width: 300px;">
+    {{ session('sukses') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+@endif
+
 </body>
+
+
 
 </html>

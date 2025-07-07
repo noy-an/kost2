@@ -138,6 +138,7 @@
     </div>
 
     @yield('content')
+    
 
     <!-- Footer Section Begin -->
     <footer class="footer-section">
