@@ -28,16 +28,14 @@
           <i class="ti ti-search text-secondary"></i>
         </span>
         <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama user / kamar..." value="{{ request('search') }}">
-        <button class="btn btn-outline-secondary" type="submit">
-          Cari
-        </button>
+        <button class="btn btn-outline-secondary" type="submit">Cari</button>
         @if(request('search'))
         <a href="{{ route('tagihan.index') }}" class="btn btn-outline-danger">
           <i class="ti ti-x"></i> Reset
         </a>
         @endif
       </div>
-    </form>>
+    </form>
 
     <!-- Table -->
     <div class="table-responsive">
@@ -70,8 +68,13 @@
                 <a href="{{ route('tagihan.edit', $tagihan->id) }}" class="btn btn-sm btn-warning" title="Edit">
                   <i class="ti ti-edit"></i>
                 </a>
-       
-
+                <form action="{{ route('tagihan.destroy', $tagihan->id) }}" method="POST" class="d-inline">
+                  @csrf
+                  @method('DELETE')
+                  <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
+  <i class="ti ti-trash"></i>
+</button>
+                </form>
               </div>
             </td>
           </tr>
@@ -92,4 +95,35 @@
     </div>
   </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const deleteButtons = document.querySelectorAll(".btn-delete");
+
+  deleteButtons.forEach(button => {
+    button.addEventListener("click", function (e) {
+      e.preventDefault();
+      const form = this.closest("form");
+
+      Swal.fire({
+        title: 'Yakin ingin menghapus?',
+        text: "Tagihan yang dihapus tidak bisa dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    });
+  });
+});
+</script>
+@endpush
+
 @endsection
