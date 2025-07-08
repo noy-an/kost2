@@ -114,6 +114,7 @@
 </div>
 
     </div>
+
 <!-- Testimonial Section Begin -->
 <section class="testimonial-section spad">
     <div class="container">
@@ -121,26 +122,20 @@
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
                 <div class="testimonial-slider owl-carousel">
-                    <div class="ts-item">
-                        <p>Kost ini sangat nyaman dan bersih. Lokasinya strategis dekat kampus dan warung makan.</p>
-                        <div class="ti-author">
-                            <div class="rating">
-                                <i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star-half_alt"></i>
+                    @forelse($testimonials as $t)
+                        <div class="ts-item">
+                            <p>{{ $t->pesan }}</p>
+                            <div class="ti-author">
+                                <div class="rating">
+                                    <i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star-half_alt"></i>
+                                </div>
+                                <h5> - {{ $t->nama }}</h5>
                             </div>
-                            <h5> - Dinda Rahma</h5>
+                            <img src="{{ asset('front-end/img/testimonial-logo.png') }}" alt="">
                         </div>
-                        <img src="{{ asset('front-end/img/testimonial-logo.png') }}" alt="">
-                    </div>
-                    <div class="ts-item">
-                        <p>Saya sangat puas dengan layanan dan respon cepat pemilik kost. Terima kasih KostKuy!</p>
-                        <div class="ti-author">
-                            <div class="rating">
-                                <i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star"></i><i class="icon_star-half_alt"></i>
-                            </div>
-                            <h5> - Raka Prasetyo</h5>
-                        </div>
-                        <img src="{{ asset('front-end/img/testimonial-logo.png') }}" alt="">
-                    </div>
+                    @empty
+                        <p class="text-center">Belum ada testimoni dari pengguna.</p>
+                    @endforelse
                 </div>
             </div>
         </div>

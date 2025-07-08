@@ -158,34 +158,49 @@
                                     <img src="{{ asset('front-end/img/footer-logo.png') }}" alt="">
                                 </a>
                             </div>
-                            <p>We inspire and reach millions of travelers<br /> across 90 local websites</p>
-                            <div class="fa-social">
-                                <a href="#"><i class="fa fa-facebook"></i></a>
-                                <a href="#"><i class="fa fa-twitter"></i></a>
-                                <a href="#"><i class="fa fa-tripadvisor"></i></a>
-                                <a href="#"><i class="fa fa-instagram"></i></a>
+                            <p>Kami membantu para pencari kost menemukan tempat tinggal yang nyaman, aman, dan strategis.<br />Temukan kost idealmu bersama kami.</p>
+                            {{-- <div class="fa-social">
+                                <a href="#"><i class="fa fa-facebook"></i></a> --}}
+                                {{-- <a href="#"><i class="fa fa-twitter"></i></a> --}}
+                                {{-- <a href="#"><i class="fa fa-tripadvisor"></i></a> --}}
+                                {{-- <a href="#"><i class="fa fa-instagram"></i></a>
                                 <a href="#"><i class="fa fa-youtube-play"></i></a>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
-                    <div class="col-lg-3 offset-lg-1">
-                        <div class="ft-contact">
-                            <h6>Contact Us</h6>
-                            <ul>
-                                <li>(12) 345 67890</li>
-                                <li>info.colorlib@gmail.com</li>
-                                <li>856 Cordia Extension Apt. 356, Lake, United State</li>
-                            </ul>
-                        </div>
-                    </div>
+            <div class="col-lg-3 offset-lg-1">
+    <div class="ft-contact">
+        <h6>Contact Us</h6>
+        <ul style="list-style: none; padding-left: 0;">
+            <li class="mb-2">
+                <a href="https://wa.me/6285810537250" target="_blank" style="color: inherit; text-decoration: none;">
+                    (No.Telp) 0858-1053-7250
+                </a>
+            </li>
+            <li class="mb-2">
+                <a href="https://mail.google.com/mail/?view=cm&to=hafizhrmuhammad@gmail.com" target="_blank" style="color: inherit; text-decoration: none;">
+                    (Email) hafizhrmuhammad@gmail.com
+                </a>
+            </li>
+            <li class="mb-2">
+                <a href="https://www.google.com/maps?q=Gedung+BITC+Cimahi+Jawa+Barat+Indonesia" target="_blank" style="color: inherit; text-decoration: none;">
+                    (Lokasi) Gedung BITC, Cimahi, Jawa Barat
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+
                     <div class="col-lg-3 offset-lg-1">
                         <div class="ft-newslatter">
-                            <h6>New latest</h6>
-                            <p>Get the latest updates and offers.</p>
-                            <form action="#" class="fn-form">
+                             <h6>Butuh Bantuan?</h6>
+                            <p>Jika kamu memiliki pertanyaan seputar kost atau kesulitan dalam pencarian, kami siap membantu.</p>
+                            {{-- <form action="#" class="fn-form">
                                 <input type="text" placeholder="Email">
                                 <button type="submit"><i class="fa fa-send"></i></button>
-                            </form>
+                            </form> --}}
                         </div>
                     </div>
                 </div>
@@ -240,6 +255,7 @@
     <script src="{{ asset('front-end/js/jquery.slicknav.js') }}"></script>
     <script src="{{ asset('front-end/js/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('front-end/js/main.js') }}"></script>
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> --}}
 
     <!-- Init Hamburger Menu -->
     <script>
