@@ -67,9 +67,9 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($pembayarans as $pembayaran)
+          @forelse($pembayarans as $no => $pembayaran)
           <tr>
-            <td>{{ $pembayaran->id }}</td>
+            <td>{{ $no + 1 }}.</td>
             <td class="text-start text-nowrap">
               <strong>User:</strong> {{ $pembayaran->booking->user->name ?? '-' }}<br>
               <strong>Kamar:</strong> {{ $pembayaran->booking->kost->nomor_kamar ?? '-' }}<br>

@@ -69,7 +69,7 @@
                                         </div>
                                         <div class="col-md-6 mb-2">
                                             <label class="form-label text-muted small">Tanggal Tagihan</label>
-                                            <p class="fw-bold">{{ date('d F Y', strtotime($tanggalTagihan)) }}</p>
+                                            <p class="fw-bold">{{ isset($tanggalTagihan) ? date('d F Y', strtotime($tanggalTagihan)) : '-' }}</p>
                                         </div>
                                     </div>
                                 </div>
