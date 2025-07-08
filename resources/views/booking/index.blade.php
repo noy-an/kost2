@@ -11,6 +11,7 @@
 @section('title', 'Data Booking')
 
 @section('content')
+
 <div class="card shadow-sm rounded-3 border-0">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
@@ -115,6 +116,25 @@
           cancelButtonColor: '#3085d6',
           confirmButtonText: 'Hapus',
           cancelButtonText: 'Batal'
+@push('scripts')
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const deleteButtons = document.querySelectorAll(".btn-delete");
+
+    deleteButtons.forEach(button => {
+      button.addEventListener("click", function (e) {
+        e.preventDefault();
+        const form = this.closest("form");
+
+        Swal.fire({
+          title: "Yakin ingin menghapus?",
+          text: "Data tidak bisa dikembalikan setelah dihapus!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Ya, hapus!",
+          cancelButtonText: "Batal"
         }).then((result) => {
           if (result.isConfirmed) {
             form.submit();
@@ -124,4 +144,5 @@
     });
   });
 </script>
+@endpush
 @endsection

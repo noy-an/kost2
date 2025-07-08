@@ -9,6 +9,7 @@ use App\Http\Controllers\KontakController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\KostController;       
 use App\Http\Controllers\TagihanController;    
+use App\Http\Controllers\TagihanpelangganController;    
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\BookingpelangganController;
@@ -30,6 +31,12 @@ Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::cl
 Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
     ->name('bookingpelanggan.store');
 
+
+   Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+
+
+ Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
+    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 
     
 use App\Http\Controllers\ProfilePelangganController;

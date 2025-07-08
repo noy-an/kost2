@@ -19,7 +19,7 @@
             <label for="booking_id" class="form-label">Booking</label>
             <select name="booking_id" id="booking_id" class="form-select @error('booking_id') is-invalid @enderror" >
                 <option value="">-- Pilih Booking --</option>
-                @foreach($bookings as $booking)
+                @foreach($booking as $booking)
                     <option value="{{ $booking->id }}" {{ (old('booking_id', $tagihan->booking_id) == $booking->id) ? 'selected' : '' }}>
                         User: {{ $booking->user->name ?? 'Unknown' }} | Kamar: {{ $booking->kost->nomor_kamar ?? '-' }} | Tanggal: {{ $booking->tgl_booking }}
                     </option>

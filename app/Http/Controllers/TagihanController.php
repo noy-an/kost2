@@ -27,15 +27,15 @@ class TagihanController extends Controller
     // Tampilkan form tambah tagihan
     public function create()
     {
-        $bookings = Booking::with('user', 'kost')->get();
-        return view('tagihan.create', compact('bookings'));
+        $booking = Booking::with('user', 'kost')->get();
+        return view('tagihan.create', compact('booking'));
     }
 
     // Simpan tagihan baru
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'booking_id' => 'required|exists:bookings,id',
+            'booking_id' => 'required|exists:booking,id',
             'bayar_per_bulan' => 'required|numeric|min:0',
             'jumlah_bayar' => 'required|numeric|min:0',
         ]);
@@ -49,9 +49,9 @@ class TagihanController extends Controller
     public function edit(string $id)
     {
         $tagihan = Tagihan::findOrFail($id);
-        $bookings = Booking::with('user', 'kost')->get();
+        $booking = Booking::with('user', 'kost')->get();
 
-        return view('tagihan.edit', compact('tagihan', 'bookings'));
+        return view('tagihan.edit', compact('tagihan', 'booking'));
     }
 
     // Update data tagihan
@@ -60,7 +60,7 @@ class TagihanController extends Controller
         $tagihan = Tagihan::findOrFail($id);
 
         $validated = $request->validate([
-            'booking_id' => 'required|exists:bookings,id',
+            'booking_id' => 'required|exists:booking,id',
             'bayar_per_bulan' => 'required|numeric|min:0',
             'jumlah_bayar' => 'required|numeric|min:0',
         ]);
