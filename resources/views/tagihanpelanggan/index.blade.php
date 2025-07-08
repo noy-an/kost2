@@ -29,6 +29,7 @@
                                 <th>Nama</th>
                                 <th>Kamar</th>
                                 <th>Harga/Bulan</th>
+                                <th>DP Dibayar</th>
                                 <th>Status</th>
                                 <th>Tanggal Booking</th>
                                 <th>Aksi</th>
@@ -41,6 +42,7 @@
                                     <td>{{ $booking->user->name ?? '-' }}</td>
                                     <td>Kamar {{ $booking->kost->nomor_kamar ?? '-' }}</td>
                                     <td>Rp{{ number_format($booking->kost->harga ?? 0, 0, ',', '.') }}</td>
+                                    <td>Rp{{ number_format($booking->dp ?? 0, 0, ',', '.') }}</td>
                                     <td>
                                         @php
                                             $status = strtolower($booking->status_booking);
@@ -56,6 +58,12 @@
                                             <a href="{{ route('tagihanpelanggan.create', $booking->id) }}"
                                                class="btn btn-sm btn-primary">
                                                 Buat Tagihan
+                                            </a>
+                                        @elseif($booking->payment_url)
+                                            <a href="{{ $booking->payment_url }}" 
+                                               class="btn btn-sm btn-success"
+                                               target="_blank">
+                                                Lanjutkan Pembayaran
                                             </a>
                                         @else
                                             <span class="text-muted">Menunggu Persetujuan</span>

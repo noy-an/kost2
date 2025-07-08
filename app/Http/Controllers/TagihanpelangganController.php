@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Tagihan;
@@ -9,27 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class TagihanpelangganController extends Controller
 {
- public function index()
-{
-    $bookings = Booking::with(['kost', 'user'])
-        ->where('user_id', Auth::id())
-        ->where('status_booking', 'disetujui')
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-    return view('tagihanpelanggan.index', [
-        'data' => $bookings,
-        'title' => 'Booking yang Disetujui',
-    ]);
-}
-
-
-    // Method dengan berbagai kemungkinan filter status
-    public function indexApproved()
+    public function index()
     {
         $bookings = Booking::with(['kost', 'user'])
             ->where('user_id', Auth::id())
-            ->whereIn('status', ['disetujui', 'approved', 'confirm', 'accepted', 'setuju'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -39,45 +23,48 @@ class TagihanpelangganController extends Controller
         ]);
     }
 
-public function create($booking_id)
-{
-    $booking = Booking::with('kost', 'user')->findOrFail($booking_id);
-    $hargaKost = $booking->kost->harga;
-    $dpAwal = $booking->dp ?? 0;
+    public function indexApproved()
+    {
+        $bookings = Booking::with(['kost', 'user'])
+            ->where('user_id', Auth::id())
+            ->whereIn('status_booking', ['disetujui', 'approved', 'confirm', 'accepted', 'setuju'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    // Jumlah tagihan yang sudah dibayar (akumulasi)
-    $totalSudahDibayar = Tagihan::where('booking_id', $booking->id)
-        ->sum(DB::raw('bayar_per_bulan * jumlah_bayar'));
+        return view('tagihanpelanggan.index', [
+            'data' => $bookings,
+            'title' => 'Booking yang Disetujui',
+        ]);
+    }
 
-    // Hitung sisa tagihan
-  $sisaTagihan = $hargaKost - $dpAwal - $totalSudahDibayar;
-$sisaTagihan = max(0, $sisaTagihan); // ⬅️ biar gak bisa minus
+    public function create($booking_id)
+    {
+        $booking = Booking::with('kost', 'user')->findOrFail($booking_id);
+        $hargaKost = $booking->kost->harga;
+        $dpAwal = $booking->dp ?? 0;
 
+        $totalSudahDibayar = Tagihan::where('booking_id', $booking->id)
+            ->sum(DB::raw('bayar_per_bulan * jumlah_bayar'));
 
-    // Hitung bulan ke berapa sekarang
-    $bulanKe = Tagihan::where('booking_id', $booking->id)->count() + 1;
+        $sisaTagihan = max(0, $hargaKost - $dpAwal - $totalSudahDibayar);
 
-    // Nominal tagihan bulan ini
-    $nominalBayar = $bulanKe === 1
-        ? $hargaKost - $dpAwal // lunasi DP
-        : $hargaKost; // bulan berikutnya full
+        $bulanKe = Tagihan::where('booking_id', $booking->id)->count() + 1;
 
-    return view('tagihanpelanggan.form', [
-        'booking' => $booking,
-        'hargaKost' => $hargaKost,
-        'dpAwal' => $dpAwal,
-        'totalSudahDibayar' => $totalSudahDibayar,
-        'sisaTagihan' => $sisaTagihan,
-        'bulanKe' => $bulanKe,
-         'title' => 'Tagihan Bulan',
-        'nominalBayar' => $nominalBayar,
-    ]);
+        $nominalBayar = $bulanKe === 1
+            ? $hargaKost - $dpAwal
+            : $hargaKost;
 
-
-}
-
-
-
+        return view('tagihanpelanggan.form', [
+            'booking' => $booking,
+            'hargaKost' => $hargaKost,
+            'dpAwal' => $dpAwal,
+            'totalSudahDibayar' => $totalSudahDibayar,
+            'sisaTagihan' => $sisaTagihan,
+            'bulanKe' => $bulanKe,
+            'title' => 'Tagihan Bulan',
+            'nominalBayar' => $nominalBayar,
+        ]);
+    }
 
     public function store(Request $request)
     {
@@ -93,6 +80,7 @@ $sisaTagihan = max(0, $sisaTagihan); // ⬅️ biar gak bisa minus
             'jumlah_bayar' => $request->jumlah_bayar,
         ]);
 
-        return redirect()->route('tagihanpelanggan.create', $request->booking_id)->with('success', 'Tagihan berhasil ditambahkan.');
+        return redirect()->route('tagihanpelanggan.create', $request->booking_id)
+            ->with('success', 'Tagihan berhasil ditambahkan.');
     }
 }

@@ -3,7 +3,6 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-           
             <div class="card shadow-sm rounded">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">Form Booking Kos</h4>
@@ -17,24 +16,20 @@
                     @endif
                     
                     @if(isset($kost) && $kost)
-                    <form method="POST" action="{{ route('bookingpelanggan.store') }}">
+                    <form method="POST" action="{{ route('bookingpelanggan.store') }}" id="booking-form">
                         @csrf
-                        <!-- Simpan ID kost secara tersembunyi -->
                         <input type="hidden" name="kost_id" id="kost_id" value="{{ $kost->id }}">
                         
-                        <!-- Tampilkan Info Kamar -->
                         <div class="mb-3">
                             <label class="form-label">Kamar Kost</label>
                             <input type="text" class="form-control" value="Kamar {{ $kost->nomor_kamar }} (Lantai {{ $kost->nomor_lantai }})" disabled>
                         </div>
                         
-                        <!-- Harga Kost -->
                         <div class="mb-3">
                             <label class="form-label">Harga Kost</label>
                             <input type="text" class="form-control" id="harga_kost" value="Rp {{ number_format($kost->harga, 0, ',', '.') }}" disabled>
                         </div>
                         
-                        <!-- Pilihan Persentase Pembayaran -->
                         <div class="mb-3">
                             <label class="form-label">Pilihan Pembayaran</label>
                             <div class="form-check">
@@ -67,7 +62,6 @@
                             </div>
                         </div>
                         
-                        <!-- Nominal yang akan dibayar -->
                         <div class="mb-3">
                             <label class="form-label">Nominal yang akan dibayar</label>
                             <input type="text" class="form-control bg-light" id="nominal_bayar" value="Rp {{ number_format($harga_calculations['dp_30'], 0, ',', '.') }}" disabled>
@@ -79,7 +73,7 @@
                         </div>
                         
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success">Kirim Booking</button>
+                            <button type="submit" class="btn btn-success" id="submit-button">Kirim Booking</button>
                             <a href="{{ route('kamar.show', $kost->id) }}" class="btn btn-outline-secondary">Kembali ke Detail Kost</a>
                         </div>
                     </form>
@@ -96,6 +90,7 @@
     </div>
 </div>
 
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const radioButtons = document.querySelectorAll('input[name="persentase_pembayaran"]');
@@ -103,16 +98,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     radioButtons.forEach(radio => {
         radio.addEventListener('change', function () {
-            // Ambil nominal yang sudah dihitung dari controller
             const nominal = parseFloat(this.getAttribute('data-nominal'));
             nominalBayar.value = 'Rp ' + nominal.toLocaleString('id-ID');
         });
     });
 
-    // Set tanggal booking minimal hari ini
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('tgl_booking').setAttribute('min', today);
+
+    document.getElementById('booking-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const button = document.getElementById('submit-button');
+        button.disabled = true;
+        button.innerHTML = 'Memproses...';
+        this.submit();
+    });
 });
 </script>
-
 @endsection

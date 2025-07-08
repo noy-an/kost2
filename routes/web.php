@@ -47,7 +47,8 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');
 });
 
-
+Route::get('/booking/{kost_id}', [BookingpelangganController::class, 'create'])->name('bookingpelanggan.form');
+Route::post('/booking', [BookingpelangganController::class, 'store'])->name('bookingpelanggan.store');
 //BATAS FRONT END
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

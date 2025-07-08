@@ -1,19 +1,27 @@
 <?php
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\Kost;
 use Illuminate\Support\Facades\Auth;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class BookingpelangganController extends Controller
 {
+    public function __construct()
+    {
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION');
+        Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
+        Config::$is3ds = env('MIDTRANS_IS_3DS');
+    }
     
     public function create($kost_id)
     {
-      
         $kost = Kost::find($kost_id);
 
-        
         if (!$kost) {
             return redirect()->route('kamar.index')->with('error', 'Kost tidak ditemukan.');
         }
@@ -23,10 +31,10 @@ class BookingpelangganController extends Controller
         }
        
         $harga_calculations = [
-            'dp_30' => $kost->harga * 0.3,
-            'dp_40' => $kost->harga * 0.4,
-            'dp_50' => $kost->harga * 0.5,
-            'bayar_penuh' => $kost->harga,
+            'dp_30' => round($kost->harga * 0.3),
+            'dp_40' => round($kost->harga * 0.4),
+            'dp_50' => round($kost->harga * 0.5),
+            'bayar_penuh' => round($kost->harga),
         ];
         
         return view('bookingpelanggan.form', [
@@ -47,34 +55,66 @@ class BookingpelangganController extends Controller
         $kost = Kost::findOrFail($request->kost_id);
         $persentase = $request->persentase_pembayaran;
         
-        
         if ($kost->status !== 'kosong') {
             return redirect()->route('bookingpelanggan.form', $kost->id)
                 ->with('error', 'Maaf, kost sudah tidak tersedia.');
         }
         
-     
-        $nominal_pembayaran = $kost->harga * ($persentase / 100);
-        
-       
+        $nominal_pembayaran = round($kost->harga * ($persentase / 100));
         $jenis_pembayaran = $persentase == 100 ? 'bayar_penuh' : 'dp';
-        $status_booking = 'pending';
         
-        Booking::create([
+        $booking = Booking::create([
             'user_id' => Auth::id(),
             'kost_id' => $kost->id,
             'dp' => $nominal_pembayaran,
             'persentase_pembayaran' => $persentase,
             'jenis_pembayaran' => $jenis_pembayaran,
             'tgl_booking' => $request->tgl_booking,
-            'status_booking' => $status_booking,
+            'status_booking' => 'pending',
         ]);
-        
-        $pesan = $persentase == 100 
-            ? 'Booking dengan pembayaran penuh berhasil dikirim!' 
-            : "Booking dengan DP {$persentase}% berhasil dikirim!";
-        
-       
-        return redirect()->route('bookingpelanggan.form', $kost->id)->with('success', $pesan);
+
+        $transaction_details = [
+            'order_id' => 'BOOKING-' . $booking->id . '-' . time(),
+            'gross_amount' => (int) $nominal_pembayaran,
+        ];
+
+        $customer_details = [
+            'first_name' => Auth::user()->name,
+            'email' => Auth::user()->email,
+            'phone' => Auth::user()->phone ?? '08123456789',
+        ];
+
+        $item_details = [
+            [
+                'id' => $kost->id,
+                'price' => (int) $nominal_pembayaran,
+                'quantity' => 1,
+                'name' => 'Booking Kamar ' . $kost->nomor_kamar . ' (Lantai ' . $kost->nomor_lantai . ')',
+            ]
+        ];
+
+        $params = [
+            'transaction_details' => $transaction_details,
+            'customer_details' => $customer_details,
+            'item_details' => $item_details,
+            'callbacks' => [
+                'finish' => route('tagihanpelanggan.index'),
+            ]
+        ];
+
+        try {
+            $paymentUrl = Snap::createTransaction($params)->redirect_url;
+            
+            $booking->update([
+                'payment_token' => $params['transaction_details']['order_id'],
+                'payment_url' => $paymentUrl,
+            ]);
+
+            return redirect($paymentUrl);
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Pembayaran gagal: ' . $e->getMessage());
+        }
     }
 }

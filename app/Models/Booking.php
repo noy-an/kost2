@@ -12,8 +12,12 @@ class Booking extends Model
         'user_id',
         'kost_id',
         'dp',
+        'persentase_pembayaran',
+        'jenis_pembayaran',
         'tgl_booking',
         'status_booking',
+        'payment_token',
+        'payment_url',
     ];
 
     protected $dates = ['tgl_booking', 'created_at', 'updated_at'];
@@ -26,5 +30,10 @@ class Booking extends Model
     public function kost()
     {
         return $this->belongsTo(Kost::class, 'kost_id', 'id');
+    }
+
+    public function tagihans()
+    {
+        return $this->hasMany(Tagihan::class, 'booking_id', 'id');
     }
 }
