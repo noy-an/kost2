@@ -19,6 +19,7 @@ class Pembayaran extends Model
         'tempat_bayar',
         'transaksi_id',
         'bukti_bayar',
+        'tanggal_bayar',
     ];
 
     public function booking()

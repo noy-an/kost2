@@ -21,7 +21,7 @@
       </a>
     </div>
 
-    <!-- Filter Form (search + tanggal) -->
+    <!-- Filter -->
     <form action="{{ route('tagihan.index') }}" method="GET" class="mb-4">
       <div class="row g-2">
         <div class="col-md-3">
@@ -44,18 +44,17 @@
       </div>
     </form>
 
-    <!-- Tampilkan info filter (optional) -->
     @if(request('dari') && request('sampai'))
-      <p class="text-muted mb-3">
-        Menampilkan tagihan dari <strong>{{ request('dari') }}</strong> sampai <strong>{{ request('sampai') }}</strong>
-      </p>
+    <p class="text-muted">
+      Menampilkan tagihan dari <strong>{{ request('dari') }}</strong> sampai <strong>{{ request('sampai') }}</strong>
+    </p>
     @endif
 
     <!-- Table -->
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
-          <tr class="text-nowrap">
+          <tr>
             <th>#</th>
             <th>Nama User</th>
             <th>Kost</th>
@@ -71,8 +70,8 @@
             <td>{{ $tagihan->id }}</td>
             <td>{{ $tagihan->booking->user->name ?? '-' }}</td>
             <td class="text-start">
-              <div><strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}</div>
-              <div><strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}</div>
+              <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
+              <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
             </td>
             <td class="text-end">Rp{{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
             <td class="text-end">Rp{{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</td>

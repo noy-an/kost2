@@ -7,6 +7,8 @@
   @include('backend.navbar')
 @endsection
 
+@section('title', 'Tambah Tagihan')
+
 @section('content')
 <div class="container">
     <h1 class="mb-4">Tambah Tagihan</h1>

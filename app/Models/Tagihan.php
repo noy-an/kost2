@@ -12,6 +12,7 @@ class Tagihan extends Model
         'booking_id',
         'bayar_per_bulan',
         'jumlah_bayar',
+        'tanggal_tagihan',
     ];
 
     public function booking()
