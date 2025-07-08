@@ -21,21 +21,35 @@
       </a>
     </div>
 
-    <!-- Search Form -->
+    <!-- Filter Form (search + tanggal) -->
     <form action="{{ route('tagihan.index') }}" method="GET" class="mb-4">
-      <div class="input-group">
-        <span class="input-group-text bg-light border-end-0">
-          <i class="ti ti-search text-secondary"></i>
-        </span>
-        <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama user / kamar..." value="{{ request('search') }}">
-        <button class="btn btn-outline-secondary" type="submit">Cari</button>
-        @if(request('search'))
-        <a href="{{ route('tagihan.index') }}" class="btn btn-outline-danger">
-          <i class="ti ti-x"></i> Reset
-        </a>
-        @endif
+      <div class="row g-2">
+        <div class="col-md-3">
+          <input type="date" name="dari" class="form-control" value="{{ request('dari') }}">
+        </div>
+        <div class="col-md-3">
+          <input type="date" name="sampai" class="form-control" value="{{ request('sampai') }}">
+        </div>
+        <div class="col-md-3">
+          <input type="text" name="search" class="form-control" placeholder="Cari nama / kamar..." value="{{ request('search') }}">
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
+          @if(request('search') || request('dari') || request('sampai'))
+          <a href="{{ route('tagihan.index') }}" class="btn btn-outline-danger">
+            <i class="ti ti-x"></i>
+          </a>
+          @endif
+        </div>
       </div>
     </form>
+
+    <!-- Tampilkan info filter (optional) -->
+    @if(request('dari') && request('sampai'))
+      <p class="text-muted mb-3">
+        Menampilkan tagihan dari <strong>{{ request('dari') }}</strong> sampai <strong>{{ request('sampai') }}</strong>
+      </p>
+    @endif
 
     <!-- Table -->
     <div class="table-responsive">
@@ -47,7 +61,7 @@
             <th>Kost</th>
             <th>Bayar / Bulan</th>
             <th>Jumlah Bayar</th>
-            <th>Dibuat</th>
+            <th>Tanggal Tagihan</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -62,7 +76,7 @@
             </td>
             <td class="text-end">Rp{{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
             <td class="text-end">Rp{{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</td>
-            <td>{{ \Carbon\Carbon::parse($tagihan->created_at)->translatedFormat('d F Y') }}</td>
+            <td>{{ \Carbon\Carbon::parse($tagihan->tanggal_tagihan)->translatedFormat('d F Y') }}</td>
             <td>
               <div class="d-flex justify-content-center gap-1">
                 <a href="{{ route('tagihan.edit', $tagihan->id) }}" class="btn btn-sm btn-warning" title="Edit">
@@ -72,8 +86,8 @@
                   @csrf
                   @method('DELETE')
                   <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
-  <i class="ti ti-trash"></i>
-</button>
+                    <i class="ti ti-trash"></i>
+                  </button>
                 </form>
               </div>
             </td>
@@ -95,6 +109,7 @@
     </div>
   </div>
 </div>
+@endsection
 
 @push('scripts')
 <script>
@@ -125,5 +140,3 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 @endpush
-
-@endsection

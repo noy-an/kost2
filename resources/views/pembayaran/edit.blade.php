@@ -33,7 +33,7 @@
         <div class="mb-3">
             <label for="metode_bayar" class="form-label">Metode Bayar</label>
             <input type="text" name="metode_bayar" id="metode_bayar" class="form-control @error('metode_bayar') is-invalid @enderror" 
-                value="{{ old('metode_bayar', $pembayaran->metode_bayar) }}" >
+                value="{{ old('metode_bayar', $pembayaran->metode_bayar) }}">
             @error('metode_bayar')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -54,7 +54,7 @@
         <div class="mb-3">
             <label for="no_rekening" class="form-label">No Rekening</label>
             <input type="number" name="no_rekening" id="no_rekening" class="form-control @error('no_rekening') is-invalid @enderror" 
-                value="{{ old('no_rekening', $pembayaran->no_rekening) }}" >
+                value="{{ old('no_rekening', $pembayaran->no_rekening) }}">
             @error('no_rekening')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -63,7 +63,7 @@
         <div class="mb-3">
             <label for="tempat_bayar" class="form-label">Tempat Bayar</label>
             <input type="text" name="tempat_bayar" id="tempat_bayar" class="form-control @error('tempat_bayar') is-invalid @enderror" 
-                value="{{ old('tempat_bayar', $pembayaran->tempat_bayar) }}" >
+                value="{{ old('tempat_bayar', $pembayaran->tempat_bayar) }}">
             @error('tempat_bayar')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -72,12 +72,23 @@
         <div class="mb-3">
             <label for="transaksi_id" class="form-label">Transaksi ID</label>
             <input type="text" name="transaksi_id" id="transaksi_id" class="form-control @error('transaksi_id') is-invalid @enderror" 
-                value="{{ old('transaksi_id', $pembayaran->transaksi_id) }}" >
+                value="{{ old('transaksi_id', $pembayaran->transaksi_id) }}">
             @error('transaksi_id')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
+        <!-- Tanggal Bayar -->
+        <div class="mb-3">
+            <label for="tanggal_bayar" class="form-label">Tanggal Bayar</label>
+            <input type="date" name="tanggal_bayar" id="tanggal_bayar" class="form-control @error('tanggal_bayar') is-invalid @enderror" 
+                value="{{ old('tanggal_bayar', $pembayaran->tanggal_bayar) }}">
+            @error('tanggal_bayar')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <!-- Bukti Bayar -->
         <div class="mb-3">
             <label for="bukti_bayar" class="form-label">Bukti Bayar</label>
             <br>

@@ -16,17 +16,21 @@ public function index(Request $request)
 {
     $bookings = \App\Models\Booking::with(['user', 'kost'])
         ->when($request->search, function ($query) use ($request) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
-            })->orWhereHas('kost', function ($q) use ($request) {
-                $q->where('nomor_kamar', 'like', '%' . $request->search . '%');
-            });
+            $query->whereHas('user', fn($q) =>
+                $q->where('name', 'like', '%' . $request->search . '%')
+            )->orWhereHas('kost', fn($q) =>
+                $q->where('nomor_kamar', 'like', '%' . $request->search . '%')
+            );
+        })
+        ->when($request->dari && $request->sampai, function ($query) use ($request) {
+            $query->whereBetween('tgl_booking', [$request->dari, $request->sampai]);
         })
         ->latest()
         ->paginate(10);
 
     return view('booking.index', compact('bookings'));
 }
+
 
 
 

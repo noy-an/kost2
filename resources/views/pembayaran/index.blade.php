@@ -21,20 +21,31 @@
       </a>
     </div>
 
-    <!-- Search Form -->
+    <!-- Filter Form -->
     <form action="{{ route('pembayaran.index') }}" method="GET" class="mb-4">
-      <div class="input-group">
-        <span class="input-group-text bg-light border-end-0">
-          <i class="ti ti-search text-secondary"></i>
-        </span>
-        <input type="text" name="search" class="form-control border-start-0"
-               placeholder="Cari nama / metode / tempat bayar..." value="{{ request('search') }}">
-        <button class="btn btn-outline-secondary" type="submit">Cari</button>
-        @if(request('search'))
-        <a href="{{ route('pembayaran.index') }}" class="btn btn-outline-danger">
-          <i class="ti ti-x"></i> Reset
-        </a>
-        @endif
+      <div class="row g-2">
+        <div class="col-md-3">
+          <input type="date" name="dari" class="form-control" value="{{ request('dari') }}">
+        </div>
+        <div class="col-md-3">
+          <input type="date" name="sampai" class="form-control" value="{{ request('sampai') }}">
+        </div>
+        <div class="col-md-3">
+          <input type="date" name="tanggal_bayar" class="form-control" value="{{ request('tanggal_bayar') }}">
+        </div>
+        <div class="col-md-3">
+          <input type="text" name="search" class="form-control" placeholder="Cari nama / metode / tempat bayar..." value="{{ request('search') }}">
+        </div>
+        <div class="col-12 d-flex gap-2 mt-2">
+          <button type="submit" class="btn btn-outline-primary">
+            <i class="ti ti-filter"></i> Filter
+          </button>
+          @if(request('search') || request('dari') || request('sampai') || request('tanggal_bayar'))
+          <a href="{{ route('pembayaran.index') }}" class="btn btn-outline-danger">
+            <i class="ti ti-x"></i> Reset
+          </a>
+          @endif
+        </div>
       </div>
     </form>
 
@@ -50,6 +61,7 @@
             <th>No. Rekening</th>
             <th>Tempat</th>
             <th>ID Transaksi</th>
+            <th>Tgl Bayar</th>
             <th>Bukti</th>
             <th>Aksi</th>
           </tr>
@@ -77,6 +89,9 @@
             <td>{{ $pembayaran->tempat_bayar }}</td>
             <td>{{ $pembayaran->transaksi_id }}</td>
             <td>
+              {{ $pembayaran->tanggal_bayar ? \Carbon\Carbon::parse($pembayaran->tanggal_bayar)->translatedFormat('d F Y') : '-' }}
+            </td>
+            <td>
               @if($pembayaran->bukti_bayar)
                 <img src="{{ asset('storage/' . $pembayaran->bukti_bayar) }}" alt="Bukti Bayar" width="50" height="50" class="rounded object-fit-cover">
               @else
@@ -88,19 +103,19 @@
                 <a href="{{ route('pembayaran.edit', $pembayaran->id) }}" class="btn btn-sm btn-warning" title="Edit">
                   <i class="ti ti-edit"></i>
                 </a>
-         <form action="{{ route('pembayaran.destroy', $pembayaran->id) }}" method="POST" class="d-inline form-delete">
-  @csrf
-  @method('DELETE')
-  <button type="button" class="btn btn-sm btn-danger btn-delete">
-    <i class="ti ti-trash"></i>
-  </button>
-</form>
+                <form action="{{ route('pembayaran.destroy', $pembayaran->id) }}" method="POST" class="d-inline">
+                  @csrf
+                  @method('DELETE')
+                  <button type="button" class="btn btn-sm btn-danger btn-delete">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </form>
               </div>
             </td>
           </tr>
           @empty
           <tr>
-            <td colspan="9" class="text-center text-muted py-4">
+            <td colspan="10" class="text-center text-muted py-4">
               <i class="ti ti-info-circle"></i> Belum ada data pembayaran tersedia.
             </td>
           </tr>
@@ -115,6 +130,8 @@
     </div>
   </div>
 </div>
+@endsection
+
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -144,5 +161,3 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 @endpush
-
-@endsection

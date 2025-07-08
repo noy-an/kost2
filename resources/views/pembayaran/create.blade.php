@@ -81,6 +81,15 @@
             @enderror
         </div>
 
+        <div class="mb-3">
+    <label for="tanggal_bayar" class="form-label">Tanggal Bayar</label>
+    <input type="date" name="tanggal_bayar" id="tanggal_bayar" class="form-control @error('tanggal_bayar') is-invalid @enderror" value="{{ old('tanggal_bayar') }}">
+    @error('tanggal_bayar')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
+
+
         <button type="submit" class="btn btn-primary">Simpan</button>
         <a href="{{ route('pembayaran.index') }}" class="btn btn-secondary">Batal</a>
     </form>
