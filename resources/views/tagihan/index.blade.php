@@ -50,57 +50,72 @@
     </p>
     @endif
 
-    <!-- Table -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle text-center">
-        <thead class="table-light">
-          <tr>
-            <th>No</th>
-            <th>Nama User</th>
-            <th>Kost</th>
-            <th>Jumlah Bayar</th>
-            <th>Bulan Tagihan</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($tagihans as $no => $tagihan)
-          <tr>
-            <td>{{ $no + 1 }}.</td>
-            <td>{{ $tagihan->booking->user->name ?? '-' }}</td>
-            <td class="text-start">
-              <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
-              <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
-            </td>
-            <td class="text-end">Rp. {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
-<td class="text-start">
-  {{ $tagihan->tanggal_tagihan_format }}
-</td>
-            <td>
-              <div class="d-flex justify-content-center gap-1">
-                <a href="{{ route('tagihan.edit', $tagihan->id) }}" class="btn btn-sm btn-warning" title="Edit">
-                  <i class="ti ti-edit"></i>
-                </a>
-                <form action="{{ route('tagihan.destroy', $tagihan->id) }}" method="POST" class="d-inline">
-                  @csrf
-                  @method('DELETE')
-                  <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
-                    <i class="ti ti-trash"></i>
-                  </button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          @empty
-          <tr>
-            <td colspan="7" class="text-center text-muted py-4">
-              <i class="ti ti-info-circle"></i> Belum ada data tagihan.
-            </td>
-          </tr>
-          @endforelse
-        </tbody>
-      </table>
-    </div>
+    <!-- Bulk Delete Form -->
+    <form action="{{ route('tagihan.bulkDelete') }}" method="POST" id="bulkDeleteForm">
+      @csrf
+      @method('DELETE')
+
+      <!-- Tombol Bulk Delete -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <button type="submit" class="btn btn-danger d-none" id="bulkDeleteBtn">
+            <i class="ti ti-trash"></i> Hapus Terpilih
+          </button>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center">
+          <thead class="table-light">
+            <tr>
+              <th><input type="checkbox" id="selectAll"></th>
+              <th>No</th>
+              <th>Nama User</th>
+              <th>Kost</th>
+              <th>Jumlah Bayar</th>
+              <th>Bulan Tagihan</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($tagihans as $no => $tagihan)
+            <tr>
+              <td><input type="checkbox" name="tagihan_ids[]" value="{{ $tagihan->id }}" class="selectRow"></td>
+              <td>{{ $no + 1 }}.</td>
+              <td>{{ $tagihan->booking->user->name ?? '-' }}</td>
+              <td class="text-start">
+                <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
+                <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
+              </td>
+              <td class="text-end">Rp. {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
+              <td class="text-start">{{ $tagihan->tanggal_tagihan_format }}</td>
+              <td>
+                <div class="d-flex justify-content-center gap-1">
+                  <a href="{{ route('tagihan.edit', $tagihan->id) }}" class="btn btn-sm btn-warning" title="Edit">
+                    <i class="ti ti-edit"></i>
+                  </a>
+                  <form action="{{ route('tagihan.destroy', $tagihan->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            @empty
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                <i class="ti ti-info-circle"></i> Belum ada data tagihan.
+              </td>
+            </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </form>
 
     <!-- Pagination -->
     <div class="d-flex justify-content-end mt-3">
@@ -109,12 +124,51 @@
   </div>
 </div>
 @endsection
+
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const deleteButtons = document.querySelectorAll(".btn-delete");
+  const selectAll = document.getElementById("selectAll");
+  const checkboxes = document.querySelectorAll(".selectRow");
+  const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
 
-  deleteButtons.forEach(button => {
+  // Toggle semua checkbox
+  selectAll.addEventListener("change", function () {
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    toggleBulkBtn();
+  });
+
+  // Toggling tombol bulk
+  checkboxes.forEach(cb => {
+    cb.addEventListener("change", toggleBulkBtn);
+  });
+
+  function toggleBulkBtn() {
+    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+    bulkDeleteBtn.classList.toggle("d-none", !anyChecked);
+  }
+
+  // SweetAlert Bulk Delete
+  const form = document.getElementById("bulkDeleteForm");
+  bulkDeleteBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    Swal.fire({
+      title: 'Yakin ingin menghapus yang dipilih?',
+      text: "Data yang dihapus tidak dapat dikembalikan.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, hapus',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit();
+      }
+    });
+  });
+
+  // SweetAlert individual delete
+  document.querySelectorAll(".btn-delete").forEach(button => {
     button.addEventListener("click", function (e) {
       e.preventDefault();
       const form = this.closest("form");

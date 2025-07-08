@@ -8,6 +8,16 @@ use Illuminate\Support\Facades\Hash;
 
 class PenggunaController extends Controller
 {
+    public function bulkDelete(Request $request)
+{
+    $ids = $request->input('selected');
+    if ($ids) {
+        User::whereIn('id', $ids)->delete();
+        return redirect()->route('pengguna.index')->with('success', 'Data pengguna berhasil dihapus.');
+    }
+    return redirect()->route('pengguna.index')->with('error', 'Tidak ada data yang dipilih.');
+}
+
     public function index(Request $request)
     {
         $users = User::query()

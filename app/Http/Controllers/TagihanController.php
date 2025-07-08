@@ -8,6 +8,19 @@ use Illuminate\Http\Request;
 
 class TagihanController extends Controller
 {
+    public function bulkDelete(Request $request)
+{
+    $ids = $request->input('tagihan_ids', []);
+
+    if (empty($ids)) {
+        return redirect()->route('tagihan.index')->with('error', 'Tidak ada tagihan yang dipilih.');
+    }
+
+    Tagihan::whereIn('id', $ids)->delete();
+
+    return redirect()->route('tagihan.index')->with('success', 'Berhasil menghapus beberapa tagihan.');
+}
+
     public function index(Request $request)
     {
         $tagihans = Tagihan::with(['booking.user', 'booking.kost'])

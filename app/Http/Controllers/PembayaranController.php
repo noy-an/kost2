@@ -9,6 +9,16 @@ use Illuminate\Support\Facades\Storage;
 
 class PembayaranController extends Controller
 {
+    public function bulkDelete(Request $request)
+{
+    $ids = $request->input('ids', []);
+    if (!empty($ids)) {
+        Pembayaran::whereIn('id', $ids)->delete();
+        return back()->with('success', count($ids) . ' data berhasil dihapus.');
+    }
+    return back()->with('error', 'Tidak ada data yang dipilih.');
+}
+
     public function index(Request $request)
     {
         $pembayarans = Pembayaran::with(['booking.user', 'booking.kost'])
