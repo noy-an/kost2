@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Kontak;
 
 class HomeController extends Controller
 {
@@ -11,10 +12,17 @@ class HomeController extends Controller
      */
     public function index()
     {
-          return view('home.index',[
-            'title' => 'Home'
+        // $testimonials = Kontak::latest()->take(5)->get();
+        $testimonials = Kontak::where('subjek', 'Testimoni')->latest()->take(5)->get();
+
+        return view('home.index', [
+            'title' => 'Home',
+            'testimonials' => $testimonials
         ]);
     }
+
+    // metode lain tidak perlu diubah
+
 
     /**
      * Show the form for creating a new resource.
