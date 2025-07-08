@@ -39,6 +39,7 @@ Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'stor
     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 
     
+    
 use App\Http\Controllers\ProfilePelangganController;
 
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
