@@ -71,8 +71,8 @@ class TagihanpelangganController extends Controller
             ->first();
 
         $tanggalTagihan = $tagihanTerakhir
-            ? \Carbon\Carbon::parse($tagihanTerakhir->tanggal_tagihan)->addMonth()->toDateString()
-            : now()->toDateString(); 
+    ? \Carbon\Carbon::parse($tagihanTerakhir->tanggal_tagihan)->addMonth()->toDateString()
+    : \Carbon\Carbon::parse($booking->tgl_booking)->toDateString();
 
         return view('tagihanpelanggan.form', [
             'booking' => $booking,

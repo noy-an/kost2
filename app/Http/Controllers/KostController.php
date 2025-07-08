@@ -26,18 +26,25 @@ class KostController extends Controller
     return redirect()->route('kost.index')->with('error', 'Tidak ada data yang dipilih.');
 }
 
-  public function index(Request $request)
+public function index(Request $request)
 {
+    $visited = session('visited_menus', []);
+    if (!in_array('kost', $visited)) {
+        $visited[] = 'kost';
+        session(['visited_menus' => $visited]);
+    }
+
     $kost = Kost::query()
         ->when($request->search, function ($query) use ($request) {
             $query->where('nomor_kamar', 'like', '%' . $request->search . '%')
-                ->orWhere('status', 'like', '%' . $request->search . '%');
+                  ->orWhere('status', 'like', '%' . $request->search . '%');
         })
         ->latest()
         ->paginate(10);
 
     return view('kost.index', compact('kost'));
 }
+
 
     /**
      * Tampilkan form tambah kost

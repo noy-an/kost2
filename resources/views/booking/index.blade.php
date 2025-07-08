@@ -13,12 +13,21 @@
 @section('content')
 <div class="card shadow-sm rounded-3 border-0">
   <div class="card-body">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-      <h4 class="fw-bold text-dark mb-0">📅 Data Booking</h4>
-      <a href="{{ route('booking.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
-        <i class="ti ti-plus"></i> Tambah Booking
-      </a>
+    <!-- Header Responsif dengan Aksi -->
+    <div class="row justify-content-between align-items-center mb-4 g-2">
+      <div class="col">
+        <h4 class="fw-bold text-dark mb-0">📅 Data Booking</h4>
+      </div>
+      <div class="col-auto">
+        <div class="d-flex flex-wrap justify-content-end gap-2">
+          <a href="{{ route('booking.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+            <i class="ti ti-plus"></i> Tambah Booking
+          </a>
+          <button type="button" id="bulkDeleteBtn" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm">
+            <i class="ti ti-trash"></i> Hapus Terpilih
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Filter -->
@@ -48,12 +57,6 @@
     <form action="{{ route('booking.bulkDelete') }}" method="POST" id="bulkDeleteForm">
       @csrf
       @method('DELETE')
-
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <button type="submit" id="bulkDeleteBtn" class="btn btn-danger d-none">
-          <i class="ti ti-trash"></i> Hapus Terpilih
-        </button>
-      </div>
 
       <!-- Table -->
       <div class="table-responsive">
@@ -133,23 +136,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // Pilih semua checkbox
   selectAll.addEventListener("change", function () {
     checkboxes.forEach(cb => cb.checked = this.checked);
-    toggleBulkBtn();
   });
-
-  // Toggle tombol bulk
-  checkboxes.forEach(cb => {
-    cb.addEventListener("change", toggleBulkBtn);
-  });
-
-  function toggleBulkBtn() {
-    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-    bulkDeleteBtn.classList.toggle("d-none", !anyChecked);
-  }
 
   // SweetAlert Bulk Delete
   const form = document.getElementById("bulkDeleteForm");
   bulkDeleteBtn.addEventListener("click", function (e) {
     e.preventDefault();
+    const selected = document.querySelectorAll(".selectRow:checked");
+    if (selected.length === 0) {
+      Swal.fire('Tidak ada data dipilih!', 'Pilih minimal satu data untuk dihapus.', 'warning');
+      return;
+    }
+
     Swal.fire({
       title: 'Yakin ingin menghapus yang dipilih?',
       text: "Data yang dihapus tidak bisa dikembalikan.",

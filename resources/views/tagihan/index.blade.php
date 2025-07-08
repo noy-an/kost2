@@ -13,12 +13,21 @@
 @section('content')
 <div class="card shadow-sm rounded-3 border-0">
   <div class="card-body">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-      <h4 class="fw-bold text-dark mb-0">📋 Data Tagihan</h4>
-      <a href="{{ route('tagihan.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
-        <i class="ti ti-plus"></i> Tambah Tagihan
-      </a>
+    <!-- Header Responsif dengan Tombol Aksi -->
+    <div class="row justify-content-between align-items-center mb-4 g-2">
+      <div class="col">
+        <h4 class="fw-bold text-dark mb-0">📋 Data Tagihan</h4>
+      </div>
+      <div class="col-auto">
+        <div class="d-flex flex-wrap justify-content-end gap-2">
+          <a href="{{ route('tagihan.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+            <i class="ti ti-plus"></i> Tambah Tagihan
+          </a>
+          <button type="button" id="bulkDeleteBtn" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm">
+            <i class="ti ti-trash"></i> Hapus Terpilih
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Filter -->
@@ -55,15 +64,6 @@
       @csrf
       @method('DELETE')
 
-      <!-- Tombol Bulk Delete -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <button type="submit" class="btn btn-danger d-none" id="bulkDeleteBtn">
-            <i class="ti ti-trash"></i> Hapus Terpilih
-          </button>
-        </div>
-      </div>
-
       <!-- Table -->
       <div class="table-responsive">
         <table class="table table-bordered table-hover align-middle text-center">
@@ -82,7 +82,7 @@
             @forelse($tagihans as $no => $tagihan)
             <tr>
               <td><input type="checkbox" name="tagihan_ids[]" value="{{ $tagihan->id }}" class="selectRow"></td>
-              <td>{{ $no + 1 }}.</td>
+              <td>{{ $no + $tagihans->firstItem() }}</td>
               <td>{{ $tagihan->booking->user->name ?? '-' }}</td>
               <td class="text-start">
                 <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
@@ -132,29 +132,24 @@ document.addEventListener("DOMContentLoaded", function () {
   const checkboxes = document.querySelectorAll(".selectRow");
   const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
 
-  // Toggle semua checkbox
+  // Pilih semua checkbox
   selectAll.addEventListener("change", function () {
     checkboxes.forEach(cb => cb.checked = this.checked);
-    toggleBulkBtn();
   });
-
-  // Toggling tombol bulk
-  checkboxes.forEach(cb => {
-    cb.addEventListener("change", toggleBulkBtn);
-  });
-
-  function toggleBulkBtn() {
-    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
-    bulkDeleteBtn.classList.toggle("d-none", !anyChecked);
-  }
 
   // SweetAlert Bulk Delete
   const form = document.getElementById("bulkDeleteForm");
   bulkDeleteBtn.addEventListener("click", function (e) {
     e.preventDefault();
+    const selected = document.querySelectorAll(".selectRow:checked");
+    if (selected.length === 0) {
+      Swal.fire('Tidak ada data dipilih!', 'Pilih minimal satu tagihan untuk dihapus.', 'warning');
+      return;
+    }
+
     Swal.fire({
       title: 'Yakin ingin menghapus yang dipilih?',
-      text: "Data yang dihapus tidak dapat dikembalikan.",
+      text: "Data tagihan yang dihapus tidak bisa dikembalikan.",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Ya, hapus',
@@ -175,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       Swal.fire({
         title: 'Yakin ingin menghapus?',
-        text: "Tagihan yang dihapus tidak bisa dikembalikan!",
+        text: "Tagihan akan dihapus permanen!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',

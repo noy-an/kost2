@@ -80,9 +80,7 @@
           <tbody>
             @forelse($pembayarans as $no => $pembayaran)
             <tr>
-              <td>
-                <input type="checkbox" name="ids[]" value="{{ $pembayaran->id }}" class="checkItem">
-              </td>
+              <td><input type="checkbox" name="ids[]" value="{{ $pembayaran->id }}" class="checkItem"></td>
               <td>{{ $no + $pembayarans->firstItem() }}</td>
               <td class="text-start text-nowrap">
                 <strong>User:</strong> {{ $pembayaran->booking->user->name ?? '-' }}<br>
@@ -107,9 +105,9 @@
               </td>
               <td>
                 @if($pembayaran->bukti_bayar)
-                  <img src="{{ asset('storage/' . $pembayaran->bukti_bayar) }}" alt="Bukti Bayar" width="50" height="50" class="rounded object-fit-cover">
+                <img src="{{ asset('storage/' . $pembayaran->bukti_bayar) }}" alt="Bukti Bayar" width="50" height="50" class="rounded object-fit-cover">
                 @else
-                  <span class="text-muted">-</span>
+                <span class="text-muted">-</span>
                 @endif
               </td>
               <td>
@@ -120,7 +118,7 @@
                   <form action="{{ route('pembayaran.destroy', $pembayaran->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
-                    <button type="button" class="btn btn-sm btn-danger btn-delete">
+                    <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
                       <i class="ti ti-trash"></i>
                     </button>
                   </form>
@@ -150,9 +148,8 @@
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  // Delete per baris
-  const deleteButtons = document.querySelectorAll(".btn-delete");
-  deleteButtons.forEach(button => {
+  // SweetAlert individual delete
+  document.querySelectorAll(".btn-delete").forEach(button => {
     button.addEventListener("click", function (e) {
       e.preventDefault();
       const form = this.closest("form");
@@ -174,30 +171,23 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Checkbox check all
-  const checkAll = document.getElementById('checkAll');
-  const checkboxes = document.querySelectorAll('.checkItem');
-
-  checkAll.addEventListener('change', function () {
-    checkboxes.forEach(cb => cb.checked = this.checked);
+  // Checkbox: pilih semua
+  document.getElementById('checkAll').addEventListener('change', function () {
+    document.querySelectorAll('.checkItem').forEach(cb => cb.checked = this.checked);
   });
 
-  // Bulk delete
-  const bulkForm = document.getElementById('bulkDeleteForm');
-  const bulkBtn = document.getElementById('btnBulkDelete');
-
-  bulkBtn.addEventListener('click', function (e) {
+  // SweetAlert bulk delete
+  document.getElementById('btnBulkDelete').addEventListener('click', function (e) {
     e.preventDefault();
     const selected = document.querySelectorAll('.checkItem:checked');
-
     if (selected.length === 0) {
-      Swal.fire('Tidak ada data terpilih!', 'Pilih minimal satu data untuk dihapus.', 'warning');
+      Swal.fire('Tidak ada data terpilih!', 'Pilih minimal satu pembayaran untuk dihapus.', 'warning');
       return;
     }
 
     Swal.fire({
       title: 'Hapus data terpilih?',
-      text: `Sebanyak ${selected.length} data pembayaran akan dihapus permanen.`,
+      text: `Sebanyak ${selected.length} data akan dihapus permanen.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -206,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
       cancelButtonText: 'Batal'
     }).then((result) => {
       if (result.isConfirmed) {
-        bulkForm.submit();
+        document.getElementById('bulkDeleteForm').submit();
       }
     });
   });

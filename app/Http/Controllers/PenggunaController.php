@@ -19,17 +19,24 @@ class PenggunaController extends Controller
 }
 
     public function index(Request $request)
-    {
-        $users = User::query()
-            ->when($request->search, function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%')
-                      ->orWhere('email', 'like', '%' . $request->search . '%');
-            })
-            ->latest()
-            ->paginate(10);
-
-        return view('pengguna.index', compact('users'));
+{
+    $visited = session('visited_menus', []);
+    if (!in_array('pengguna', $visited)) {
+        $visited[] = 'pengguna';
+        session(['visited_menus' => $visited]);
     }
+
+    $users = User::query()
+        ->when($request->search, function ($query) use ($request) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+        })
+        ->latest()
+        ->paginate(10);
+
+    return view('pengguna.index', compact('users'));
+}
+
 
     public function create()
     {

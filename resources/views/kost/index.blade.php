@@ -13,19 +13,21 @@
 @section('content')
 <div class="card shadow-sm rounded-3 border-0">
   <div class="card-body">
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-      <h4 class="fw-bold text-dark mb-0">🏠 Data Kamar Kost</h4>
-      <div class="d-flex gap-2">
-        <a href="{{ route('kost.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
-          <i class="ti ti-plus"></i> Tambah Kost
-        </a>
-        <!-- BULK DELETE BUTTON -->
-        <button type="button" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm" id="bulk-delete-btn">
-          <i class="ti ti-trash"></i> Hapus Terpilih
-        </button>
-      </div>
+   <div class="row justify-content-between align-items-center mb-4 g-2">
+  <div class="col">
+    <h4 class="fw-bold text-dark mb-0">🏠 Data Kamar Kost</h4>
+  </div>
+  <div class="col-auto">
+    <div class="d-flex flex-wrap justify-content-end gap-2">
+      <a href="{{ route('kost.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+        <i class="ti ti-plus"></i> Tambah Kost
+      </a>
+      <button type="button" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm" id="bulk-delete-btn">
+        <i class="ti ti-trash"></i> Hapus Terpilih
+      </button>
     </div>
-
+  </div>
+</div>
     <form action="{{ route('kost.index') }}" method="GET" class="mb-4">
       <div class="input-group">
         <span class="input-group-text bg-light border-end-0"><i class="ti ti-search text-secondary"></i></span>

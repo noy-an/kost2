@@ -23,6 +23,12 @@ class BookingController extends Controller
 
 public function index(Request $request)
 {
+    $visited = session('visited_menus', []);
+    if (!in_array('booking', $visited)) {
+        $visited[] = 'booking';
+        session(['visited_menus' => $visited]);
+    }
+
     $bookings = \App\Models\Booking::with(['user', 'kost'])
         ->when($request->search, function ($query) use ($request) {
             $query->whereHas('user', fn($q) =>
@@ -39,6 +45,7 @@ public function index(Request $request)
 
     return view('booking.index', compact('bookings'));
 }
+
 
 
 
