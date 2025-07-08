@@ -19,7 +19,7 @@ class TagihanpelangganController extends Controller
 
     return view('tagihanpelanggan.index', [
         'data' => $bookings,
-        'title' => 'Booking yang Disetujui',
+        'title' => 'Booking yang Disetujui.',
     ]);
 }
 
