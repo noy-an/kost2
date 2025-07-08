@@ -52,11 +52,10 @@
 
     <!-- Table -->
     <div class="table-responsive">
-@endphp
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
           <tr>
-            <th>#</th>
+            <th>ID</th>
             <th>Nama User</th>
             <th>Kost</th>
             <th>Jumlah Bayar</th>
