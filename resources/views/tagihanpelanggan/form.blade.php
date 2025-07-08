@@ -26,11 +26,12 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('tagihanpelanggan.store') }}" method="POST">
+                    <form action="{{ route('tagihanpelanggan.store') }}" method="POST" id="payment-form">
                         @csrf
                         <input type="hidden" name="booking_id" value="{{ $booking->id }}">
                         <input type="hidden" name="bayar_per_bulan" value="{{ $nominalBayar }}">
                         <input type="hidden" name="jumlah_bayar" value="1">
+                        <input type="hidden" name="tanggal_tagihan" value="{{ $tanggalTagihan }}">
 
                         <div class="row g-3">
                             <!-- Customer Info Section -->
@@ -91,16 +92,13 @@
                                 </div>
                             </div>
 
-                            <!-- Hidden Fields -->
-                            <input type="hidden" name="tanggal_tagihan" value="{{ $tanggalTagihan }}">
-
                             <!-- Submit Button -->
                             <div class="col-md-12 mt-2">
-                                <button type="submit" class="btn btn-primary btn-lg w-100 py-3">
-                                    <i ></i>Konfirmasi Pembayaran Bulan ke-{{ $bulanKe }}
+                                <button type="submit" class="btn btn-primary btn-lg w-100 py-3" id="pay-button">
+                                    <i ></i>Bayar Sekarang (Rp {{ number_format($nominalBayar, 0, ',', '.') }})
                                 </button>
                                 <p class="text-muted small mt-2 text-center">
-                                    <i class="fas fa-info-circle me-1"></i>Pastikan pembayaran sudah dilakukan sebelum mengkonfirmasi
+                                    <i class="fas fa-info-circle me-1"></i>Anda akan diarahkan ke halaman pembayaran Midtrans
                                 </p>
                             </div>
                         </div>
@@ -117,6 +115,19 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+<script>
+    document.getElementById('pay-button').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('pay-button').disabled = true;
+        document.getElementById('pay-button').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
+        
+        document.getElementById('payment-form').submit();
+    });
+</script>
+@endpush
 
 @push('styles')
 <style>
