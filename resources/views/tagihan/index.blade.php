@@ -55,7 +55,7 @@
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
           <tr>
-            <th>ID</th>
+            <th>No</th>
             <th>Nama User</th>
             <th>Kost</th>
             <th>Jumlah Bayar</th>
@@ -64,9 +64,9 @@
           </tr>
         </thead>
         <tbody>
-          @forelse($tagihans as $tagihan)
+          @forelse($tagihans as $no => $tagihan)
           <tr>
-            <td>{{ $tagihan->id }}</td>
+            <td>{{ $no + 1 }}.</td>
             <td>{{ $tagihan->booking->user->name ?? '-' }}</td>
             <td class="text-start">
               <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
