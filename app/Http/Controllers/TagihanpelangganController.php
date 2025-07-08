@@ -83,12 +83,16 @@ $tanggalTagihan = $tanggalMulai->copy()->addMonths($bulanKe - 1)->format('Y-m-d'
             'booking_id' => 'required|exists:booking,id',
             'bayar_per_bulan' => 'required|integer|min:0',
             'jumlah_bayar' => 'required|integer|min:0',
+            'tanggal_tagihan' => 'required|date',
+
         ]);
 
         Tagihan::create([
             'booking_id' => $request->booking_id,
             'bayar_per_bulan' => $request->bayar_per_bulan,
             'jumlah_bayar' => $request->jumlah_bayar,
+            'tanggal_tagihan' => $request->tanggal_tagihan,
+
         ]);
 
         return redirect()->route('tagihanpelanggan.index', $request->booking_id)->with('success', 'Tagihan berhasil ditambahkan.');

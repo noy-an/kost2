@@ -52,15 +52,15 @@
 
     <!-- Table -->
     <div class="table-responsive">
+@endphp
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-light">
           <tr>
             <th>#</th>
             <th>Nama User</th>
             <th>Kost</th>
-            <th>Bayar / Bulan</th>
-            <th>Jumlah Bulan</th>
-            <th>Tanggal Tagihan</th>
+            <th>Jumlah Bayar</th>
+            <th>Bulan Tagihan</th>
             <th>Aksi</th>
           </tr>
         </thead>
@@ -74,8 +74,9 @@
               <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
             </td>
             <td class="text-end">Rp. {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
-            <td class="text-end">Rp. {{ $tagihan->jumlah_bayar }} /bulan</td>
-            <td>{{ \Carbon\Carbon::parse($tagihan->tanggal_tagihan)->translatedFormat('d F Y') }}</td>
+<td class="text-start">
+  {{ $tagihan->tanggal_tagihan_format }}
+</td>
             <td>
               <div class="d-flex justify-content-center gap-1">
                 <a href="{{ route('tagihan.edit', $tagihan->id) }}" class="btn btn-sm btn-warning" title="Edit">
@@ -109,7 +110,6 @@
   </div>
 </div>
 @endsection
-
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
