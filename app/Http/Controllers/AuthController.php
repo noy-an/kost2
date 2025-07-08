@@ -20,7 +20,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'role' => 'required|string',
-            'phone' => 'required|string',
+           
             'password' => 'required|string|min:6',
             'avatar' => 'required|image|mimes:jpeg,png,jpg|max:5120',
             'id_card' => 'required|image|mimes:jpeg,png,jpg|max:5120',
