@@ -59,7 +59,7 @@
             <th>Nama User</th>
             <th>Kost</th>
             <th>Bayar / Bulan</th>
-            <th>Jumlah Bayar</th>
+            <th>Jumlah Bulan</th>
             <th>Tanggal Tagihan</th>
             <th>Aksi</th>
           </tr>
@@ -73,8 +73,8 @@
               <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
               <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
             </td>
-            <td class="text-end">Rp{{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
-            <td class="text-end">Rp{{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</td>
+            <td class="text-end">Rp. {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
+            <td class="text-end">Rp. {{ $tagihan->jumlah_bayar }} /bulan</td>
             <td>{{ \Carbon\Carbon::parse($tagihan->tanggal_tagihan)->translatedFormat('d F Y') }}</td>
             <td>
               <div class="d-flex justify-content-center gap-1">
