@@ -69,8 +69,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/kost', [KostController::class, 'bulkDelete'])->name('kost.bulk-delete');
     Route::delete('/pembayaran', [PembayaranController::class, 'bulkDelete'])->name('pembayaran.bulk-delete');
     Route::delete('/pengguna', [PenggunaController::class, 'bulkDelete'])->name('pengguna.bulkDelete');
-
-
+    Route::delete('/kontak-destroy-all', [KontakController::class, 'destroyAll'])->name('kontak.destroyAll');
 
 
 });

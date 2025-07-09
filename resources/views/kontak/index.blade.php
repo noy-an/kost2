@@ -11,26 +11,43 @@
 @section('title', 'Pesan Pelanggan')
 
 @section('content')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
 <div class="container-fluid">
     <!-- Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
         <div>
-            <h4 class="fw-bold text-dark mb-1">📬 Pesan Masuk</h4>
+            <h4 class="fw-bold text-dark mb-1"><i class="ti ti-mail fs-5 text-primary"></i> Pesan Masuk</h4>
             <p class="text-muted mb-0">Daftar pesan yang dikirim oleh pelanggan melalui halaman kontak.</p>
         </div>
 
-        <!-- Search -->
-        <form action="{{ route('kontak.index') }}" method="GET" class="d-flex gap-2 flex-wrap shadow-sm">
+        <!-- Filter dan Search -->
+        <form action="{{ route('kontak.index') }}" method="GET" class="d-flex gap-2 flex-wrap shadow-sm align-items-center">
             <input type="text" name="search" class="form-control rounded-pill" placeholder="Cari nama/email/subjek..."
                    value="{{ request('search') }}">
-            <button class="btn btn-outline-secondary rounded-pill" type="submit">🔍</button>
-            @if(request('search'))
+            <input type="date" name="tanggal" class="form-control rounded-pill" value="{{ request('tanggal') }}">
+            <button class="btn btn-outline-primary rounded-pill px-4" type="submit">
+                <i class="bi bi-search"></i> Cari
+            </button>
+
+            @if(request('search') || request('tanggal'))
                 <a href="{{ route('kontak.index') }}" class="btn btn-outline-danger rounded-pill">
                     <i class="ti ti-x"></i> Reset
                 </a>
             @endif
         </form>
     </div>
+
+    <!-- Tombol Bersihkan Semua -->
+    @if ($kontaks->count())
+    <form id="form-clear-all" action="{{ route('kontak.destroyAll')}}" method="POST" class="mb-3">
+        @csrf
+        @method('DELETE')
+        <button type="button" class="btn btn-danger rounded-pill" id="btn-clear-all">
+            <i class="ti ti-trash"></i> Bersihkan Semua Pesan
+        </button>
+    </form>
+    @endif
 
     <!-- Messages -->
     @forelse ($kontaks as $kontak)
@@ -69,7 +86,7 @@
                 <form action="{{ route('kontak.destroy', $kontak->id) }}" method="POST" class="form-delete">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill shadow-sm d-flex align-items-center gap-1 btn-delete">
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill shadow-sm d-flex align-items-center gap-1 btn-delete">
                         <i class="ti ti-trash"></i> Hapus
                     </button>
                 </form>
@@ -79,7 +96,11 @@
     @empty
     <div class="alert alert-info d-flex align-items-center gap-2">
         <i class="ti ti-info-circle fs-4"></i>
-        <span>Belum ada pesan dari pelanggan.</span>
+        @if(request('search') || request('tanggal'))
+            <span>Data yang dicari tidak ada.</span>
+        @else
+            <span>Belum ada pesan dari pelanggan.</span>
+        @endif
     </div>
     @endforelse
 
@@ -88,4 +109,67 @@
         {{ $kontaks->appends(request()->query())->links('pagination::bootstrap-5') }}
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.querySelectorAll('.btn-delete').forEach(button => {
+        button.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Yakin ingin menghapus pesan ini?',
+                text: 'Data akan terhapus secara permanen!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.closest('form').submit();
+                }
+            });
+        });
+    });
+
+    const clearBtn = document.getElementById('btn-clear-all');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Hapus semua pesan?',
+                text: 'Semua pesan akan dihapus permanen!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, hapus semua!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch("{{ route('kontak.destroyAll') }}", {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Gagal menghapus');
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Sukses', 'Semua pesan berhasil dihapus.', 'success');
+
+                        document.querySelectorAll('.card').forEach(card => card.remove());
+
+                        const alertInfo = document.createElement('div');
+                        alertInfo.className = 'alert alert-info d-flex align-items-center gap-2 mt-3';
+                        alertInfo.innerHTML = '<i class="ti ti-info-circle fs-4"></i><span>Belum ada pesan dari pelanggan.</span>';
+                        document.querySelector('.container-fluid').appendChild(alertInfo);
+
+                        clearBtn.closest('form')?.remove();
+                    })
+                    .catch(error => {
+                        Swal.fire('Gagal', 'Terjadi kesalahan saat menghapus.', 'error');
+                    });
+                }
+            });
+        });
+    }
+</script>
 @endsection
