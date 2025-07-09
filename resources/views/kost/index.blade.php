@@ -107,11 +107,11 @@
                   <a href="{{ route('kost.edit', $item->id) }}" class="btn btn-sm btn-warning" title="Edit">
                     <i class="ti ti-edit"></i>
                   </a>
-                  <form action="{{ route('kost.destroy', $item->id) }}" method="POST" class="d-inline form-delete">
+                  {{-- <form action="{{ route('kost.destroy', $item->id) }}" method="POST" class="d-inline form-delete">
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-sm btn-danger btn-delete"><i class="ti ti-trash"></i></button>
-                  </form>
+                  </form> --}}
                 </div>
               </td>
             </tr>
