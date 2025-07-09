@@ -1,20 +1,17 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
-
 use App\Models\Kost;
+use App\Models\Notifbook;
 use Illuminate\Support\Facades\Auth;
 use Midtrans\Config;
 use Midtrans\Snap;
 
 class BookingpelangganController extends Controller
 {
-
-// Contoh di BookingController
-
-    
     public function __construct()
     {
         Config::$serverKey = env('MIDTRANS_SERVER_KEY');
@@ -22,7 +19,7 @@ class BookingpelangganController extends Controller
         Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
         Config::$is3ds = env('MIDTRANS_IS_3DS');
     }
-    
+
     public function create($kost_id)
     {
         $kost = Kost::find($kost_id);
@@ -30,25 +27,25 @@ class BookingpelangganController extends Controller
         if (!$kost) {
             return redirect()->route('kamar.index')->with('error', 'Kost tidak ditemukan.');
         }
-                
+
         if ($kost->status !== 'kosong') {
             return redirect()->route('kamar.index')->with('error', 'Kost sudah tidak tersedia.');
         }
-       
+
         $harga_calculations = [
             'dp_30' => round($kost->harga * 0.3),
             'dp_40' => round($kost->harga * 0.4),
             'dp_50' => round($kost->harga * 0.5),
             'bayar_penuh' => round($kost->harga),
         ];
-        
+
         return view('bookingpelanggan.form', [
             'title' => 'Bookingpelanggan',
             'kost' => $kost,
             'harga_calculations' => $harga_calculations,
         ]);
     }
-    
+
     public function store(Request $request)
     {
         $request->validate([
@@ -56,18 +53,18 @@ class BookingpelangganController extends Controller
             'tgl_booking' => 'required|date',
             'persentase_pembayaran' => 'required|in:30,40,50,100',
         ]);
-        
+
         $kost = Kost::findOrFail($request->kost_id);
         $persentase = $request->persentase_pembayaran;
-        
+
         if ($kost->status !== 'kosong') {
             return redirect()->route('bookingpelanggan.form', $kost->id)
                 ->with('error', 'Maaf, kost sudah tidak tersedia.');
         }
-        
+
         $nominal_pembayaran = round($kost->harga * ($persentase / 100));
         $jenis_pembayaran = $persentase == 100 ? 'bayar_penuh' : 'dp';
-        
+
         $booking = Booking::create([
             'user_id' => Auth::id(),
             'kost_id' => $kost->id,
@@ -76,6 +73,12 @@ class BookingpelangganController extends Controller
             'jenis_pembayaran' => $jenis_pembayaran,
             'tgl_booking' => $request->tgl_booking,
             'status_booking' => 'pending',
+        ]);
+
+        // ✅ Notifikasi untuk admin: booking baru masuk
+        Notifbook::create([
+            'booking_id' => $booking->id,
+            'message' => 'Booking baru dari pelanggan ' . Auth::user()->name . ' untuk kamar ' . $kost->nomor_kamar,
         ]);
 
         $transaction_details = [
@@ -109,14 +112,13 @@ class BookingpelangganController extends Controller
 
         try {
             $paymentUrl = Snap::createTransaction($params)->redirect_url;
-            
+
             $booking->update([
                 'payment_token' => $params['transaction_details']['order_id'],
                 'payment_url' => $paymentUrl,
             ]);
 
             return redirect($paymentUrl);
-
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Pembayaran gagal: ' . $e->getMessage());

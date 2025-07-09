@@ -1,17 +1,46 @@
+@php
+  use App\Models\Notifbook;
+  $notifs = Notifbook::where('is_read', false)->latest()->get();
+@endphp
+
 <header class="app-header shadow-sm bg-white border-bottom">
   <nav class="navbar navbar-expand-lg navbar-light px-3 py-2">
     <div class="d-flex align-items-center w-100 justify-content-between">
-      <!-- Sidebar Toggler (hamburger menu) -->
       <a class="nav-link d-block d-xl-none text-muted fs-4" id="headerCollapse" href="javascript:void(0)">
         <i class="ti ti-menu-2"></i>
       </a>
 
       <div class="navbar-collapse justify-content-end d-flex" id="navbarNav">
         <ul class="navbar-nav align-items-center gap-3">
-          <li class="nav-item position-relative">
-            <a class="nav-link text-muted" href="#"><i class="ti ti-bell fs-5"></i>
-              <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+
+          <!-- Notifikasi -->
+          <li class="nav-item dropdown position-relative">
+            <a class="nav-link text-muted" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="ti ti-bell fs-5"></i>
+              @if($notifs->count() > 0)
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ $notifs->count() }}
+                </span>
+              @endif
             </a>
+
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm animate__animated animate__fadeIn" style="min-width: 300px;">
+              @forelse($notifs as $notif)
+              <li>
+                <form action="{{ route('notifbook.read', $notif->id) }}" method="POST">
+                  @csrf
+                  @method('PATCH')
+                  <button type="submit" class="dropdown-item text-wrap text-start">
+                    🔔 {{ $notif->message }}
+                  </button>
+                </form>
+              </li>
+              @empty
+              <li>
+                <span class="dropdown-item text-muted">Tidak ada notifikasi baru.</span>
+              </li>
+              @endforelse
+            </ul>
           </li>
 
           <li class="nav-item dropdown">
@@ -31,6 +60,7 @@
               </li>
             </ul>
           </li>
+
         </ul>
       </div>
     </div>
