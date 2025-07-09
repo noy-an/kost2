@@ -9,11 +9,26 @@ use App\Models\Kost;
 
 class BookingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public function bulkDelete(Request $request)
+{
+    $ids = $request->input('booking_ids', []);
+    if (empty($ids)) {
+        return redirect()->route('booking.index')->with('error', 'Tidak ada booking yang dipilih.');
+    }
+
+    Booking::whereIn('id', $ids)->delete();
+
+    return redirect()->route('booking.index')->with('success', 'Berhasil menghapus booking terpilih.');
+}
+
 public function index(Request $request)
 {
+    $visited = session('visited_menus', []);
+    if (!in_array('booking', $visited)) {
+        $visited[] = 'booking';
+        session(['visited_menus' => $visited]);
+    }
+
     $bookings = \App\Models\Booking::with(['user', 'kost'])
         ->when($request->search, function ($query) use ($request) {
             $query->whereHas('user', fn($q) =>
@@ -30,6 +45,7 @@ public function index(Request $request)
 
     return view('booking.index', compact('bookings'));
 }
+
 
 
 

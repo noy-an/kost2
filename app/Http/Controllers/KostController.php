@@ -8,21 +8,43 @@ use Illuminate\Support\Facades\Storage;
 
 class KostController extends Controller
 {
-    /**
-     * Tampilkan semua data kost
-     */
-  public function index(Request $request)
+    public function bulkDelete(Request $request)
 {
+    $ids = $request->input('ids');
+    if ($ids) {
+        foreach ($ids as $id) {
+            $kost = Kost::find($id);
+            if ($kost) {
+                // Optional: hapus foto dari storage
+                Storage::delete([$kost->foto1, $kost->foto2, $kost->foto3]);
+                $kost->delete();
+            }
+        }
+        return redirect()->route('kost.index')->with('success', 'Beberapa kamar kost berhasil dihapus.');
+    }
+
+    return redirect()->route('kost.index')->with('error', 'Tidak ada data yang dipilih.');
+}
+
+public function index(Request $request)
+{
+    $visited = session('visited_menus', []);
+    if (!in_array('kost', $visited)) {
+        $visited[] = 'kost';
+        session(['visited_menus' => $visited]);
+    }
+
     $kost = Kost::query()
         ->when($request->search, function ($query) use ($request) {
             $query->where('nomor_kamar', 'like', '%' . $request->search . '%')
-                ->orWhere('status', 'like', '%' . $request->search . '%');
+                  ->orWhere('status', 'like', '%' . $request->search . '%');
         })
         ->latest()
         ->paginate(10);
 
     return view('kost.index', compact('kost'));
 }
+
 
     /**
      * Tampilkan form tambah kost

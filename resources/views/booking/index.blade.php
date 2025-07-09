@@ -13,12 +13,21 @@
 @section('content')
 <div class="card shadow-sm rounded-3 border-0">
   <div class="card-body">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-      <h4 class="fw-bold text-dark mb-0">📅 Data Booking</h4>
-      <a href="{{ route('booking.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
-        <i class="ti ti-plus"></i> Tambah Booking
-      </a>
+    <!-- Header Responsif dengan Aksi -->
+    <div class="row justify-content-between align-items-center mb-4 g-2">
+      <div class="col">
+        <h4 class="fw-bold text-dark mb-0">📅 Data Booking</h4>
+      </div>
+      <div class="col-auto">
+        <div class="d-flex flex-wrap justify-content-end gap-2">
+          <a href="{{ route('booking.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+            <i class="ti ti-plus"></i> Tambah Booking
+          </a>
+          <button type="button" id="bulkDeleteBtn" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm">
+            <i class="ti ti-trash"></i> Hapus Terpilih
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Filter -->
@@ -44,62 +53,70 @@
       </div>
     </form>
 
-    <!-- Table -->
-    <div class="table-responsive">
-      <table class="table table-bordered table-hover align-middle text-center">
-        <thead class="table-light">
-          <tr class="text-nowrap">
-            <th>No</th>
-            <th>Nama User</th>
-            <th>No. Kamar</th>
-            <th>DP</th>
-            <th>Tanggal Booking</th>
-            <th>Status</th>
-            <th class="text-nowrap">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          @forelse($bookings as $index => $booking)
-          <tr>
-            <td>{{ $index + $bookings->firstItem() }}</td>
-            <td>{{ $booking->user->name ?? '-' }}</td>
-            <td>{{ $booking->kost->nomor_kamar ?? '-' }}</td>
-            <td class="text-end">Rp{{ number_format($booking->dp, 0, ',', '.') }}</td>
-            <td>{{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d F Y') }}</td>
-            <td>
-              <span class="badge 
-                @if($booking->status_booking === 'pending') bg-warning text-dark
-                @elseif($booking->status_booking === 'disetujui') bg-success
-                @else bg-secondary
-                @endif">
-                {{ ucfirst($booking->status_booking) }}
-              </span>
-            </td>
-            <td>
-              <div class="d-flex justify-content-center gap-1">
-                <a href="{{ route('booking.edit', $booking->id) }}" class="btn btn-sm btn-warning" title="Edit">
-                  <i class="ti ti-edit"></i>
-                </a>
-                <form action="{{ route('booking.destroy', $booking->id) }}" method="POST" class="d-inline">
-                  @csrf
-                  @method('DELETE')
-                  <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
-                    <i class="ti ti-trash"></i>
-                  </button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          @empty
-          <tr>
-            <td colspan="7" class="text-center text-muted py-4">
-              <i class="ti ti-info-circle"></i> Belum ada data booking.
-            </td>
-          </tr>
-          @endforelse
-        </tbody>
-      </table>
-    </div>
+    <!-- Bulk Delete Form -->
+    <form action="{{ route('booking.bulkDelete') }}" method="POST" id="bulkDeleteForm">
+      @csrf
+      @method('DELETE')
+
+      <!-- Table -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center">
+          <thead class="table-light">
+            <tr class="text-nowrap">
+              <th><input type="checkbox" id="selectAll"></th>
+              <th>No</th>
+              <th>Nama User</th>
+              <th>No. Kamar</th>
+              <th>DP</th>
+              <th>Tanggal Booking</th>
+              <th>Status</th>
+              <th class="text-nowrap">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            @forelse($bookings as $index => $booking)
+            <tr>
+              <td><input type="checkbox" name="booking_ids[]" value="{{ $booking->id }}" class="selectRow"></td>
+              <td>{{ $index + $bookings->firstItem() }}</td>
+              <td>{{ $booking->user->name ?? '-' }}</td>
+              <td>{{ $booking->kost->nomor_kamar ?? '-' }}</td>
+              <td class="text-end">Rp{{ number_format($booking->dp, 0, ',', '.') }}</td>
+              <td>{{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d F Y') }}</td>
+              <td>
+                <span class="badge 
+                  @if($booking->status_booking === 'pending') bg-warning text-dark
+                  @elseif($booking->status_booking === 'disetujui') bg-success
+                  @else bg-secondary
+                  @endif">
+                  {{ ucfirst($booking->status_booking) }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex justify-content-center gap-1">
+                  <a href="{{ route('booking.edit', $booking->id) }}" class="btn btn-sm btn-warning" title="Edit">
+                    <i class="ti ti-edit"></i>
+                  </a>
+                  {{-- <form action="{{ route('booking.destroy', $booking->id) }}" method="POST" class="d-inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </form> --}}
+                </div>
+              </td>
+            </tr>
+            @empty
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">
+                <i class="ti ti-info-circle"></i> Belum ada data booking.
+              </td>
+            </tr>
+            @endforelse
+          </tbody>
+        </table>
+      </div>
+    </form>
 
     <!-- Pagination -->
     <div class="d-flex justify-content-end mt-3">
@@ -112,9 +129,42 @@
 @push('scripts')
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const deleteButtons = document.querySelectorAll(".btn-delete");
+  const selectAll = document.getElementById("selectAll");
+  const checkboxes = document.querySelectorAll(".selectRow");
+  const bulkDeleteBtn = document.getElementById("bulkDeleteBtn");
 
-  deleteButtons.forEach(button => {
+  // Pilih semua checkbox
+  selectAll.addEventListener("change", function () {
+    checkboxes.forEach(cb => cb.checked = this.checked);
+  });
+
+  // SweetAlert Bulk Delete
+  const form = document.getElementById("bulkDeleteForm");
+  bulkDeleteBtn.addEventListener("click", function (e) {
+    e.preventDefault();
+    const selected = document.querySelectorAll(".selectRow:checked");
+    if (selected.length === 0) {
+      Swal.fire('Tidak ada data dipilih!', 'Pilih minimal satu data untuk dihapus.', 'warning');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Yakin ingin menghapus yang dipilih?',
+      text: "Data yang dihapus tidak bisa dikembalikan.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, hapus',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit();
+      }
+    });
+  });
+
+  // SweetAlert untuk delete per-item
+  document.querySelectorAll(".btn-delete").forEach(button => {
     button.addEventListener("click", function (e) {
       e.preventDefault();
       const form = this.closest("form");

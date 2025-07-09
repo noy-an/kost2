@@ -11,62 +11,78 @@
 
     <nav class="sidebar-nav scroll-sidebar" data-simplebar>
       <ul id="sidebarnav">
-        <li class="nav-small-cap"><i class="ti ti-dots nav-small-cap-icon fs-4"></i><span class="hide-menu">MAIN MENU</span></li>
-        
+        <li class="nav-small-cap">
+          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+          <span class="hide-menu">MAIN MENU</span>
+        </li>
+
+        <!-- Home -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('admin.index') ? 'active' : '' }}" href="{{ route('admin.index') }}">
             <i class="ti ti-home"></i><span class="hide-menu">Home</span>
           </a>
         </li>
 
+        <!-- Kost -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('kost.*') ? 'active' : '' }}" href="{{ route('kost.index') }}">
             <i class="ti ti-building-community"></i><span class="hide-menu">Kost</span>
+            @if($kostBaru)
+              <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
+            @endif
           </a>
         </li>
 
+        <!-- Booking -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('booking.*') ? 'active' : '' }}" href="{{ route('booking.index') }}">
             <i class="ti ti-calendar-event"></i><span class="hide-menu">Booking</span>
+            @if($bookingBaru)
+              <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
+            @endif
           </a>
         </li>
 
+        <!-- Tagihan -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('tagihan.*') ? 'active' : '' }}" href="{{ route('tagihan.index') }}">
             <i class="ti ti-file-invoice"></i><span class="hide-menu">Tagihan</span>
+            @if($tagihanBaru)
+              <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
+            @endif
           </a>
         </li>
 
+        <!-- Pembayaran -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('pembayaran.*') ? 'active' : '' }}" href="{{ route('pembayaran.index') }}">
             <i class="ti ti-credit-card"></i><span class="hide-menu">Pembayaran</span>
+            @if($pembayaranBaru)
+              <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
+            @endif
           </a>
         </li>
 
+        <!-- Pengguna -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('pengguna.*') ? 'active' : '' }}" href="{{ route('pengguna.index') }}">
             <i class="ti ti-users"></i><span class="hide-menu">Pengguna</span>
+            @if($penggunaBaru)
+              <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
+            @endif
           </a>
         </li>
 
+        <!-- Kontak -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('kontak.*') ? 'active' : '' }}" href="{{ route('kontak.index') }}">
             <i class="ti ti-mail"></i><span class="hide-menu">Kontak</span>
+            @if($kontakBaru)
+              <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
+            @endif
           </a>
         </li>
       </ul>
-
-      <div class="unlimited-access hide-menu bg-light-primary position-relative mt-5 rounded mx-3 mb-4">
-        <div class="d-flex">
-          <div class="unlimited-access-title me-3">
-            <h6 class="fw-semibold fs-4 mb-2 text-dark w-85">Upgrade to Pro</h6>
-            <a href="https://adminmart.com/product/modernize-bootstrap-5-admin-template/" target="_blank" class="btn btn-primary fs-2 fw-semibold">Buy Pro</a>
-          </div>
-          <div class="unlimited-access-img">
-            <img src="{{ asset('backend/assets/images/backgrounds/rocket.png') }}" class="img-fluid" alt="">
-          </div>
-        </div>
-      </div>
     </nav>
   </div>
 </aside>

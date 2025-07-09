@@ -61,6 +61,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('pembayaran', PembayaranController::class);
     Route::resource('tagihan', TagihanController::class);
     Route::resource('pengguna', PenggunaController::class);
+    Route::delete('/tagihan', [TagihanController::class, 'bulkDelete'])->name('tagihan.bulkDelete');
+    Route::delete('/booking', [BookingController::class, 'bulkDelete'])->name('booking.bulkDelete');
+    Route::delete('/kost', [KostController::class, 'bulkDelete'])->name('kost.bulk-delete');
+    Route::delete('/pembayaran', [PembayaranController::class, 'bulkDelete'])->name('pembayaran.bulk-delete');
+    Route::delete('/pengguna', [PenggunaController::class, 'bulkDelete'])->name('pengguna.bulkDelete');
+
+
+
+
 });
 
 Route::get('/registrasi/pelanggan', [AuthController::class, 'registrasiPelanggan'])->name('registrasipelanggan');
