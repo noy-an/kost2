@@ -13,6 +13,9 @@ use App\Http\Controllers\TagihanpelangganController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\BookingpelangganController;
+use App\Http\Controllers\PdfController;
+
+// use App\Http\Controllers\LaporanPdfController;
 
 //front-end
 Route::resource('/', \App\Http\Controllers\HomeController::class);
@@ -69,6 +72,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 
 
+
+});
+
+Route::middleware(['auth', 'role:pemilik'])->group(function () {
+    Route::resource('pemilik', \App\Http\Controllers\PemilikController::class);
+    Route::resource('laporan', \App\Http\Controllers\LaporanController::class);
+    Route::get('/pdf/laporan', [PdfController::class, 'exportGabungan'])->name('pdf.laporan');
 
 });
 
