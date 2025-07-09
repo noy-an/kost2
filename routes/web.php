@@ -62,7 +62,7 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
     Route::get('/profile', [ProfilePelangganController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfilePelangganController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');  
 });
 
 
