@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\User;
@@ -9,6 +9,32 @@ use App\Models\Kost;
 
 class BookingController extends Controller
 {
+
+public function approve($id)
+{
+    $booking = Booking::findOrFail($id);
+
+    logger('booking->user_id = ' . $booking->user_id);
+
+    $booking->status_booking = 'disetujui';
+    $booking->save();
+
+    // Cek dulu user_id-nya valid atau nggak
+    if ($booking->user_id) {
+        Notification::create([
+            'user_id' => $booking->user_id,
+            'message' => 'Booking Anda telah disetujui. Silakan cek tagihan.',
+            'link' => route('tagihanpelanggan.index'),
+        ]);
+
+        logger('NOTIF CREATED!');
+    } else {
+        logger('GAGAL BUAT NOTIF: user_id NULL');
+    }
+
+    return redirect()->route('tagihanpelanggan.index')->with('success', 'Booking disetujui.');
+}
+
     public function bulkDelete(Request $request)
 {
     $ids = $request->input('booking_ids', []);
@@ -46,10 +72,6 @@ public function index(Request $request)
     return view('booking.index', compact('bookings'));
 }
 
-
-
-
-
     /**
      * Show the form for creating a new resource.
      */
@@ -64,20 +86,48 @@ public function index(Request $request)
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'kost_id' => 'required|exists:kost,id',
-            'dp' => 'nullable|numeric|min:0',
-            'tgl_booking' => 'required|date',
-            'status_booking' => 'required|in:pending,disetujui',
-        ]);
+  public function store(Request $request)
+{
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'kost_id' => 'required|exists:kost,id',
+        'persentase_pembayaran' => 'required|in:30,40,50,100',
+        'jenis_pembayaran' => 'required|in:cash,transfer_bank,qris,debit_card',
+        'tgl_booking' => 'required|date',
+        'status_booking' => 'required|in:pending,disetujui',
+    ]);
 
-        Booking::create($validated);
 
-        return redirect()->route('booking.index')->with('success', 'Booking berhasil dibuat.');
-    }
+    if ($request->status_booking === 'disetujui') {
+    Notification::create([
+        'user_id' => $request->user_id,
+        'message' => 'Booking Anda telah disetujui. Silakan cek tagihan.',
+        'link' => route('tagihanpelanggan.index'),
+    ]);
+}
+
+    // Get kost data to calculate DP
+    $kost = Kost::findOrFail($validated['kost_id']);
+    $dp_amount = ($validated['persentase_pembayaran'] / 100) * $kost->harga;
+
+    // DEBUG
+    logger('ADMIN CREATE booking - user_id = ' . $validated['user_id']);
+    logger('ADMIN CREATE booking - persentase_pembayaran = ' . $validated['persentase_pembayaran']);
+    logger('ADMIN CREATE booking - jenis_pembayaran = ' . $validated['jenis_pembayaran']);
+    logger('ADMIN CREATE booking - dp_amount = ' . $dp_amount);
+
+    $booking = Booking::create([
+        'user_id' => $validated['user_id'],
+        'kost_id' => $validated['kost_id'],
+        'persentase_pembayaran' => $validated['persentase_pembayaran'],
+        'jenis_pembayaran' => $validated['jenis_pembayaran'],
+        'dp' => $dp_amount,
+        'tgl_booking' => $validated['tgl_booking'],
+        'status_booking' => $validated['status_booking'],
+    ]);
+
+    return redirect()->route('booking.index')->with('success', 'Booking berhasil dibuat.');
+}
 
     /**
      * Display the specified resource.
@@ -106,16 +156,37 @@ public function index(Request $request)
      */
     public function update(Request $request, string $id)
     {
+
+        
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'kost_id' => 'required|exists:kost,id',
-            'dp' => 'nullable|numeric|min:0',
+            'persentase_pembayaran' => 'required|in:30,40,50,100',
+            'jenis_pembayaran' => 'required|in:cash,transfer_bank,qris,debit_card',
             'tgl_booking' => 'required|date',
             'status_booking' => 'required|in:pending,disetujui',
         ]);
+ if ($request->status_booking === 'disetujui') {
+    Notification::create([
+        'user_id' => $request->user_id,
+        'message' => 'Booking Anda telah disetujui. Silakan cek tagihan.',
+        'link' => route('tagihanpelanggan.index'),
+    ]);
+}
+        // Get kost data to calculate DP
+        $kost = Kost::findOrFail($validated['kost_id']);
+        $dp_amount = ($validated['persentase_pembayaran'] / 100) * $kost->harga;
 
         $booking = Booking::findOrFail($id);
-        $booking->update($validated);
+        $booking->update([
+            'user_id' => $validated['user_id'],
+            'kost_id' => $validated['kost_id'],
+            'persentase_pembayaran' => $validated['persentase_pembayaran'],
+            'jenis_pembayaran' => $validated['jenis_pembayaran'],
+            'dp' => $dp_amount,
+            'tgl_booking' => $validated['tgl_booking'],
+            'status_booking' => $validated['status_booking'],
+        ]);
 
         return redirect()->route('booking.index')->with('success', 'Booking berhasil diperbarui.');
     }

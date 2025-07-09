@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -13,6 +14,16 @@ use App\Http\Controllers\TagihanpelangganController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\BookingpelangganController;
+
+
+    Route::post('/notif-read/{id}', function ($id) {
+        $notif = \App\Models\Notification::find($id);
+        if ($notif && $notif->user_id === Auth::id()
+) {
+            $notif->update(['is_read' => true]);
+        }
+        return response()->json(['status' => 'ok']);
+    });
 
 //front-end
 Route::resource('/', \App\Http\Controllers\HomeController::class);
@@ -48,8 +59,7 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');
 });
 
-Route::get('/booking/{kost_id}', [BookingpelangganController::class, 'create'])->name('bookingpelanggan.form');
-Route::post('/booking', [BookingpelangganController::class, 'store'])->name('bookingpelanggan.store');
+
 //BATAS FRONT END
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

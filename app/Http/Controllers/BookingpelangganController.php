@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+
 use App\Models\Kost;
 use Illuminate\Support\Facades\Auth;
 use Midtrans\Config;
@@ -12,17 +13,6 @@ class BookingpelangganController extends Controller
 {
 
 // Contoh di BookingController
-public function approve($id)
-{
-    $booking = Booking::findOrFail($id);
-    $booking->status_booking = 'disetujui';
-    $booking->save();
-
-    // Set flash notifikasi
-    session()->flash('notif_booking', 'Booking Anda telah disetujui. Silakan cek tagihan.');
-
-    return redirect()->route('bookingpelanggan.index')->with('success', 'Booking disetujui.');
-}
 
     
     public function __construct()

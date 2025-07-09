@@ -68,6 +68,7 @@
               <th>Nama User</th>
               <th>No. Kamar</th>
               <th>DP</th>
+              <th>Jenis Pembayaran</th>
               <th>Tanggal Booking</th>
               <th>Status</th>
               <th class="text-nowrap">Aksi</th>
@@ -81,6 +82,7 @@
               <td>{{ $booking->user->name ?? '-' }}</td>
               <td>{{ $booking->kost->nomor_kamar ?? '-' }}</td>
               <td class="text-end">Rp{{ number_format($booking->dp, 0, ',', '.') }}</td>
+              <td class="text-end">{{ ($booking->jenis_pembayaran) }}</td>
               <td>{{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d F Y') }}</td>
               <td>
                 <span class="badge 

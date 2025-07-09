@@ -24,15 +24,7 @@
     <link rel="stylesheet" href="{{ asset('front-end/css/magnific-popup.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('front-end/css/slicknav.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('front-end/css/style.css') }}" type="text/css">
-    <style>
-    .nav-item .badge {
-        position: absolute;
-        top: 8px;
-        right: 4px;
-        font-size: 10px;
-    }
-</style>
-
+    
 </head>
 
 <body>
@@ -119,25 +111,49 @@
                                 <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
                                     <a href="{{ route('contact.index') }}">Contact</a>
                                 </li>
-<li class="nav-item dropdown">
-    <a href="#" class="nav-link dropdown-toggle" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        🔔
-        @if (session('notif_booking'))
-            <span class="badge bg-danger">1</span>
-        @endif
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="notifDropdown">
-        @if (session('notif_booking'))
-            <li>
-                <a class="dropdown-item" href="{{ route('tagihanpelanggan.index') }}">
-                    {{ session('notif_booking') }}
-                </a>
-            </li>
-        @else
-            <li><span class="dropdown-item">Tidak ada notifikasi</span></li>
-        @endif
-    </ul>
-</li>
+                                    @auth
+                                    @php
+                                        $notifs = \App\Models\Notification::where('user_id', auth()->id())
+                                            ->where('is_read', false)
+                                            ->latest()
+                                            ->get();
+                                    @endphp
+
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            🔔
+                                            @if ($notifs->count() > 0)
+                                                <span class="badge bg-danger">{{ $notifs->count() }}</span>
+                                            @endif
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="notifDropdown">
+                                                                                @if($notifs->count() > 0)
+                                            @foreach ($notifs as $notif)
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ $notif->link }}" onclick="markAsRead('{{ $notif->id }}')">
+                                                        {{ $notif->message }}
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        @else
+                                            <li><span class="dropdown-item">Tidak ada notifikasi</span></li>
+                                        @endif
+
+                                        </ul>
+                                    </li>
+
+                                    <script>
+                                        function markAsRead(id) {
+                                            fetch('/notif-read/' + id, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                    'Accept': 'application/json'
+                                                }
+                                            });
+                                        }
+                                    </script>
+                                    @endauth
 
                                 @guest
                                     <li>
