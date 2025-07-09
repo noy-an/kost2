@@ -30,10 +30,7 @@ class BookingController extends Controller
                 'link' => route('tagihanpelanggan.index'),
             ]);
 
-            Notifbook::create([
-                'booking_id' => $booking->id,
-                'message' => 'Booking atas nama ' . ($booking->user->name ?? 'Unknown') . ' telah disetujui.',
-            ]);
+           
 
             logger('NOTIF CREATED!');
         } else {
@@ -113,10 +110,7 @@ if ($user) {
                 'link' => route('tagihanpelanggan.index'),
             ]);
 
-            Notifbook::create([
-                'booking_id' => null,
-                'message' => 'Booking baru telah disetujui atas nama user ID ' . $request->user_id,
-            ]);
+          
         }
 
 
@@ -180,19 +174,7 @@ if ($user) {
             'status_booking' => 'required|in:pending,disetujui',
         ]);
 
-if ($request->status_booking === 'disetujui') {
-    Notification::create([
-        'user_id' => $request->user_id,
-        'message' => 'Booking Anda telah disetujui. Silakan cek tagihan.',
-        'link' => route('tagihanpelanggan.index'),
-    ]);
 
-    // kirim email
-    $user = User::find($request->user_id);
-    if ($user) {
-        $user->notify(new BookingDisetujuiNotification());
-    }
-}
 
 
 
@@ -222,6 +204,12 @@ if ($request->status_booking === 'disetujui') {
                 'booking_id' => $booking->id,
                 'message' => 'Booking atas nama ' . ($booking->user->name ?? 'Unknown') . ' telah diperbarui dan disetujui.',
             ]);
+
+                    // kirim email
+            $user = User::find($request->user_id);
+            if ($user) {
+                $user->notify(new BookingDisetujuiNotification());
+            }
         }
 
         return redirect()->route('booking.index')->with('success', 'Booking berhasil diperbarui.');
