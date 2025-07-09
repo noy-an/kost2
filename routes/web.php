@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -15,9 +16,25 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\BookingpelangganController;
 use App\Http\Controllers\PdfController;
-
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\ProfilePelangganController;
 // use App\Http\Controllers\LaporanPdfController;
 
+Auth::routes(['verify' => true]);
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/home');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
     Route::post('/notif-read/{id}', function ($id) {
         $notif = \App\Models\Notification::find($id);
@@ -28,15 +45,36 @@ use App\Http\Controllers\PdfController;
         return response()->json(['status' => 'ok']);
     });
 
-//front-end
-Route::resource('/', \App\Http\Controllers\HomeController::class);
-Route::resource('/home', \App\Http\Controllers\HomeController::class);
-Route::resource('/kost', \App\Http\Controllers\KostController::class);
-Route::resource('/about', \App\Http\Controllers\AboutController::class);
-Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 
+
+    Route::middleware(['auth', 'verified'])->group(function () {
+   Route::resource('/', \App\Http\Controllers\HomeController::class);
+Route::resource('/home', \App\Http\Controllers\HomeController::class);
+   Route::resource('/about', \App\Http\Controllers\AboutController::class);
+Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
+Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+
+
+ Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
+    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+    Route::get('/profile', [ProfilePelangganController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfilePelangganController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');
+});
+
+
+
+
+
+    //front-end
+
+Route::resource('/kost', \App\Http\Controllers\KostController::class);
+
+
+
 
 // Fix: Change the route to accept kost_id as URL parameter
 Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::class, 'create'])
@@ -46,20 +84,12 @@ Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'stor
     ->name('bookingpelanggan.store');
 
 
-   Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
-
-
- Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
-    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
-
     
     
-use App\Http\Controllers\ProfilePelangganController;
+
 
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
-    Route::get('/profile', [ProfilePelangganController::class, 'index'])->name('profile.index');
-    Route::get('/profile/edit', [ProfilePelangganController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');
+
 });
 
 Route::get('/booking/{kost_id}', [BookingpelangganController::class, 'create'])->name('bookingpelanggan.form');

@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Booking;
 use App\Models\User;
 use App\Models\Kost;
+
+use App\Notifications\BookingDisetujuiNotification;
+
 use App\Models\Notifbook;
 
 class BookingController extends Controller
@@ -36,9 +39,16 @@ class BookingController extends Controller
         } else {
             logger('GAGAL BUAT NOTIF: user_id NULL');
         }
-
+$user = User::find($booking->user_id);
+if ($user) {
+    $user->notify(new BookingDisetujuiNotification());
+}
         return redirect()->route('tagihanpelanggan.index')->with('success', 'Booking disetujui.');
     }
+
+
+
+    
 
     public function bulkDelete(Request $request)
     {
@@ -109,8 +119,20 @@ class BookingController extends Controller
             ]);
         }
 
+
+ 
+    $user = User::find($request->user_id);
+    if ($user) {
+        $user->notify(new BookingDisetujuiNotification());
+    }
+
+
+    $kost = Kost::findOrFail($validated['kost_id']);
+    $dp_amount = ($validated['persentase_pembayaran'] / 100) * $kost->harga;
+
         $kost = Kost::findOrFail($validated['kost_id']);
         $dp_amount = ($validated['persentase_pembayaran'] / 100) * $kost->harga;
+
 
         $booking = Booking::create([
             'user_id' => $validated['user_id'],
@@ -157,6 +179,23 @@ class BookingController extends Controller
             'tgl_booking' => 'required|date',
             'status_booking' => 'required|in:pending,disetujui',
         ]);
+
+if ($request->status_booking === 'disetujui') {
+    Notification::create([
+        'user_id' => $request->user_id,
+        'message' => 'Booking Anda telah disetujui. Silakan cek tagihan.',
+        'link' => route('tagihanpelanggan.index'),
+    ]);
+
+    // kirim email
+    $user = User::find($request->user_id);
+    if ($user) {
+        $user->notify(new BookingDisetujuiNotification());
+    }
+}
+
+
+
 
         $kost = Kost::findOrFail($validated['kost_id']);
         $dp_amount = ($validated['persentase_pembayaran'] / 100) * $kost->harga;

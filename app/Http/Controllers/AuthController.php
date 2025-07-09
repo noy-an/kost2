@@ -10,7 +10,9 @@ class AuthController extends Controller
 
     public function registrasiPelanggan()
     {
-        return view('auth.registrasipelanggan');
+        return view('auth.registrasipelanggan',[
+            'title'=> 'verif'
+        ]);
     }
 
     public function submitRegistrasiPelanggan(Request $request)
@@ -44,8 +46,10 @@ class AuthController extends Controller
             $user->avatar = $request->file('avatar')->store('avatar', 'public');
         }
 
-        $user->save();
-        return redirect()->route('login')->with('sukses', 'Registrasi telah berhasil. Silakan login');
+       $user->save();
+$user->sendEmailVerificationNotification();
+return redirect()->route('login')->with('sukses', 'Registrasi berhasil. Cek email untuk verifikasi!');
+
     }
 
     public function login()

@@ -7,7 +7,8 @@
     <meta name="keywords" content="Sona, unica, creative, html">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ $title }}</title>
+    <title>{{ $title ?? 'Hotel Booking' }}</title>
+
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700&display=swap" rel="stylesheet">
@@ -111,49 +112,49 @@
                                 <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
                                     <a href="{{ route('contact.index') }}">Contact</a>
                                 </li>
-                                    @auth
-                                    @php
-                                        $notifs = \App\Models\Notification::where('user_id', auth()->id())
-                                            ->where('is_read', false)
-                                            ->latest()
-                                            ->get();
-                                    @endphp
+                                @auth
+                                @php
+                                    $notifs = \App\Models\Notification::where('user_id', auth()->id())
+                                        ->where('is_read', false)
+                                        ->latest()
+                                        ->get();
+                                @endphp
 
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            🔔
-                                            @if ($notifs->count() > 0)
-                                                <span class="badge bg-danger">{{ $notifs->count() }}</span>
-                                            @endif
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="notifDropdown">
-                                                                                @if($notifs->count() > 0)
-                                            @foreach ($notifs as $notif)
-                                                <li>
-                                                    <a class="dropdown-item" href="{{ $notif->link }}" onclick="markAsRead('{{ $notif->id }}')">
-                                                        {{ $notif->message }}
-                                                    </a>
-                                                </li>
-                                            @endforeach
-                                        @else
-                                            <li><span class="dropdown-item">Tidak ada notifikasi</span></li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        🔔
+                                        @if ($notifs->count() > 0)
+                                            <span class="badge bg-danger">{{ $notifs->count() }}</span>
                                         @endif
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="notifDropdown">
+                                                                            @if($notifs->count() > 0)
+                                        @foreach ($notifs as $notif)
+                                            <li>
+                                                <a class="dropdown-item" href="{{ $notif->link }}" onclick="markAsRead('{{ $notif->id }}')">
+                                                    {{ $notif->message }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    @else
+                                        <li><span class="dropdown-item">Tidak ada notifikasi</span></li>
+                                    @endif
 
-                                        </ul>
-                                    </li>
+                                    </ul>
+                                </li>
 
-                                    <script>
-                                        function markAsRead(id) {
-                                            fetch('/notif-read/' + id, {
-                                                method: 'POST',
-                                                headers: {
-                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                    'Accept': 'application/json'
-                                                }
-                                            });
-                                        }
-                                    </script>
-                                    @endauth
+                                <script>
+                                    function markAsRead(id) {
+                                        fetch('/notif-read/' + id, {
+                                            method: 'POST',
+                                            headers: {
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                'Accept': 'application/json'
+                                            }
+                                        });
+                                    }
+                                </script>
+                                @endauth 
 
                                 @guest
                                     <li>
