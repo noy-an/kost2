@@ -94,6 +94,14 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
 
 Route::get('/booking/{kost_id}', [BookingpelangganController::class, 'create'])->name('bookingpelanggan.form');
 Route::post('/booking', [BookingpelangganController::class, 'store'])->name('bookingpelanggan.store');
+
+use App\Models\Notifbook;
+
+Route::patch('/notifbook/{id}/read', function ($id) {
+    Notifbook::where('id', $id)->update(['is_read' => true]);
+    return redirect()->route('booking.index');
+})->name('notifbook.read');
+
 //BATAS FRONT END
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
