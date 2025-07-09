@@ -1,40 +1,39 @@
 @extends('fe.master')
 
 @section('content')
-<section class="py-5" style="background: gray; min-height: 100vh;">
+<section class="py-5" style="background: #f5f5f5; min-height: 100vh;">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-11">
-                
-                {{-- Hero Section --}}
+
+                {{-- Hero --}}
                 <div class="text-center mb-5">
-                    <h1 class="display-4 text-white fw-bold mb-3">Detail Kamar </h1>
-                    <p class="text-white-50 fs-5">Temukan kenyamanan dalam setiap detail</p>
+                    <h1 class="display-4 fw-bold text-dark mb-2">Detail Kamar</h1>
+                    <p class="text-muted fs-5 mb-0">Temukan kenyamanan dalam setiap detail</p>
                 </div>
 
-                {{-- Main Content Card --}}
-                <div class="card shadow-lg border-0 rounded-4 overflow-hidden backdrop-blur">
-                    <div class="card-body p-0">
-                        <div class="row g-0">
-                            
-                            {{-- Image Section --}}
-                            <div class="col-lg-7">
-                                <div class="position-relative h-100" style="min-height: 500px;">
-                                    @if($kosts->foto1)
-                                        <img src="{{ asset('storage/' . $kosts->foto1) }}" 
-                                             class="img-fluid w-100 h-100 object-fit-cover" 
-                                             alt="Foto Kamar"
-                                             style="transition: transform 0.3s ease;">
-                                    @else
-                                        <img src="https://via.placeholder.com/800x600?text=Foto+Tidak+Tersedia" 
-                                             class="img-fluid w-100 h-100 object-fit-cover" 
-                                             alt="No Image">
-                                    @endif
-                                    
-                                    {{-- Overlay Gradient --}}
-                                    <div class="position-absolute top-0 start-0 w-100 h-100" 
-                                         style="background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.3));"></div>
-                                    
+                {{-- Main Card --}}
+                <div class="card shadow-lg border-0 rounded-4 backdrop-blur overflow-hidden">
+                    <div class="row g-0">
+
+                        {{-- Gambar --}}
+                        <div class="col-lg-7">
+                            <div class="p-4 h-100 d-flex flex-column">
+                                @php
+                                    $fotoArray = [
+                                        $kosts->foto1,
+                                        $kosts->foto2,
+                                        $kosts->foto3
+                                    ];
+                                @endphp
+
+                                <div class="main-image mb-4 position-relative">
+                                    <img id="mainPreview" 
+                                        src="{{ $kosts->foto1 ? asset('storage/' . $kosts->foto1) : 'https://via.placeholder.com/800x600?text=Foto+Tidak+Tersedia' }}"
+                                        class="img-fluid rounded-4 shadow-sm w-100 border object-fit-cover"
+                                        style="height: 460px; background-color: #ddd;" 
+                                        alt="Preview Kamar">
+
                                     {{-- Status Badge --}}
                                     <div class="position-absolute top-0 end-0 m-3">
                                         @if($kosts->status === 'kosong')
@@ -48,122 +47,97 @@
                                         @endif
                                     </div>
                                 </div>
+
+                                {{-- Thumbnails --}}
+                                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                                    @foreach ($fotoArray as $index => $foto)
+                                        <div class="thumbnail-wrapper rounded-3 border @if($index === 0) border-primary @endif" 
+                                            style="cursor: pointer; overflow: hidden; width: 100px; height: 70px;"
+                                            onclick="document.getElementById('mainPreview').src = '{{ $foto ? asset('storage/' . $foto) : 'https://via.placeholder.com/800x600?text=Foto+Tidak+Tersedia' }}'; highlightThumbnail(this)">
+                                            <img src="{{ $foto ? asset('storage/' . $foto) : 'https://via.placeholder.com/800x600?text=No+Image' }}" 
+                                                class="img-fluid w-100 h-100 object-fit-cover" alt="Thumb {{ $index + 1 }}">
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
+                        </div>
 
-                            {{-- Details Section --}}
-                            <div class="col-lg-5">
-                                <div class="p-5 h-100 d-flex flex-column">
-                                    
-                                    {{-- Room Number --}}
-                                    <div class="mb-4">
-                                        <h2 class="display-5 fw-bold text-primary mb-2">
-                                            Kamar No {{ $kosts->nomor_kamar }}
-                                        </h2>
-                                        <p class="text-muted fs-5 mb-0">
-                                            <i class="fas fa-building me-2"></i>Lantai {{ $kosts->nomor_lantai }}
-                                        </p>
-                                    </div>
+                        {{-- Detail --}}
+                        <div class="col-lg-5">
+                            <div class="p-5 d-flex flex-column h-100">
+                                <h4 class="fw-bold text-primary mb-2">Kamar No {{ $kosts->nomor_kamar }}</h4>
+                                <p class="text-muted mb-4"><i class="fas fa-building me-2"></i>Lantai {{ $kosts->nomor_lantai }}</p>
 
-                                    {{-- Price --}}
-                                    <div class="mb-4 p-3 bg-light rounded-3 border-start border-primary border-4">
-                                        <h3 class="text-primary fw-bold mb-1">
-                                            Rp {{ number_format($kosts->harga, 0, ',', '.') }}
-                                        </h3>
-                                        <span class="text-muted">per bulan</span>
-                                    </div>
+                                <ul class="list-unstyled mb-4">
+                                    <li class="mb-3">
+                                        <span class="d-block fw-semibold text-muted">Harga</span>
+                                        <span class="fs-4 fw-bold text-primary">Rp {{ number_format($kosts->harga, 0, ',', '.') }} <small class="fs-6 text-muted">/bulan</small></span>
+                                    </li>
+                                    <li class="mb-3">
+                                        <span class="d-block fw-semibold text-muted">Ukuran Kamar</span>
+                                        <span class="text-dark fw-semibold">{{ $kosts->ukuran_ruangan ?? 'Tidak disebutkan' }}</span>
+                                    </li>
+                                    <li class="mb-3">
+                                        <span class="d-block fw-semibold text-muted">Fasilitas Premium</span>
+                                        <span class="text-dark fw-semibold lh-lg">{{ $kosts->fasilitas }}</span>
+                                    </li>
+                                </ul>
 
-                                    {{-- Room Details --}}
-                                    <div class="mb-4">
-                                        <div class="row g-3">
-                                            <div class="col-12">
-                                                <div class="d-flex align-items-center p-3 bg-light rounded-3">
-                                                    <i class="fas fa-ruler-combined text-primary me-3 fs-5"></i>
-                                                    <div>
-                                                        <strong>Ukuran Kamar</strong><br>
-                                                        <span class="text-muted">{{ $kosts->ukuran_ruangan ?? 'Tidak disebutkan' }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Facilities --}}
-                                    <div class="mb-4 flex-grow-1">
-                                        <h5 class="fw-bold text-dark mb-3">
-                                            <i class="fas fa-star text-warning me-2"></i>Fasilitas Premium
-                                        </h5>
-                                        <div class="bg-light p-3 rounded-3">
-                                            <p class="mb-0 text-muted lh-lg">{{ $kosts->fasilitas }}</p>
-                                        </div>
-                                    </div>
-
-                                    {{-- Action Buttons --}}
-                                    <div class="mt-auto">
-                                        @if($kosts->status === 'kosong')
-                                            @auth('web')
-                                                <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" 
-                                                   class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
-                                                    <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
-                                                </a>
-                                            @else
-                                                <button onclick="showLoginAlert()" 
-                                                        class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
-                                                    <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
-                                                </button>
-                                            @endauth
+                                <div class="mt-auto">
+                                    @if($kosts->status === 'kosong')
+                                        @auth('web')
+                                            <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" 
+                                               class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
+                                                <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
+                                            </a>
                                         @else
-                                            <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
-                                                <i class="fas fa-times-circle me-2"></i>Kamar Tidak Tersedia
+                                            <button onclick="showLoginAlert()" 
+                                                    class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
+                                                <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
                                             </button>
-                                        @endif
-                                        
-                                        <a href="{{ route('kamar.index') }}" 
-                                           class="btn btn-outline-dark btn-lg w-100 rounded-pill">
-                                            <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
-                                        </a>
-                                    </div>
+                                        @endauth
+                                    @else
+                                        <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
+                                            <i class="fas fa-times-circle me-2"></i>Kamar Tidak Tersedia
+                                        </button>
+                                    @endif
 
+                                    <a href="{{ route('kamar.index') }}" 
+                                       class="btn btn-outline-dark btn-lg w-100 rounded-pill">
+                                        <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- Additional Info Cards --}}
+                {{-- Tambahan Info --}}
                 <div class="row g-4 mt-4">
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm h-100 text-center">
                             <div class="card-body p-4">
-                                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                                     style="width: 60px; height: 60px;">
-                                    <i class="fas fa-shield-alt text-primary fs-4"></i>
-                                </div>
+                                <div class="icon-circle bg-primary text-white mb-3"><i class="fas fa-shield-alt"></i></div>
                                 <h6 class="fw-bold">Keamanan 24/7</h6>
-                                <p class="text-muted small mb-0">Sistem keamanan terdepan untuk kenyamanan Anda</p>
+                                <p class="text-muted small">Sistem keamanan terdepan untuk kenyamanan Anda</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm h-100 text-center">
                             <div class="card-body p-4">
-                                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                                     style="width: 60px; height: 60px;">
-                                    <i class="fas fa-wifi text-success fs-4"></i>
-                                </div>
+                                <div class="icon-circle bg-success text-white mb-3"><i class="fas fa-wifi"></i></div>
                                 <h6 class="fw-bold">WiFi Unlimited</h6>
-                                <p class="text-muted small mb-0">Koneksi internet cepat dan stabil</p>
+                                <p class="text-muted small">Koneksi internet cepat dan stabil</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="card border-0 shadow-sm h-100 text-center">
                             <div class="card-body p-4">
-                                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                                     style="width: 60px; height: 60px;">
-                                    <i class="fas fa-concierge-bell text-warning fs-4"></i>
-                                </div>
+                                <div class="icon-circle bg-warning text-white mb-3"><i class="fas fa-concierge-bell"></i></div>
                                 <h6 class="fw-bold">Layanan Prima</h6>
-                                <p class="text-muted small mb-0">Pelayanan terbaik untuk kepuasan Anda</p>
+                                <p class="text-muted small">Pelayanan terbaik untuk kepuasan Anda</p>
                             </div>
                         </div>
                     </div>
@@ -179,49 +153,31 @@
         backdrop-filter: blur(10px);
         background-color: rgba(255, 255, 255, 0.9);
     }
-    
-    .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
-    }
-    
-    .btn {
-        transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-outline-dark:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    }
-    
     .object-fit-cover {
         object-fit: cover;
     }
-    
-    .display-5 {
-        font-size: 2.5rem;
+    .thumbnail-wrapper {
+        transition: transform 0.2s ease;
     }
-    
+    .thumbnail-wrapper:hover {
+        transform: scale(1.05);
+        border-color: #0d6efd !important;
+    }
+    .thumbnail-wrapper.active-thumb {
+        border: 2px solid #0d6efd !important;
+    }
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+    }
     @media (max-width: 768px) {
-        .display-4 {
-            font-size: 2rem;
-        }
-        
-        .display-5 {
-            font-size: 1.8rem;
-        }
-        
-        .col-lg-7 {
-            min-height: 300px;
+        #mainPreview {
+            height: 300px !important;
         }
     }
 </style>
@@ -230,7 +186,6 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
-
 <script>
     function showLoginAlert() {
         Swal.fire({
@@ -258,32 +213,16 @@
         });
     }
 
-    // Add smooth scrolling and hover effects
-    document.addEventListener('DOMContentLoaded', function() {
-        // Smooth image hover effect
-        const roomImage = document.querySelector('.col-lg-7 img');
-        if (roomImage) {
-            roomImage.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.05)';
-            });
-            
-            roomImage.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
-            });
+    function highlightThumbnail(element) {
+        document.querySelectorAll('.thumbnail-wrapper').forEach(el => el.classList.remove('active-thumb'));
+        element.classList.add('active-thumb');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const firstThumb = document.querySelector('.thumbnail-wrapper');
+        if (firstThumb) {
+            firstThumb.classList.add('active-thumb');
         }
-        
-        // Add animation to cards
-        const cards = document.querySelectorAll('.card');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                card.style.transition = 'all 0.6s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 100);
-        });
     });
 </script>
 @endsection
