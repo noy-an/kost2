@@ -52,7 +52,6 @@
               <th>No HP</th>
               <th>Avatar</th>
               <th>ID Card</th>
-              <th class="text-nowrap">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -86,15 +85,6 @@
                 @else
                   <span class="text-muted">-</span>
                 @endif
-              </td>
-              <td>
-                <form action="{{ route('pengguna.destroy', $user->id) }}" method="POST" class="d-inline form-delete">
-                  @csrf
-                  @method('DELETE')
-                  <button type="button" class="btn btn-sm btn-danger btn-delete" data-name="{{ $user->name }}">
-                    <i class="ti ti-trash"></i>
-                  </button>
-                </form>
               </td>
             </tr>
             @empty
