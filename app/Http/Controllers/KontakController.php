@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class KontakController extends Controller
 {
-   public function index(Request $request)
+    public function index(Request $request)
 {
     $visited = session('visited_menus', []);
     if (!in_array('kontak', $visited)) {
@@ -21,6 +21,9 @@ class KontakController extends Controller
                   ->orWhere('email', 'like', '%' . $request->search . '%')
                   ->orWhere('subjek', 'like', '%' . $request->search . '%');
         })
+        ->when($request->tanggal, function ($query) use ($request) {
+            $query->whereDate('created_at', $request->tanggal);
+        })
         ->latest()
         ->paginate(10);
 
@@ -28,13 +31,11 @@ class KontakController extends Controller
 }
 
 
-    // Tampilkan form tambah kontak
     public function create()
     {
         return view('kontak.create');
     }
 
-    // Simpan data kontak baru
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -49,21 +50,18 @@ class KontakController extends Controller
         return redirect()->route('kontak.index')->with('success', 'Pesan berhasil dikirim.');
     }
 
-    // Tampilkan detail kontak
     public function show($id)
     {
         $kontak = Kontak::findOrFail($id);
         return view('kontak.show', compact('kontak'));
     }
 
-    // Tampilkan form edit kontak
     public function edit($id)
     {
         $kontak = Kontak::findOrFail($id);
         return view('kontak.edit', compact('kontak'));
     }
 
-    // Update data kontak
     public function update(Request $request, $id)
     {
         $kontak = Kontak::findOrFail($id);
@@ -80,7 +78,6 @@ class KontakController extends Controller
         return redirect()->route('kontak.index')->with('success', 'Pesan berhasil diperbarui.');
     }
 
-    // Hapus kontak
     public function destroy($id)
     {
         $kontak = Kontak::findOrFail($id);
@@ -88,4 +85,16 @@ class KontakController extends Controller
 
         return redirect()->route('kontak.index')->with('success', 'Pesan berhasil dihapus.');
     }
+
+public function destroyAll()
+{
+    Kontak::truncate();
+
+    if (request()->expectsJson()) {
+        return response()->json(['success' => true]);
+    }
+
+    return redirect()->route('kontak.index')->with('success', 'Semua pesan berhasil dihapus.');
+}
+
 }

@@ -14,6 +14,9 @@ use App\Http\Controllers\TagihanpelangganController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\BookingpelangganController;
+use App\Http\Controllers\PdfController;
+
+// use App\Http\Controllers\LaporanPdfController;
 
 
     Route::post('/notif-read/{id}', function ($id) {
@@ -59,7 +62,8 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');
 });
 
-
+Route::get('/booking/{kost_id}', [BookingpelangganController::class, 'create'])->name('bookingpelanggan.form');
+Route::post('/booking', [BookingpelangganController::class, 'store'])->name('bookingpelanggan.store');
 //BATAS FRONT END
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -76,9 +80,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/kost', [KostController::class, 'bulkDelete'])->name('kost.bulk-delete');
     Route::delete('/pembayaran', [PembayaranController::class, 'bulkDelete'])->name('pembayaran.bulk-delete');
     Route::delete('/pengguna', [PenggunaController::class, 'bulkDelete'])->name('pengguna.bulkDelete');
+    Route::delete('/kontak-destroy-all', [KontakController::class, 'destroyAll'])->name('kontak.destroyAll');
 
 
+});
 
+Route::middleware(['auth', 'role:pemilik'])->group(function () {
+    Route::resource('pemilik', \App\Http\Controllers\PemilikController::class);
+    Route::resource('laporan', \App\Http\Controllers\LaporanController::class);
+    Route::get('/pdf/laporan', [PdfController::class, 'exportGabungan'])->name('pdf.laporan');
 
 });
 
