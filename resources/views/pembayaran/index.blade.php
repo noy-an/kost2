@@ -115,13 +115,13 @@
                   <a href="{{ route('pembayaran.edit', $pembayaran->id) }}" class="btn btn-sm btn-warning" title="Edit">
                     <i class="ti ti-edit"></i>
                   </a>
-                  <form action="{{ route('pembayaran.destroy', $pembayaran->id) }}" method="POST" class="d-inline">
+                  {{-- <form action="{{ route('pembayaran.destroy', $pembayaran->id) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
                       <i class="ti ti-trash"></i>
                     </button>
-                  </form>
+                  </form> --}}
                 </div>
               </td>
             </tr>
