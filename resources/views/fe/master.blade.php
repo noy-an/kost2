@@ -24,6 +24,15 @@
     <link rel="stylesheet" href="{{ asset('front-end/css/magnific-popup.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('front-end/css/slicknav.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('front-end/css/style.css') }}" type="text/css">
+    <style>
+    .nav-item .badge {
+        position: absolute;
+        top: 8px;
+        right: 4px;
+        font-size: 10px;
+    }
+</style>
+
 </head>
 
 <body>
@@ -60,18 +69,18 @@
                     <li><a href="{{ route('registrasipelanggan') }}">Register</a></li>
                 @endguest
            @auth
-    @if (Auth::user()->role === 'pelanggan')
-        <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
-            <a href="{{ route('profile.index') }}">Profil Saya</a>
-        </li>
-    @endif
-    <li>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" style="background:none; border:none; color:white;">Logout</button>
-        </form>
-    </li>
-@endauth
+                @if (Auth::user()->role === 'pelanggan')
+                    <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
+                        <a href="{{ route('profile.index') }}">Profil Saya</a>
+                    </li>
+                @endif
+                <li>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" style="background:none; border:none; color:white;">Logout</button>
+                    </form>
+                </li>
+            @endauth
 
             </ul>
         </nav>
@@ -110,6 +119,25 @@
                                 <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
                                     <a href="{{ route('contact.index') }}">Contact</a>
                                 </li>
+<li class="nav-item dropdown">
+    <a href="#" class="nav-link dropdown-toggle" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        🔔
+        @if (session('notif_booking'))
+            <span class="badge bg-danger">1</span>
+        @endif
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="notifDropdown">
+        @if (session('notif_booking'))
+            <li>
+                <a class="dropdown-item" href="{{ route('tagihanpelanggan.index') }}">
+                    {{ session('notif_booking') }}
+                </a>
+            </li>
+        @else
+            <li><span class="dropdown-item">Tidak ada notifikasi</span></li>
+        @endif
+    </ul>
+</li>
 
                                 @guest
                                     <li>
@@ -256,6 +284,7 @@
     <script src="{{ asset('front-end/js/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('front-end/js/main.js') }}"></script>
     {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> --}}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Init Hamburger Menu -->
     <script>
