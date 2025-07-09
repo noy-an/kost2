@@ -215,7 +215,7 @@
         </div>
 
         <div class="form-group">
-          <label for="phone" class="form-label">Phone Number</label>
+          <label for="phone" class="form-label">Phone</label>
           <input type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone" id="phone" placeholder="Enter your phone number" required>
           @error('phone') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
@@ -256,7 +256,18 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 
+<script>
+  const input = document.querySelector("#phone");
+  const iti = window.intlTelInput(input, {
+    separateDialCode: true,
+    initialCountry: "id", 
+    preferredCountries: ["id", "us", "gb", "my", "sg"],
+    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+  });
+</script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const togglePassword = document.getElementById('togglePassword');
