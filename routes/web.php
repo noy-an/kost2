@@ -46,9 +46,9 @@ Route::post('/email/verification-notification', function (Request $request) {
     });
 
 
-
+  Route::resource('/', \App\Http\Controllers\HomeController::class);
     Route::middleware(['auth', 'verified'])->group(function () {
-   Route::resource('/', \App\Http\Controllers\HomeController::class);
+ 
 Route::resource('/home', \App\Http\Controllers\HomeController::class);
    Route::resource('/about', \App\Http\Controllers\AboutController::class);
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
@@ -92,8 +92,7 @@ Route::middleware(['auth', 'role:pelanggan'])->group(function () {
 
 });
 
-Route::get('/booking/{kost_id}', [BookingpelangganController::class, 'create'])->name('bookingpelanggan.form');
-Route::post('/booking', [BookingpelangganController::class, 'store'])->name('bookingpelanggan.store');
+
 
 use App\Models\Notifbook;
 

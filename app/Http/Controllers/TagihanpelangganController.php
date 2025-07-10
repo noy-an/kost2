@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Tagihan;
@@ -21,71 +21,92 @@ class TagihanpelangganController extends Controller
         Config::$is3ds = env('MIDTRANS_IS_3DS');
     }
 
-    public function index()
-    {
-        $bookings = Booking::with(['kost', 'user'])
-            ->where('user_id', Auth::id())
-            ->where('status_booking', 'disetujui')
-            ->orderBy('created_at', 'desc')
-            ->get();
+public function index()
+{
+    // Carbon::setTestNow(Carbon::now()->addDays(80)); // TESTING DOANG BRO, HAPUS NANTI
 
-        return view('tagihanpelanggan.index', [
-            'data' => $bookings,
-            'title' => 'Booking yang Disetujui.',
-        ]);
-    }
+    $userId = Auth::id();
 
-    public function indexApproved()
-    {
-        $bookings = Booking::with(['kost', 'user'])
-            ->where('user_id', Auth::id())
-            ->whereIn('status', ['disetujui', 'approved', 'confirm', 'accepted', 'setuju'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+    $bookings = Booking::with(['kost', 'user', 'tagihan'])
+        ->where('user_id', $userId)
+        ->get()
+        ->map(function ($booking) {
+            $lastTagihan = $booking->tagihan->sortByDesc('tanggal_tagihan')->first();
 
-        return view('tagihanpelanggan.index', [
-            'data' => $bookings,
-            'title' => 'Booking yang Disetujui',
-        ]);
-    }
+            $tglTerakhir = $lastTagihan
+                ? Carbon::parse($lastTagihan->tanggal_tagihan)
+                : Carbon::parse($booking->tgl_booking);
 
-    public function create($booking_id)
-    {
-        $booking = Booking::with('kost', 'user')->findOrFail($booking_id);
-        $hargaKost = $booking->kost->harga;
-        $dpAwal = $booking->dp ?? 0;
+            $jatuhTempo = $tglTerakhir->copy()->addDays(30);
+            $tenggang = $jatuhTempo->copy()->addDay();
 
-        $totalSudahDibayar = Tagihan::where('booking_id', $booking->id)
-            ->sum(DB::raw('bayar_per_bulan * jumlah_bayar'));
+            if ($lastTagihan && $lastTagihan->status_pembayaran === 'success') {
+                $booking->status_booking = 'aktif';
+            }
 
-        $sisaTagihan = max(0, $hargaKost - $dpAwal - $totalSudahDibayar);
+            if (now()->gt($tenggang)) {
+                $booking->status_booking = 'expired';
+            } elseif (now()->gt($jatuhTempo)) {
+                $booking->status_booking = 'masa_tenggang';
+            }
 
-        $bulanKe = Tagihan::where('booking_id', $booking->id)->count() + 1;
+            $booking->save();
+            return $booking;
+        });
 
-        $nominalBayar = $bulanKe === 1
-            ? $hargaKost - $dpAwal
-            : $hargaKost;
+    return view('tagihanpelanggan.index', [
+        'data' => $bookings,
+        'title' => 'Tagihan Booking yang Bisa Dibayar',
+    ]);
+}
 
-        $tagihanTerakhir = Tagihan::where('booking_id', $booking->id)
-            ->orderByDesc('tanggal_tagihan')
-            ->first();
+    
 
-        $tanggalTagihan = $tagihanTerakhir
-    ? \Carbon\Carbon::parse($tagihanTerakhir->tanggal_tagihan)->addMonth()->toDateString()
-    : \Carbon\Carbon::parse($booking->tgl_booking)->toDateString();
 
-        return view('tagihanpelanggan.form', [
-            'booking' => $booking,
-            'hargaKost' => $hargaKost,
-            'dpAwal' => $dpAwal,
-            'totalSudahDibayar' => $totalSudahDibayar,
-            'sisaTagihan' => $sisaTagihan,
-            'bulanKe' => $bulanKe,
-            'title' => 'Tagihan Bulan',
-            'nominalBayar' => $nominalBayar,
-            'tanggalTagihan' => $tanggalTagihan, 
-        ]);
-    }
+
+   public function create($booking_id)
+{
+    $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
+
+        if ($booking->status_booking !== 'masa_tenggang') {
+            return back()->with('error', 'Hanya bisa membayar saat masa tenggang.');
+        }
+
+
+    $hargaKost = $booking->kost->harga;
+    $dpAwal = $booking->dp ?? 0;
+
+    $totalSudahDibayar = Tagihan::where('booking_id', $booking->id)
+        ->sum(DB::raw('bayar_per_bulan * jumlah_bayar'));
+
+    $sisaTagihan = max(0, $hargaKost - $dpAwal - $totalSudahDibayar);
+
+    // ...
+$bulanKe = Tagihan::where('booking_id', $booking->id)->count() + 1;
+
+$lastTagihan = $booking->tagihan
+    ->where('status_pembayaran', 'success')
+    ->sortByDesc('tanggal_tagihan')
+    ->first();
+
+$tanggalTagihan = $lastTagihan
+    ? \Carbon\Carbon::parse($lastTagihan->tanggal_tagihan)->addDays(30)->toDateString()
+    : \Carbon\Carbon::parse($booking->tgl_booking)->addDays(30)->toDateString();
+
+$nominalBayar = $booking->kost->harga;
+
+return view('tagihanpelanggan.form', compact(
+    'booking',
+    'hargaKost',
+    'dpAwal',
+    'totalSudahDibayar',
+    'sisaTagihan',
+    'bulanKe',
+    'tanggalTagihan',
+    'nominalBayar'
+));
+}
+
 
     public function store(Request $request)
     {
@@ -96,13 +117,23 @@ class TagihanpelangganController extends Controller
             'tanggal_tagihan' => 'required|date',
         ]);
 
+        // Pastikan booking milik user yang sedang login
+        $booking = Booking::where('id', $request->booking_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Cek apakah booking masih bisa dibayar
+        if (!in_array($booking->status_booking, ['aktif', 'masa_tenggang'])) {
+            return back()->with('error', 'Booking ini tidak bisa dibayar.');
+        }
+
         // Simpan data tagihan terlebih dahulu
         $tagihan = Tagihan::create([
             'booking_id' => $request->booking_id,
             'bayar_per_bulan' => $request->bayar_per_bulan,
             'jumlah_bayar' => $request->jumlah_bayar,
             'tanggal_tagihan' => $request->tanggal_tagihan,
-            'status_pembayaran' => 'pending', // Tambahkan status pembayaran
+            'status_pembayaran' => 'pending', // Status pembayaran pending
         ]);
 
         // Siapkan data untuk Midtrans
@@ -122,7 +153,7 @@ class TagihanpelangganController extends Controller
                 'id' => $tagihan->id,
                 'price' => (int) $request->bayar_per_bulan,
                 'quantity' => 1,
-                'name' => 'Pembayaran Bulanan Kost Bulan ke-' . ($tagihan->jumlah_bayar + 1),
+                'name' => 'Pembayaran Bulanan Kost Bulan ke-' . $tagihan->jumlah_bayar,
             ]
         ];
 
@@ -131,7 +162,7 @@ class TagihanpelangganController extends Controller
             'customer_details' => $customer_details,
             'item_details' => $item_details,
             'callbacks' => [
-                'finish' => route('tagihanpelanggan.index', $request->booking_id),
+                'finish' => route('tagihanpelanggan.index'),
             ]
         ];
 
@@ -147,8 +178,86 @@ class TagihanpelangganController extends Controller
             return redirect($paymentUrl);
 
         } catch (\Exception $e) {
+            // Hapus tagihan jika terjadi error
+            $tagihan->delete();
+            
             return redirect()->back()
                 ->with('error', 'Pembayaran gagal: ' . $e->getMessage());
+        }
+    }
+
+    // Method untuk menangani callback dari Midtrans
+    public function callback(Request $request)
+    {
+        try {
+            $serverKey = env('MIDTRANS_SERVER_KEY');
+            $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+            
+            if ($hashed == $request->signature_key) {
+                $orderId = $request->order_id;
+                $transactionStatus = $request->transaction_status;
+                $fraudStatus = $request->fraud_status;
+                
+                // Ambil ID tagihan dari order_id
+                $tagihanId = explode('-', $orderId)[1];
+                $tagihan = Tagihan::find($tagihanId);
+                
+                if ($tagihan) {
+                    if ($transactionStatus == 'capture') {
+                        if ($fraudStatus == 'challenge') {
+                            $tagihan->update(['status_pembayaran' => 'challenge']);
+                        } else if ($fraudStatus == 'accept') {
+                            $tagihan->update(['status_pembayaran' => 'success']);
+                        }
+                    } else if ($transactionStatus == 'settlement') {
+                        $tagihan->update(['status_pembayaran' => 'success']);
+                    } else if ($transactionStatus == 'pending') {
+                        $tagihan->update(['status_pembayaran' => 'pending']);
+                    } else if ($transactionStatus == 'deny') {
+                        $tagihan->update(['status_pembayaran' => 'failed']);
+                    } else if ($transactionStatus == 'expire') {
+                        $tagihan->update(['status_pembayaran' => 'expired']);
+                    } else if ($transactionStatus == 'cancel') {
+                        $tagihan->update(['status_pembayaran' => 'cancelled']);
+                    }
+                }
+            }
+            
+                               if (in_array($transactionStatus, ['capture', 'settlement'])) {
+    $tagihan->update(['status_pembayaran' => 'success']);
+
+    $booking = Booking::find($tagihan->booking_id);
+    
+    if ($booking) {
+        // Cari tagihan terakhir yang sukses
+        $lastTagihan = $booking->tagihan()
+            ->where('status_pembayaran', 'success')
+            ->orderByDesc('tanggal_tagihan')
+            ->first();
+
+        $tglTerakhir = $lastTagihan
+            ? Carbon::parse($lastTagihan->tanggal_tagihan)
+            : Carbon::parse($booking->tgl_booking);
+
+        $jatuhTempo = $tglTerakhir->copy()->addDays(30);
+        $tenggang = $jatuhTempo->copy()->addDay();
+
+        if (now()->lte($tenggang)) {
+            // BALIKIN STATUS JADI AKTIF KALO BELUM LEWAT MASA TENGGANG
+            $booking->status_booking = 'aktif';
+            $booking->save();
+        }
+    }
+}
+
+
+
+
+            
+            return response()->json(['status' => 'success']);
+            
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
     }
 }

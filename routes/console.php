@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use App\Console\Commands\CekStatusBooking;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Artisan::command('cek:booking-status', function () {
+    $this->call(CekStatusBooking::class);
+})->purpose('Jalankan pengecekan status booking');
+

@@ -32,8 +32,9 @@ class Booking extends Model
         return $this->belongsTo(Kost::class, 'kost_id', 'id');
     }
 
-    public function tagihans()
-    {
-        return $this->hasMany(Tagihan::class, 'booking_id', 'id');
-    }
+public function tagihan()
+{
+    return $this->hasMany(Tagihan::class, 'booking_id');
+}
+
 }
