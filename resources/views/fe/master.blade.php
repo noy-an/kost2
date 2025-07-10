@@ -112,7 +112,24 @@
                                 <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
                                     <a href="{{ route('contact.index') }}">Contact</a>
                                 </li>
+                                
+                                @guest
+                                    <li>
+                                        <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
+                                    </li>
+                                @endguest
+
                                 @auth
+                                @if (Auth::user()->role === 'pelanggan')
+                            <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
+                                <a href="{{ route('profile.index') }}">Profil Saya</a>
+                            </li>
+                        @endif
+
+                        @auth
                                 @php
                                     $notifs = \App\Models\Notification::where('user_id', auth()->id())
                                         ->where('is_read', false)
@@ -155,22 +172,6 @@
                                     }
                                 </script>
                                 @endauth 
-
-                                @guest
-                                    <li>
-                                        <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
-                                    </li>
-                                @endguest
-
-                                @auth
-                                @if (Auth::user()->role === 'pelanggan')
-                            <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
-                                <a href="{{ route('profile.index') }}">Profil Saya</a>
-                            </li>
-                        @endif
                                                         <li>
                                         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                                             @csrf

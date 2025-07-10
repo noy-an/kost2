@@ -1,9 +1,13 @@
 @extends('fe.master')
 @section('content')
+
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-           
+
             <div class="card shadow-sm rounded">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">Form Booking Kos</h4>
@@ -22,68 +26,73 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
-                    
+
                     @if(isset($kost) && $kost)
                     <form method="POST" action="{{ route('bookingpelanggan.store') }}" id="booking-form">
                         @csrf
                         <input type="hidden" name="kost_id" id="kost_id" value="{{ $kost->id }}">
-                        
+
                         <!-- Tampilkan Info Kamar -->
                         <div class="mb-3">
                             <label class="form-label">Kamar Kost</label>
                             <input type="text" class="form-control" value="Kamar {{ $kost->nomor_kamar }} (Lantai {{ $kost->nomor_lantai }})" disabled>
                         </div>
-                        
+
                         <!-- Harga Kost -->
                         <div class="mb-3">
                             <label class="form-label">Harga Kost</label>
                             <input type="text" class="form-control" id="harga_kost" value="Rp {{ number_format($kost->harga, 0, ',', '.') }}" disabled>
                         </div>
-                            
-                            <!-- Pilihan Persentase Pembayaran -->
-                            <div class="mb-3">
-                                <label class="form-label">Pilihan Pembayaran</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp30" value="30" checked 
-                                        data-nominal="{{ $harga_calculations['dp_30'] }}">
-                                    <label class="form-check-label" for="dp30">
-                                        DP 30% - <span>Rp {{ number_format($harga_calculations['dp_30'], 0, ',', '.') }}</span>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp40" value="40"
-                                        data-nominal="{{ $harga_calculations['dp_40'] }}">
-                                    <label class="form-check-label" for="dp40">
-                                        DP 40% - <span>Rp {{ number_format($harga_calculations['dp_40'], 0, ',', '.') }}</span>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp50" value="50"
-                                        data-nominal="{{ $harga_calculations['dp_50'] }}">
-                                    <label class="form-check-label" for="dp50">
-                                        DP 50% - <span>Rp {{ number_format($harga_calculations['dp_50'], 0, ',', '.') }}</span>
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="persentase_pembayaran" id="bayar_penuh" value="100"
-                                        data-nominal="{{ $harga_calculations['bayar_penuh'] }}">
-                                    <label class="form-check-label" for="bayar_penuh">
-                                        Bayar Penuh - <span>Rp {{ number_format($harga_calculations['bayar_penuh'], 0, ',', '.') }}</span>
-                                    </label>
-                                </div>
+
+                        <!-- Pilihan Persentase Pembayaran -->
+                        <div class="mb-3">
+                            <label class="form-label">Pilihan Pembayaran</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp30" value="30" checked 
+                                    data-nominal="{{ $harga_calculations['dp_30'] }}">
+                                <label class="form-check-label" for="dp30">
+                                    DP 30% - <span>Rp {{ number_format($harga_calculations['dp_30'], 0, ',', '.') }}</span>
+                                </label>
                             </div>
-                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp40" value="40"
+                                    data-nominal="{{ $harga_calculations['dp_40'] }}">
+                                <label class="form-check-label" for="dp40">
+                                    DP 40% - <span>Rp {{ number_format($harga_calculations['dp_40'], 0, ',', '.') }}</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp50" value="50"
+                                    data-nominal="{{ $harga_calculations['dp_50'] }}">
+                                <label class="form-check-label" for="dp50">
+                                    DP 50% - <span>Rp {{ number_format($harga_calculations['dp_50'], 0, ',', '.') }}</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="bayar_penuh" value="100"
+                                    data-nominal="{{ $harga_calculations['bayar_penuh'] }}">
+                                <label class="form-check-label" for="bayar_penuh">
+                                    Bayar Penuh - <span>Rp {{ number_format($harga_calculations['bayar_penuh'], 0, ',', '.') }}</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <!-- Nominal yang akan dibayar -->
                         <div class="mb-3">
                             <label class="form-label">Nominal yang akan dibayar</label>
                             <input type="text" class="form-control bg-light" id="nominal_bayar" value="Rp {{ number_format($harga_calculations['dp_30'], 0, ',', '.') }}" disabled>
                         </div>
-                        
+
                         <div class="mb-3">
-                            <label for="tgl_booking" class="form-label">Tanggal Booking</label>
-                            <input type="date" class="form-control" id="tgl_booking" name="tgl_booking" required>
+                            <label for="tgl_booking" class="form-label">
+                                Tanggal Booking
+                                <br><small class="text-muted">Tanggal tersedia mulai: 
+                                    <span id="tanggalTersedia" class="text-success"></span>
+                                </small>
+                            </label>
+                            <input type="text" class="form-control" id="tgl_booking" name="tgl_booking" required>
                         </div>
-                        
+
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success">Kirim Booking</button>
                             <a href="{{ route('kamar.show', $kost->id) }}" class="btn btn-outline-secondary">Kembali ke Detail Kost</a>
@@ -109,6 +118,9 @@
     </div>
 </div>
 
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const radioButtons = document.querySelectorAll('input[name="persentase_pembayaran"]');
@@ -121,11 +133,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('tgl_booking').setAttribute('min', today);
-});
+    const disabledDates = @json($disabledDates);
 
+    // Tentukan tanggal tersedia mulai dari hari ini atau hari setelah terakhir disable
+    let tanggalTersedia = new Date();
+    while (disabledDates.includes(tanggalTersedia.toISOString().split('T')[0])) {
+        tanggalTersedia.setDate(tanggalTersedia.getDate() + 1);
+    }
+
+    document.getElementById('tanggalTersedia').textContent = tanggalTersedia.toISOString().split('T')[0];
+
+    flatpickr("#tgl_booking", {
+        dateFormat: "Y-m-d",
+        disable: disabledDates,
+        minDate: "today",
+        locale: {
+            firstDayOfWeek: 1
+        }
+    });
+});
 </script>
 
 @endsection

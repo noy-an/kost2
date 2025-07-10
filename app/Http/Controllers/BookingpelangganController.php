@@ -39,10 +39,22 @@ class BookingpelangganController extends Controller
             'bayar_penuh' => round($kost->harga),
         ];
 
+        // Ambil semua tanggal booking aktif untuk kamar ini
+        $bookings = Booking::where('kost_id', $kost->id)->get();
+        $disabledDates = [];
+
+        foreach ($bookings as $booking) {
+            for ($i = 0; $i < 30; $i++) {
+                $date = \Carbon\Carbon::parse($booking->tgl_booking)->addDays($i)->format('Y-m-d');
+                $disabledDates[] = $date;
+            }
+        }
+
         return view('bookingpelanggan.form', [
             'title' => 'Bookingpelanggan',
             'kost' => $kost,
             'harga_calculations' => $harga_calculations,
+            'disabledDates' => $disabledDates,
         ]);
     }
 
@@ -75,7 +87,6 @@ class BookingpelangganController extends Controller
             'status_booking' => 'pending',
         ]);
 
-        // ✅ Notifikasi untuk admin: booking baru masuk
         Notifbook::create([
             'booking_id' => $booking->id,
             'message' => 'Booking baru dari pelanggan ' . Auth::user()->name . ' untuk kamar ' . $kost->nomor_kamar,
