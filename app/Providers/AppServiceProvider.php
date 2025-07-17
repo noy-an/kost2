@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Kost;
 use App\Models\Booking;
 use App\Models\Tagihan;
+
+use Illuminate\Support\Facades\Schedule;
 use App\Models\Pembayaran;
 use App\Models\User;
 use App\Models\Kontak;
@@ -28,7 +30,9 @@ class AppServiceProvider extends ServiceProvider
                 'penggunaBaru' => User::whereDate('created_at', today())->exists() && !in_array('pengguna', $visited),
                 'kontakBaru' => Kontak::whereDate('created_at', today())->exists() && !in_array('kontak', $visited),
             ];
-
+  $this->app->booted(function () {
+        Schedule::command('booking:cek-notif')->everyMinute();
+    });
             $view->with($notif);
         });
     }

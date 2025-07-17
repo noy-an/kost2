@@ -1,8 +1,12 @@
 <?php
+
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
+
+use App\Console\Commands\CekBookingDanKirimNotif;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -11,12 +15,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-           $middleware->alias([
+        $middleware->alias([
             'role' => RoleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
-    })->create();
+    })
 
-    
+    // ⬇️ Tambahin blok ini SEBELUM ->create()
+    ->booting(function ($app) {
+        $app->booted(function () use ($app) {
+            $schedule = $app->make(Schedule::class);
+            $schedule->command('booking:cek-notif')->everyMinute();
+        });
+    })
+
+    ->create();
