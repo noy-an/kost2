@@ -18,6 +18,7 @@ use App\Http\Controllers\BookingpelangganController;
 use App\Http\Controllers\PdfController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\ProfilePelangganController;
+use App\Http\Controllers\PesanBalasanController;
 // use App\Http\Controllers\LaporanPdfController;
 
 Auth::routes(['verify' => true]);
@@ -47,10 +48,10 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 
 
-    Route::middleware(['auth', 'verified'])->group(function () {
-   Route::resource('/', \App\Http\Controllers\HomeController::class);
+Route::middleware(['auth', 'verified'])->group(function () {
+Route::resource('/', \App\Http\Controllers\HomeController::class);
 Route::resource('/home', \App\Http\Controllers\HomeController::class);
-   Route::resource('/about', \App\Http\Controllers\AboutController::class);
+Route::resource('/about', \App\Http\Controllers\AboutController::class);
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
@@ -58,11 +59,15 @@ Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->
  Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::get('/contact/show', [ContactController::class, 'show'])->name('contact.show')->middleware('auth');
 
     Route::get('/profile', [ProfilePelangganController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfilePelangganController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');  
+    Route::get('/pesan_balasan', [PesanBalasanController::class, 'index'])->name('pesan_balasan.index');
+
 });
 
 
@@ -119,7 +124,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/pembayaran', [PembayaranController::class, 'bulkDelete'])->name('pembayaran.bulk-delete');
     Route::delete('/pengguna', [PenggunaController::class, 'bulkDelete'])->name('pengguna.bulkDelete');
     Route::delete('/kontak-destroy-all', [KontakController::class, 'destroyAll'])->name('kontak.destroyAll');
-
+Route::post('/kontak/send-reply', [KontakController::class, 'sendReply'])->name('kontak.sendReply');
 
 });
 

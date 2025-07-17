@@ -13,6 +13,9 @@
         <div class="row mb-5">
             <!-- Contact Info -->
             <div class="col-lg-4 mb-4">
+                <a href="{{ route('contact.show') }}" class="btn btn-outline-primary mt-4 w-100 rounded-pill">
+                        Histori Pesanmu
+                    </a>
                 <div class="bg-white p-4 rounded shadow-sm h-100">
                     <h3 class="fw-bold mb-3 text-primary">Hubungi Kami</h3>
                     <p class="text-muted">Silakan hubungi kami kapan saja jika ada pertanyaan atau membutuhkan informasi kost.</p>
@@ -36,9 +39,10 @@
                             </a>
                         </li>
                     </ul>
+
+                    {{-- Tombol Histori Pesan --}}
                 </div>
             </div>
-
 
             <!-- Contact Form -->
             <div class="col-lg-8">
@@ -46,13 +50,12 @@
                     <h3 class="fw-bold mb-4 text-primary">Form Kontak</h3>
                     <form action="{{ route('contact.store') }}" method="POST" class="contact-form">
                         @csrf
+                        
+                        {{-- Hidden input untuk nama dan email dari pelanggan login --}}
+                        <input type="hidden" name="nama" value="{{ Auth::user()->name }}">
+                        <input type="hidden" name="email" value="{{ Auth::user()->email }}">
+
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <input type="text" name="nama" class="form-control rounded" placeholder="Your Name" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <input type="email" name="email" class="form-control rounded" placeholder="Your Email" required>
-                            </div>
                             <div class="col-12 mb-3">
                                 <input type="text" name="subjek" class="form-control rounded" placeholder="Subject (isi dengan kata Testimoni jika ingin memberi Testimoni)" required>
                             </div>
@@ -69,12 +72,6 @@
         </div>
 
         <!-- Google Maps -->
-        {{-- <div class="map rounded shadow-sm overflow-hidden">
-            <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18..."
-                height="470" width="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-        </div> --}}
         <div class="map rounded shadow-sm overflow-hidden">
             <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.904162354329!2d107.54120591431807!3d-6.900548795017979!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e5ff379e6dcb%3A0x37069c8ffdc2db7d!2sBalai%20Industri%20Kreatif%20TIK%20(BITC)%20Cimahi!5e0!3m2!1sid!2sid!4v1720427513506!5m2!1sid!2sid"

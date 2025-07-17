@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Kontak;
+use Illuminate\Support\Facades\Auth;
 
 class ContactController extends Controller
 {
@@ -27,4 +28,19 @@ class ContactController extends Controller
 
         return redirect()->route('contact.index')->with('success', 'Pesan kamu berhasil dikirim!');
     }
+
+public function show()
+{
+    // $email = auth()->user()->email;
+     $email = Auth::user()->email;
+
+    $pesans = \App\Models\Kontak::where('email', $email)->latest()->get();
+
+    return view('contact.show', [
+        'title' => 'Histori Pesanmu',
+        'pesans' => $pesans
+    ]);
+}
+
+
 }

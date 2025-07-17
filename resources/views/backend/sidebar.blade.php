@@ -15,7 +15,7 @@
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
           <span class="hide-menu">MAIN MENU</span>
         </li>
-
+   @if(Auth::check() && Auth::user()->role === 'admin')
         <!-- Home -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('admin.index') ? 'active' : '' }}" href="{{ route('admin.index') }}">
@@ -82,6 +82,21 @@
             @endif
           </a>
         </li>
+
+        {{-- Hanya tampil untuk role pemilik --}}
+    @elseif(Auth::check() && Auth::user()->role == 'pemilik')
+<li class="sidebar-item">
+  <a class="sidebar-link {{ request()->routeIs('pemilik.*') ? 'active' : '' }}" href="{{ route('pemilik.index') }}">
+    <i class="ti ti-layout-dashboard"></i><span class="hide-menu">Dashboard</span>
+  </a>
+</li>
+<li class="sidebar-item">
+  <a class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}" href="{{ route('laporan.index') }}">
+    <i class="ti ti-report"></i><span class="hide-menu">Laporan</span>
+  </a>
+</li>
+        @endif
+
       </ul>
     </nav>
   </div>
