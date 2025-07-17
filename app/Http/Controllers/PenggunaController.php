@@ -9,34 +9,48 @@ use Illuminate\Support\Facades\Hash;
 class PenggunaController extends Controller
 {
     public function bulkDelete(Request $request)
-{
-    $ids = $request->input('selected');
-    if ($ids) {
-        User::whereIn('id', $ids)->delete();
-        return redirect()->route('pengguna.index')->with('success', 'Data pengguna berhasil dihapus.');
+    {
+        $ids = $request->input('selected');
+        if ($ids) {
+            User::whereIn('id', $ids)->delete();
+            return redirect()->route('pengguna.index')->with('success', 'Data pengguna berhasil dihapus.');
+        }
+        return redirect()->route('pengguna.index')->with('error', 'Tidak ada data yang dipilih.');
     }
-    return redirect()->route('pengguna.index')->with('error', 'Tidak ada data yang dipilih.');
-}
 
     public function index(Request $request)
-{
-    $visited = session('visited_menus', []);
-    if (!in_array('pengguna', $visited)) {
-        $visited[] = 'pengguna';
-        session(['visited_menus' => $visited]);
+    {
+        $visited = session('visited_menus', []);
+        if (!in_array('pengguna', $visited)) {
+            $visited[] = 'pengguna';
+            session(['visited_menus' => $visited]);
+        }
+
+        $users = User::query()
+            ->when($request->search, function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->search . '%')
+                      ->orWhere('email', 'like', '%' . $request->search . '%');
+                });
+            })
+            ->when($request->role, function ($query) use ($request) {
+                $query->where('role', $request->role);
+            }, function ($query) {
+                $query->orderByRaw("
+                    CASE 
+                        WHEN role = 'admin' THEN 0
+                        WHEN role = 'pemilik' THEN 1
+                        WHEN role = 'pelanggan' THEN 2
+                        ELSE 3
+                    END
+                ");
+            })
+            ->latest('id')
+            ->paginate(10)
+            ->appends($request->all());
+
+        return view('pengguna.index', compact('users'));
     }
-
-    $users = User::query()
-        ->when($request->search, function ($query) use ($request) {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
-        })
-        ->latest()
-        ->paginate(10);
-
-    return view('pengguna.index', compact('users'));
-}
-
 
     public function create()
     {
@@ -46,12 +60,12 @@ class PenggunaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email',
-            'role' => 'required|in:admin,pelanggan,pemilik',
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'id_card' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'phone' => 'required|numeric',
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|email|unique:users,email',
+            'role'     => 'required|in:admin,pelanggan,pemilik',
+            'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'id_card'  => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'phone'    => 'required|digits_between:10,15',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
@@ -89,12 +103,12 @@ class PenggunaController extends Controller
         $user = User::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required|in:admin,pelanggan,pemilik',
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'id_card' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'phone' => 'required|numeric',
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|email|unique:users,email,' . $id,
+            'role'     => 'required|in:admin,pelanggan,pemilik',
+            'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'id_card'  => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'phone'    => 'required|digits_between:10,15',
             'password' => 'nullable|string|min:6|confirmed',
         ]);
 

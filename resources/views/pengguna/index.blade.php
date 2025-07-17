@@ -15,24 +15,40 @@
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
       <h4 class="fw-bold text-dark mb-0">👥 Data Pengguna</h4>
-      <button id="bulkDeleteBtn" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm">
-        <i class="ti ti-trash"></i> Hapus Terpilih
-      </button>
+
+      <div class="d-flex gap-2">
+        @if (Auth::user()->role === 'admin' || Auth::user()->role === 'pemilik')
+          <a href="{{ route('pengguna.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
+            <i class="ti ti-plus"></i> Tambah Pengguna
+          </a>
+        @endif
+        <button id="bulkDeleteBtn" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm">
+          <i class="ti ti-trash"></i> Hapus Terpilih
+        </button>
+      </div>
     </div>
 
-    <form action="{{ route('pengguna.index') }}" method="GET" class="mb-4">
-      <div class="input-group">
-        <span class="input-group-text bg-light border-end-0">
-          <i class="ti ti-search text-secondary"></i>
-        </span>
-        <input type="text" name="search" class="form-control border-start-0"
-               placeholder="Cari nama atau email..." value="{{ request('search') }}">
-        <button class="btn btn-outline-secondary" type="submit">Cari</button>
-        @if(request('search'))
-        <a href="{{ route('pengguna.index') }}" class="btn btn-outline-danger">
+    <form method="GET" class="row row-cols-lg-auto g-2 align-items-center mb-4">
+      <div class="col-12">
+        <input type="text" name="search" class="form-control shadow-sm" placeholder="Cari nama atau email..." value="{{ request('search') }}">
+      </div>
+      <div class="col-12">
+        <select name="role" class="form-select shadow-sm">
+          <option value="">-- Semua Role --</option>
+          <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+          <option value="pemilik" {{ request('role') === 'pemilik' ? 'selected' : '' }}>Pemilik</option>
+          <option value="pelanggan" {{ request('role') === 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-outline-primary">
+          <i class="ti ti-search"></i> Filter
+        </button>
+      </div>
+      <div class="col-12">
+        <a href="{{ route('pengguna.index') }}" class="btn btn-outline-secondary">
           <i class="ti ti-x"></i> Reset
         </a>
-        @endif
       </div>
     </form>
 
@@ -52,6 +68,9 @@
               <th>No HP</th>
               <th>Avatar</th>
               <th>ID Card</th>
+              @if (Auth::user()->role === 'admin' || Auth::user()->role === 'pemilik')
+              <th>Aksi</th>
+              @endif
             </tr>
           </thead>
           <tbody>
@@ -86,10 +105,19 @@
                   <span class="text-muted">-</span>
                 @endif
               </td>
+              @if (Auth::user()->role === 'admin' || Auth::user()->role === 'pemilik')
+              <td>
+                @if ($user->role !== 'pelanggan')
+                  <a href="{{ route('pengguna.edit', $user->id) }}" class="btn btn-sm btn-warning">
+                    <i class="ti ti-pencil"></i> Edit
+                  </a>
+                @endif
+              </td>
+              @endif
             </tr>
             @empty
             <tr>
-              <td colspan="9" class="text-center text-muted py-4">
+              <td colspan="{{ (Auth::user()->role === 'admin' || Auth::user()->role === 'pemilik') ? 9 : 8 }}" class="text-center text-muted py-4">
                 <i class="ti ti-info-circle"></i> Belum ada data pengguna tersedia.
               </td>
             </tr>
@@ -108,32 +136,10 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  // Individual delete
-  document.querySelectorAll('.btn-delete').forEach(button => {
-    button.addEventListener('click', function () {
-      const form = this.closest('form');
-      const name = this.dataset.name;
-      Swal.fire({
-        title: 'Yakin ingin menghapus?',
-        text: `Data pengguna ${name} akan dihapus permanen.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Hapus',
-        cancelButtonText: 'Batal'
-      }).then(result => {
-        if (result.isConfirmed) form.submit();
-      });
-    });
-  });
-
-  // Select all
   document.getElementById('selectAll').addEventListener('change', function () {
     document.querySelectorAll('.selectItem').forEach(cb => cb.checked = this.checked);
   });
 
-  // Bulk delete
   document.getElementById('bulkDeleteBtn').addEventListener('click', function () {
     const selected = document.querySelectorAll('.selectItem:checked');
     if (selected.length === 0) {
