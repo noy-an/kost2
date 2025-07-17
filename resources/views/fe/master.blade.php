@@ -94,24 +94,115 @@
                     </div>
                 </div>
                 <div class="col-lg-10">
-    <div class="nav-menu">
-        <nav class="mainmenu" id="mobile-menu">
-            <ul>
-                <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
-                    <a href="{{ route('home.index') }}">Home</a>
-                </li>
-                <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
-                    <a href="{{ route('kamar.index') }}">Kamar Kost</a>
-                </li>
-                <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
-                    <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
-                </li>
-                <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
-                    <a href="{{ route('about.index') }}">About Us</a>
-                </li>
-                <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
-                    <a href="{{ route('contact.index') }}">Contact</a>
-                </li>
+
+                    <div class="nav-menu">
+                        <nav class="mainmenu" id="mobile-menu">
+                            <ul>
+                                <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+                                    <a href="{{ route('home.index') }}">Home</a>
+                                </li>
+                                <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+                                    <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+                                </li>
+                                <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
+                                    <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
+                                </li>
+                                <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+                                    <a href="{{ route('about.index') }}">About Us</a>
+                                </li>
+                                
+                                @guest
+                                    <li>
+                                        <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
+                                    </li>
+                                @endguest
+
+                                @auth
+                                @if (Auth::user()->role === 'pelanggan')
+                            <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
+                                <a href="{{ route('profile.index') }}">Profil Saya</a>
+                            </li>
+
+                               <style>
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown > a {
+        padding: 8px 12px;
+        display: inline-block;
+        text-decoration: none;
+        color: #333;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
+    }
+
+    .dropdown:hover > a {
+        background-color: #f2f2f2;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 140px;
+        background-color: #fff;
+        border-radius: 6px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        z-index: 1000;
+        padding: 4px 0;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown-content li {
+        list-style: none;
+    }
+
+    .dropdown-content li a {
+        display: block;
+        padding: 6px 12px;
+        text-decoration: none;
+        font-size: 13px;
+        color: #444;
+        transition: background-color 0.2s ease, padding-left 0.2s ease;
+    }
+
+    .dropdown-content li a:hover {
+        background-color: #f5f5f5;
+        padding-left: 16px;
+    }
+
+    .active > a,
+    .dropdown-content li.active > a {
+        font-weight: 600;
+        color: #0066cc;
+    }
+</style>
+
+<li class="dropdown {{ Request::routeIs('contact.index') || Request::routeIs('pesan_balasan.index') ? 'active' : '' }}">
+    <a href="javascript:void(0)">Contact ▾</a>
+    <ul class="dropdown-content">
+        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
+            <a href="{{ route('contact.index') }}">Contact</a>
+        </li>
+        <li class="{{ Request::routeIs('pesan_balasan.index') ? 'active' : '' }}">
+            <a href="{{ route('pesan_balasan.index') }}">Balasan</a>
+        </li>
+    </ul>
+</li>
+
+                        @endif
+
 
                 @guest
                     <li>
