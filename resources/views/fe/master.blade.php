@@ -214,12 +214,6 @@
                 @endguest
 
                 @auth
-                    @if (Auth::user()->role === 'pelanggan')
-                        <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
-                            <a href="{{ route('profile.index') }}">Profil Saya</a>
-                        </li>
-                    @endif
-
                     <li>
                         <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                             @csrf

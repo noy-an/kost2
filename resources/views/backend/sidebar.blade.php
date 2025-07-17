@@ -82,7 +82,6 @@
             @endif
           </a>
         </li>
-<<<<<<< HEAD
         @if(Auth::user() && Auth::user()->role == 'pemilik')
     <li class="sidebar-item">
         <a class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}" href="{{ route('laporan.index') }}">
@@ -90,7 +89,6 @@
         </a>
     </li>
 @endif
-=======
 
         {{-- Hanya tampil untuk role pemilik --}}
     @elseif(Auth::check() && Auth::user()->role == 'pemilik')
@@ -105,8 +103,6 @@
   </a>
 </li>
         @endif
->>>>>>> d7627d284693ee21e9477b424db8333178c82438
-
       </ul>
     </nav>
   </div>
