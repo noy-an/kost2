@@ -82,6 +82,14 @@
             @endif
           </a>
         </li>
+        @if(Auth::user() && Auth::user()->role == 'pemilik')
+    <li class="sidebar-item">
+        <a class="sidebar-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}" href="{{ route('laporan.index') }}">
+            <i class="ti ti-chart-bar"></i><span class="hide-menu">Laporan</span>
+        </a>
+    </li>
+@endif
+
       </ul>
     </nav>
   </div>
