@@ -122,8 +122,9 @@
         <div class="col-md-6 mb-3">
           <label for="status_booking" class="form-label">Status Booking</label>
           <select class="form-select" name="status_booking" required>
-            <option value="pending" {{ (old('status_booking') ?? $booking->status_booking) == 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="disetujui" {{ (old('status_booking') ?? $booking->status_booking) == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+            <option value="aktif" {{ (old('status_booking') ?? $booking->status_booking) == 'aktif' ? 'selected' : '' }}>aktif</option>
+            <option value="masa_tenggang" {{ (old('status_booking') ?? $booking->status_booking) == 'masa_tenggang' ? 'selected' : '' }}>masa_tenggang</option>
+            <option value="expired" {{ (old('status_booking') ?? $booking->status_booking) == 'expired' ? 'selected' : '' }}>expired</option>
           </select>
         </div>
       </div>

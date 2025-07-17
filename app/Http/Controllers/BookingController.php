@@ -8,7 +8,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Models\Kost;
 
-use App\Notifications\BookingDisetujuiNotification;
+use App\Notifications\BookingNotification;
 
 use App\Models\Notifbook;
 
@@ -20,13 +20,13 @@ class BookingController extends Controller
 
         logger('booking->user_id = ' . $booking->user_id);
 
-        $booking->status_booking = 'disetujui';
+        $booking->status_booking = 'masa_tenggang';
         $booking->save();
 
         if ($booking->user_id) {
             Notification::create([
                 'user_id' => $booking->user_id,
-                'message' => 'Booking Anda telah disetujui. Silakan cek tagihan.',
+                'message' => 'Booking Anda sudah masa tenggang. Silakan cek tagihan.',
                 'link' => route('tagihanpelanggan.index'),
             ]);
 
@@ -38,9 +38,9 @@ class BookingController extends Controller
         }
 $user = User::find($booking->user_id);
 if ($user) {
-    $user->notify(new BookingDisetujuiNotification());
+    $user->notify(new BookingNotification());
 }
-        return redirect()->route('tagihanpelanggan.index')->with('success', 'Booking disetujui.');
+        return redirect()->route('tagihanpelanggan.index')->with('success', 'Booking aktif.');
     }
 
 
@@ -100,13 +100,13 @@ if ($user) {
             'persentase_pembayaran' => 'required|in:30,40,50,100',
             'jenis_pembayaran' => 'required|in:cash,transfer_bank,qris,debit_card',
             'tgl_booking' => 'required|date',
-            'status_booking' => 'required|in:pending,disetujui',
+            'status_booking' => 'required|in:aktif,masa_tenggang,expired',
         ]);
 
-        if ($request->status_booking === 'disetujui') {
+        if ($request->status_booking === 'masa_tenggang') {
             Notification::create([
                 'user_id' => $request->user_id,
-                'message' => 'Booking Anda telah disetujui. Silakan cek tagihan.',
+                'message' => 'Booking Anda telah aktif. Silakan cek tagihan.',
                 'link' => route('tagihanpelanggan.index'),
             ]);
 
@@ -117,7 +117,7 @@ if ($user) {
  
     $user = User::find($request->user_id);
     if ($user) {
-        $user->notify(new BookingDisetujuiNotification());
+        $user->notify(new BookingNotification());
     }
 
 
@@ -171,7 +171,7 @@ if ($user) {
             'persentase_pembayaran' => 'required|in:30,40,50,100',
             'jenis_pembayaran' => 'required|in:cash,transfer_bank,qris,debit_card',
             'tgl_booking' => 'required|date',
-            'status_booking' => 'required|in:pending,disetujui',
+            'status_booking' => 'required|in:aktif,masa_tenggang,expired',
         ]);
 
 
@@ -193,23 +193,23 @@ if ($user) {
             'status_booking' => $validated['status_booking'],
         ]);
 
-        if ($request->status_booking === 'disetujui') {
+        if ($request->status_booking === 'masa_tenggang') {
             Notification::create([
                 'user_id' => $request->user_id,
-                'message' => 'Booking Anda telah disetujui. Silakan cek tagihan.',
+                'message' => 'Booking Anda telah aktif. Silakan cek tagihan.',
                 'link' => route('tagihanpelanggan.index'),
             ]);
 
             Notifbook::create([
                 'booking_id' => $booking->id,
-                'message' => 'Booking atas nama ' . ($booking->user->name ?? 'Unknown') . ' telah diperbarui dan disetujui.',
+                'message' => 'Booking atas nama ' . ($booking->user->name ?? 'Unknown') . ' telah diperbarui dan aktif.',
             ]);
 
                     // kirim email
-            $user = User::find($request->user_id);
-            if ($user) {
-                $user->notify(new BookingDisetujuiNotification());
-            }
+                $user = User::find($request->user_id);
+                if ($user) {
+                    $user->notify(new BookingNotification());
+                }
         }
 
         return redirect()->route('booking.index')->with('success', 'Booking berhasil diperbarui.');

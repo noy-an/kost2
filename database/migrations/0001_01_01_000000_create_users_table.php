@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('role',['admin', 'pelanggan', 'pemilik']);
             $table->string('avatar')->nullable();
             $table->string('id_card')->nullable();
-            $table->integer('phone')->nullable(false);
+            $table->string('phone')->nullable(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

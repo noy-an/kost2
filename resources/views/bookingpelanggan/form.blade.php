@@ -91,6 +91,7 @@
                                 </small>
                             </label>
                             <input type="text" class="form-control" id="tgl_booking" name="tgl_booking" required>
+                            <input type="hidden" id="disabledDates" value="{{ implode(',', $disabledDates) }}">
                         </div>
 
                         <div class="d-grid gap-2">
@@ -133,7 +134,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    const disabledDates = @json($disabledDates);
+const disabledDatesInput = document.getElementById('disabledDates').value;
+const disabledDates = disabledDatesInput.split(',');
+
 
     // Tentukan tanggal tersedia mulai dari hari ini atau hari setelah terakhir disable
     let tanggalTersedia = new Date();

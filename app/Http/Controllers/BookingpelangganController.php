@@ -39,7 +39,7 @@ class BookingpelangganController extends Controller
             'bayar_penuh' => round($kost->harga),
         ];
 
-        // Ambil semua tanggal booking aktif untuk kamar ini
+       
         $bookings = Booking::where('kost_id', $kost->id)->get();
         $disabledDates = [];
 
@@ -84,7 +84,7 @@ class BookingpelangganController extends Controller
             'persentase_pembayaran' => $persentase,
             'jenis_pembayaran' => $jenis_pembayaran,
             'tgl_booking' => $request->tgl_booking,
-            'status_booking' => 'pending',
+            'status_booking' => 'aktif',
         ]);
 
         Notifbook::create([

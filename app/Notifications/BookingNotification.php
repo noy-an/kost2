@@ -5,7 +5,7 @@ namespace App\Notifications;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class BookingDisetujuiNotification extends Notification
+class BookingNotification extends Notification
 {
     public function via($notifiable)
     {
@@ -15,7 +15,7 @@ class BookingDisetujuiNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Booking Anda Telah Disetujui')
+            ->subject('Booking Anda Telah Masa Tenggang')
             ->greeting('Halo ' . $notifiable->name . '!')
             ->line('Booking Anda telah disetujui oleh admin.')
             ->action('Lihat Tagihan', route('tagihanpelanggan.index'))
