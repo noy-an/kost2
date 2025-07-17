@@ -49,6 +49,38 @@
     </form>
     @endif
 
+    <!-- Form Balas Email (Hidden by default) -->
+    <div id="reply-form-container" class="card shadow-sm rounded-4 border-0 mb-4" style="display: none;">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0 text-primary fw-bold">Balas Pesan</h5>
+                <button type="button" class="btn-close" id="close-reply-form"></button>
+            </div>
+            <form id="reply-form" method="POST">
+                @csrf
+                <input type="hidden" name="email_id" id="reply-email-id">
+                <div class="mb-3">
+                    <label for="reply-to" class="form-label">Kepada</label>
+                    <input type="email" class="form-control" id="reply-to" name="to" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="reply-subject" class="form-label">Subjek</label>
+                    <input type="text" class="form-control" id="reply-subject" name="subject" required>
+                </div>
+                <div class="mb-3">
+                    <label for="reply-message" class="form-label">Pesan</label>
+                    <textarea class="form-control" id="reply-message" name="message" rows="5" required></textarea>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" id="cancel-reply">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill">
+                        <i class="ti ti-send"></i> Kirim Balasan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Messages -->
     @forelse ($kontaks as $kontak)
     <div class="card shadow-sm rounded-4 border-0 mb-4">
@@ -78,10 +110,12 @@
 
             <!-- Aksi -->
             <div class="d-flex flex-column gap-2">
-                <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ $kontak->email }}&su=Menanggapi pesan yang kamu kirimkan pada aplikasi kostku"
-                   target="_blank" class="btn btn-sm btn-outline-primary rounded-pill shadow-sm d-flex align-items-center gap-1">
+                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill shadow-sm d-flex align-items-center gap-1 btn-reply" 
+                        data-id="{{ $kontak->id }}" 
+                        data-email="{{ $kontak->email }}" 
+                        data-subject="{{ $kontak->subjek }}">
                     <i class="ti ti-send"></i> Balas
-                </a>
+                </button>
 
                 <form action="{{ route('kontak.destroy', $kontak->id) }}" method="POST" class="form-delete">
                     @csrf
@@ -171,5 +205,83 @@
             });
         });
     }
+
+    // Fungsi untuk menangani balas email
+    document.querySelectorAll('.btn-reply').forEach(button => {
+        button.addEventListener('click', function() {
+            const email = this.getAttribute('data-email');
+            const subject = this.getAttribute('data-subject');
+            const id = this.getAttribute('data-id');
+            
+            // Isi form balasan
+            document.getElementById('reply-to').value = email;
+            document.getElementById('reply-subject').value = 'Re: ' + subject;
+            document.getElementById('reply-email-id').value = id;
+            
+            // Tampilkan form balasan
+            document.getElementById('reply-form-container').style.display = 'block';
+            
+            // Scroll ke form balasan
+            document.getElementById('reply-form-container').scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    // Fungsi untuk menutup form balasan
+    document.getElementById('close-reply-form').addEventListener('click', function() {
+        document.getElementById('reply-form-container').style.display = 'none';
+    });
+
+    document.getElementById('cancel-reply').addEventListener('click', function() {
+        document.getElementById('reply-form-container').style.display = 'none';
+    });
+
+    // Fungsi untuk mengirim balasan email dengan loading
+    document.getElementById('reply-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        Swal.fire({
+            title: 'Mengirim balasan...',
+            text: 'Silakan tunggu sebentar',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        const formData = new FormData(this);
+
+        fetch("{{ route('kontak.sendReply') }}", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Gagal mengirim balasan');
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                title: 'Sukses!',
+                text: 'Balasan email berhasil dikirim',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+
+            this.reset();
+            document.getElementById('reply-form-container').style.display = 'none';
+        })
+        .catch(error => {
+            Swal.fire({
+                title: 'Gagal!',
+                text: 'Terjadi kesalahan saat mengirim balasan',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    });
 </script>
 @endsection

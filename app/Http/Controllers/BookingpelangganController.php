@@ -33,9 +33,7 @@ class BookingpelangganController extends Controller
         }
 
         $harga_calculations = [
-            'dp_30' => round($kost->harga * 0.3),
-            'dp_40' => round($kost->harga * 0.4),
-            'dp_50' => round($kost->harga * 0.5),
+           
             'bayar_penuh' => round($kost->harga),
         ];
 
@@ -63,7 +61,7 @@ class BookingpelangganController extends Controller
         $request->validate([
             'kost_id' => 'required|exists:kost,id',
             'tgl_booking' => 'required|date',
-            'persentase_pembayaran' => 'required|in:30,40,50,100',
+            'nominal_bayar' => 'required|numeric|min:1000',
         ]);
 
         $kost = Kost::findOrFail($request->kost_id);
@@ -74,8 +72,8 @@ class BookingpelangganController extends Controller
                 ->with('error', 'Maaf, kost sudah tidak tersedia.');
         }
 
-        $nominal_pembayaran = round($kost->harga * ($persentase / 100));
-        $jenis_pembayaran = $persentase == 100 ? 'bayar_penuh' : 'dp';
+       $nominal_pembayaran = $request->nominal_bayar;
+      $jenis_pembayaran = 'bayar_penuh';
 
         $booking = Booking::create([
             'user_id' => Auth::id(),

@@ -23,7 +23,7 @@
                                 <input type="file" name="avatar" class="form-control mt-2">
                             </div>
 
-                            <div>
+                            {{-- <div>
                                 <label class="fw-bold mb-2">Foto KTP</label><br>
                                 @if ($user->id_card)
                                     <img src="{{ asset('storage/' . $user->id_card) }}" class="rounded shadow-sm mb-2" width="130">
@@ -31,7 +31,7 @@
                                     <p class="text-muted">Belum diunggah</p>
                                 @endif
                                 <input type="file" name="id_card" class="form-control mt-2">
-                            </div>
+                            </div> --}}
                         </div>
 
                         <!-- Kanan: Form -->
