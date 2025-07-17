@@ -202,7 +202,7 @@
 </li>
 
                         @endif
-
+@endauth
 
                 @guest
                     <li>
