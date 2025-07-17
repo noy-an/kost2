@@ -30,18 +30,18 @@ class TagihanpelangganController extends Controller
 public function index()
 {
 
-     Carbon::setTestNow(Carbon::parse('2025-12-2'));
+    //Carbon::setTestNow(Carbon::parse('2026-1-3'));
     $userId = Auth::id();
 
     $bookings = Booking::with(['kost', 'user', 'tagihan'])
         ->where('user_id', $userId)
         ->get();
 
-    // ✅ Cek status & kirim notif di sini
-    foreach ($bookings as $booking) {
-        $status = $this->hitungStatusBooking($booking);
-        $this->kirimNotifBooking($booking, $status);
-    }
+    // // ✅ Cek status & kirim notif di sini
+    // foreach ($bookings as $booking) {
+    //     $status = $this->hitungStatusBooking($booking);
+    //     $this->kirimNotifBooking($booking, $status);
+    // }
 
     return view('tagihanpelanggan.index', [
         'data' => $bookings,
@@ -56,7 +56,7 @@ public function index()
    public function create($booking_id)
 {
 
-     Carbon::setTestNow(Carbon::parse('2025-12-2'));
+   //  Carbon::setTestNow(Carbon::parse('2025-12-2'));
     $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
 
     
@@ -285,78 +285,78 @@ public function callback(Request $request)
         ], 500);
     }
 }
-private function hitungStatusBooking($booking)
-{
-    $lastTagihan = Tagihan::where('booking_id', $booking->id)
-        ->where('status_pembayaran', 'success')
-        ->latest('tanggal_tagihan')
-        ->first();
+// private function hitungStatusBooking($booking)
+// {
+//     $lastTagihan = Tagihan::where('booking_id', $booking->id)
+//         ->where('status_pembayaran', 'success')
+//         ->latest('tanggal_tagihan')
+//         ->first();
 
-    $tglTerakhir = $lastTagihan
-        ? Carbon::parse($lastTagihan->tanggal_tagihan)
-        : Carbon::parse($booking->tgl_booking);
+//     $tglTerakhir = $lastTagihan
+//         ? Carbon::parse($lastTagihan->tanggal_tagihan)
+//         : Carbon::parse($booking->tgl_booking);
 
-    $jatuhTempo = $tglTerakhir->copy()->addDays(30);
-    $tenggang = $jatuhTempo->copy()->addDay();
-    $now = Carbon::now();
+//     $jatuhTempo = $tglTerakhir->copy()->addDays(30);
+//     $tenggang = $jatuhTempo->copy()->addDay();
+//     $now = Carbon::now();
 
-    if ($now->gt($tenggang)) {
-        return 'expired';
-    } elseif ($now->gt($jatuhTempo)) {
-        return 'masa_tenggang';
-    } else {
-        return 'aktif';
-    }
-}
+//     if ($now->gt($tenggang)) {
+//         return 'expired';
+//     } elseif ($now->gt($jatuhTempo)) {
+//         return 'masa_tenggang';
+//     } else {
+//         return 'aktif';
+//     }
+// }
 
-private function kirimNotifBooking($booking, $status)
-{
-    $user = $booking->user;
-    $kost = $booking->kost;
+// private function kirimNotifBooking($booking, $status)
+// {
+//     $user = $booking->user;
+//     $kost = $booking->kost;
 
-    $pesan = match ($status) {
-        'aktif' => "Booking Anda untuk kamar {$kost->nomor_kamar} telah aktif.",
-        'masa_tenggang' => "Booking Anda masuk masa tenggang. Segera lakukan pembayaran ulang!",
-        'expired' => "Booking Anda sudah kadaluarsa! Harap hubungi admin.",
-    };
+//     $pesan = match ($status) {
+//         'aktif' => "Booking Anda untuk kamar {$kost->nomor_kamar} telah aktif.",
+//         'masa_tenggang' => "Booking Anda masuk masa tenggang. Segera lakukan pembayaran ulang!",
+//         'expired' => "Booking Anda sudah kadaluarsa! Harap hubungi admin.",
+//     };
 
-   Notification::create([
-    'user_id' => $user->id,
-    'booking_id' => $booking->id, 
-    'message' => $pesan,
-    'link' => route('tagihanpelanggan.index'),
-]);
+//    Notification::create([
+//     'user_id' => $user->id,
+//     'booking_id' => $booking->id, 
+//     'message' => $pesan,
+//     'link' => route('tagihanpelanggan.index'),
+// ]);
 
 
-    if ($user) {
-        $user->notify(new BookingNotification($status, $kost->nomor_kamar));
-    }
-}
+//     if ($user) {
+//         $user->notify(new BookingNotification($status, $kost->nomor_kamar));
+//     }
+// }
 
-    public function show(string $id)
-    {
-        $booking = Booking::with(['user', 'kost'])->findOrFail($id);
+//     public function show(string $id)
+//     {
+//         $booking = Booking::with(['user', 'kost'])->findOrFail($id);
 
-        return view('booking.show', compact('booking'));
-    }
+//         return view('booking.show', compact('booking'));
+//     }
 
-    public function edit(string $id)
-    {
-        $booking = Booking::findOrFail($id);
-        $users = User::all();
-        $kosts = Kost::all();
+//     public function edit(string $id)
+//     {
+//         $booking = Booking::findOrFail($id);
+//         $users = User::all();
+//         $kosts = Kost::all();
 
-        return view('booking.edit', compact('booking', 'users', 'kosts'));
-    }
+//         return view('booking.edit', compact('booking', 'users', 'kosts'));
+//     }
 
    
 
-    public function destroy(string $id)
-    {
-        $booking = Booking::findOrFail($id);
-        $booking->delete();
+//     public function destroy(string $id)
+//     {
+//         $booking = Booking::findOrFail($id);
+//         $booking->delete();
 
-        return redirect()->route('booking.index')->with('success', 'Booking berhasil dihapus.');
-    }
+//         return redirect()->route('booking.index')->with('success', 'Booking berhasil dihapus.');
+//     }
 
 }
