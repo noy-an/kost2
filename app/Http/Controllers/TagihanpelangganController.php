@@ -5,6 +5,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Tagihan;
+use Illuminate\Support\Facades\Log;
+
 use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Midtrans\Config;
@@ -21,9 +23,10 @@ class TagihanpelangganController extends Controller
         Config::$is3ds = env('MIDTRANS_IS_3DS');
     }
 
+
 public function index()
 {
-    // Carbon::setTestNow(Carbon::now()->addDays(80)); // TESTING DOANG BRO, HAPUS NANTI
+     //Carbon::setTestNow(Carbon::now()->addDays(30)); 
 
     $userId = Auth::id();
 
@@ -41,8 +44,9 @@ public function index()
             $tenggang = $jatuhTempo->copy()->addDay();
 
             if ($lastTagihan && $lastTagihan->status_pembayaran === 'success') {
-                $booking->status_booking = 'aktif';
-            }
+                    $booking->status_booking = 'aktif';
+                }
+
 
             if (now()->gt($tenggang)) {
                 $booking->status_booking = 'expired';
@@ -81,7 +85,7 @@ public function index()
 
     $sisaTagihan = max(0, $hargaKost - $dpAwal - $totalSudahDibayar);
 
-    // ...
+    
 $bulanKe = Tagihan::where('booking_id', $booking->id)->count() + 1;
 
 $lastTagihan = $booking->tagihan
@@ -117,26 +121,26 @@ return view('tagihanpelanggan.form', compact(
             'tanggal_tagihan' => 'required|date',
         ]);
 
-        // Pastikan booking milik user yang sedang login
+       
         $booking = Booking::where('id', $request->booking_id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        // Cek apakah booking masih bisa dibayar
+        
         if (!in_array($booking->status_booking, ['aktif', 'masa_tenggang'])) {
             return back()->with('error', 'Booking ini tidak bisa dibayar.');
         }
 
-        // Simpan data tagihan terlebih dahulu
+      
         $tagihan = Tagihan::create([
             'booking_id' => $request->booking_id,
             'bayar_per_bulan' => $request->bayar_per_bulan,
             'jumlah_bayar' => $request->jumlah_bayar,
             'tanggal_tagihan' => $request->tanggal_tagihan,
-            'status_pembayaran' => 'pending', // Status pembayaran pending
+            'status_pembayaran' => 'pending', 
         ]);
 
-        // Siapkan data untuk Midtrans
+        
         $transaction_details = [
             'order_id' => 'TAGIHAN-' . $tagihan->id . '-' . time(),
             'gross_amount' => (int) $request->bayar_per_bulan,
@@ -169,7 +173,7 @@ return view('tagihanpelanggan.form', compact(
         try {
             $paymentUrl = Snap::createTransaction($params)->redirect_url;
             
-            // Update tagihan dengan payment token
+          
             $tagihan->update([
                 'payment_token' => $transaction_details['order_id'],
                 'payment_url' => $paymentUrl,
@@ -178,7 +182,7 @@ return view('tagihanpelanggan.form', compact(
             return redirect($paymentUrl);
 
         } catch (\Exception $e) {
-            // Hapus tagihan jika terjadi error
+          
             $tagihan->delete();
             
             return redirect()->back()
@@ -186,78 +190,90 @@ return view('tagihanpelanggan.form', compact(
         }
     }
 
-    // Method untuk menangani callback dari Midtrans
-    public function callback(Request $request)
-    {
-        try {
-            $serverKey = env('MIDTRANS_SERVER_KEY');
-            $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
-            
-            if ($hashed == $request->signature_key) {
-                $orderId = $request->order_id;
-                $transactionStatus = $request->transaction_status;
-                $fraudStatus = $request->fraud_status;
-                
-                // Ambil ID tagihan dari order_id
-                $tagihanId = explode('-', $orderId)[1];
-                $tagihan = Tagihan::find($tagihanId);
-                
-                if ($tagihan) {
-                    if ($transactionStatus == 'capture') {
-                        if ($fraudStatus == 'challenge') {
-                            $tagihan->update(['status_pembayaran' => 'challenge']);
-                        } else if ($fraudStatus == 'accept') {
-                            $tagihan->update(['status_pembayaran' => 'success']);
-                        }
-                    } else if ($transactionStatus == 'settlement') {
-                        $tagihan->update(['status_pembayaran' => 'success']);
-                    } else if ($transactionStatus == 'pending') {
-                        $tagihan->update(['status_pembayaran' => 'pending']);
-                    } else if ($transactionStatus == 'deny') {
-                        $tagihan->update(['status_pembayaran' => 'failed']);
-                    } else if ($transactionStatus == 'expire') {
-                        $tagihan->update(['status_pembayaran' => 'expired']);
-                    } else if ($transactionStatus == 'cancel') {
-                        $tagihan->update(['status_pembayaran' => 'cancelled']);
-                    }
-                }
-            }
-            
-                               if (in_array($transactionStatus, ['capture', 'settlement'])) {
-    $tagihan->update(['status_pembayaran' => 'success']);
 
-    $booking = Booking::find($tagihan->booking_id);
-    
-    if ($booking) {
-        // Cari tagihan terakhir yang sukses
-        $lastTagihan = $booking->tagihan()
-            ->where('status_pembayaran', 'success')
-            ->orderByDesc('tanggal_tagihan')
-            ->first();
+   
 
-        $tglTerakhir = $lastTagihan
-            ? Carbon::parse($lastTagihan->tanggal_tagihan)
-            : Carbon::parse($booking->tgl_booking);
+public function callback(Request $request)
+{
+    Log::info('🔥 CALLBACK DARI MIDTRANS:', $request->all());
 
-        $jatuhTempo = $tglTerakhir->copy()->addDays(30);
-        $tenggang = $jatuhTempo->copy()->addDay();
+    try {
+        $serverKey = env('MIDTRANS_SERVER_KEY');
 
-        if (now()->lte($tenggang)) {
-            // BALIKIN STATUS JADI AKTIF KALO BELUM LEWAT MASA TENGGANG
-            $booking->status_booking = 'aktif';
-            $booking->save();
+        // ✅ INI FORMULA HASH YANG BENER BUAT WEBHOOK
+        $signatureKey = hash("sha512",
+            $request->order_id .
+            $request->status_code .
+            $request->gross_amount .
+            $serverKey
+        );
+
+        // ❗ CEK KECOCOKAN SIGNATURE
+        if ($signatureKey !== $request->signature_key) {
+            Log::warning('❌ SIGNATURE TIDAK COCOK, CALLBACK DITOLAK');
+            return response()->json(['status' => 'forbidden'], 403);
         }
+
+        $orderId = $request->order_id;
+        $transactionStatus = $request->transaction_status;
+        $fraudStatus = $request->fraud_status;
+
+        $tagihanId = explode('-', $orderId)[1] ?? null;
+
+        if (!$tagihanId) {
+            Log::error('💀 GAGAL PARSING TAGIHAN ID DARI ORDER_ID');
+            return response()->json(['status' => 'invalid order id'], 400);
+        }
+
+        $tagihan = Tagihan::find($tagihanId);
+
+        if (!$tagihan) {
+            Log::error("💀 TAGIHAN ID $tagihanId TIDAK DITEMUKAN");
+            return response()->json(['status' => 'tagihan not found'], 404);
+        }
+
+        // 🔄 UPDATE STATUS TAGIHAN SESUAI TRANSAKSI
+        switch ($transactionStatus) {
+            case 'capture':
+                $status = $fraudStatus == 'challenge' ? 'challenge' : 'success';
+                break;
+            case 'settlement':
+                $status = 'success';
+                break;
+            case 'pending':
+                $status = 'pending';
+                break;
+            case 'deny':
+                $status = 'failed';
+                break;
+            case 'expire':
+                $status = 'expired';
+                break;
+            case 'cancel':
+                $status = 'cancelled';
+                break;
+            default:
+                $status = 'unknown';
+                break;
+        }
+
+        $tagihan->update(['status_pembayaran' => $status]);
+        Log::info("✅ TAGIHAN $tagihanId DIUPDATE KE STATUS: $status");
+
+        // 🧠 UBAH STATUS BOOKING KALO BERHASIL
+        if ($status === 'success') {
+            $booking = Booking::find($tagihan->booking_id);
+            if ($booking) {
+                $booking->status_booking = 'aktif';
+                $booking->save();
+                Log::info("🚀 BOOKING ID {$booking->id} DISET KE AKTIF");
+            }
+        }
+
+        return response()->json(['status' => 'success']);
+    } catch (\Exception $e) {
+        Log::error('💥 ERROR CALLBACK MIDTRANS: ' . $e->getMessage());
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
 }
-
-
-
-
-            
-            return response()->json(['status' => 'success']);
-            
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
-        }
-    }
 }

@@ -48,8 +48,7 @@ Route::post('/email/verification-notification', function (Request $request) {
 
   Route::resource('/', \App\Http\Controllers\HomeController::class);
     Route::middleware(['auth', 'verified'])->group(function () {
- 
-Route::resource('/home', \App\Http\Controllers\HomeController::class);
+ Route::resource('/home', \App\Http\Controllers\HomeController::class);
    Route::resource('/about', \App\Http\Controllers\AboutController::class);
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
@@ -63,8 +62,9 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
     Route::get('/profile', [ProfilePelangganController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfilePelangganController::class, 'edit'])->name('profile.edit');
     Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');  
-});
 
+
+});
 
 
 
@@ -83,7 +83,7 @@ Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::cl
 Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
     ->name('bookingpelanggan.store');
 
-
+Route::post('/midtrans-callback', [TagihanpelangganController::class, 'callback'])->name('midtrans.callback');
     
     
 
