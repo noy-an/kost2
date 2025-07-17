@@ -84,15 +84,30 @@
               <td class="text-end">Rp{{ number_format($booking->dp, 0, ',', '.') }}</td>
               <td class="text-end">{{ ($booking->jenis_pembayaran) }}</td>
               <td>{{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d F Y') }}</td>
-              <td>
-                <span class="badge 
-                  @if($booking->status_booking === 'pending') bg-warning text-dark
-                  @elseif($booking->status_booking === 'disetujui') bg-success
-                  @else bg-secondary
-                  @endif">
-                  {{ ucfirst($booking->status_booking) }}
-                </span>
-              </td>
+         @php
+    $lastTagihan = $booking->tagihan->where('status_pembayaran', 'success')->sortByDesc('tanggal_tagihan')->first();
+    $tglTagihan = $lastTagihan ? \Carbon\Carbon::parse($lastTagihan->tanggal_tagihan) : \Carbon\Carbon::parse($booking->tgl_booking);
+    $jatuhTempo = $tglTagihan->copy()->addDays(30);
+    $tenggang = $jatuhTempo->copy()->addDay();
+    $now = \Carbon\Carbon::now();
+
+    if ($now->gt($tenggang)) {
+        $status = 'Expired';
+        $badge = 'bg-danger';
+    } elseif ($now->gt($jatuhTempo)) {
+        $status = 'Masa Tenggang';
+        $badge = 'bg-warning text-dark';
+    } else {
+        $status = 'Aktif';
+        $badge = 'bg-success';
+    }
+@endphp
+
+<td>
+  <span class="badge {{ $badge }}">{{ $status }}</span>
+</td>
+
+
               <td>
                 <div class="d-flex justify-content-center gap-1">
                   <a href="{{ route('booking.edit', $booking->id) }}" class="btn btn-sm btn-warning" title="Edit">

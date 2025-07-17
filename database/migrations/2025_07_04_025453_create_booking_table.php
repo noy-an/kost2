@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('kost_id')->constrained('kost')->onDelete('cascade');
             $table->integer('dp')->nullable('false');
             $table->date('tgl_booking');
-            $table->enum('status_booking',['aktif', 'masa_tenggang','expired']);
+         
             $table->timestamps();
         });
     }

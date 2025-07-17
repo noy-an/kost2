@@ -44,44 +44,17 @@
                             <input type="text" class="form-control" id="harga_kost" value="Rp {{ number_format($kost->harga, 0, ',', '.') }}" disabled>
                         </div>
 
-                        <!-- Pilihan Persentase Pembayaran -->
-                        <div class="mb-3">
-                            <label class="form-label">Pilihan Pembayaran</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp30" value="30" checked 
-                                    data-nominal="{{ $harga_calculations['dp_30'] }}">
-                                <label class="form-check-label" for="dp30">
-                                    DP 30% - <span>Rp {{ number_format($harga_calculations['dp_30'], 0, ',', '.') }}</span>
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp40" value="40"
-                                    data-nominal="{{ $harga_calculations['dp_40'] }}">
-                                <label class="form-check-label" for="dp40">
-                                    DP 40% - <span>Rp {{ number_format($harga_calculations['dp_40'], 0, ',', '.') }}</span>
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp50" value="50"
-                                    data-nominal="{{ $harga_calculations['dp_50'] }}">
-                                <label class="form-check-label" for="dp50">
-                                    DP 50% - <span>Rp {{ number_format($harga_calculations['dp_50'], 0, ',', '.') }}</span>
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="persentase_pembayaran" id="bayar_penuh" value="100"
-                                    data-nominal="{{ $harga_calculations['bayar_penuh'] }}">
-                                <label class="form-check-label" for="bayar_penuh">
-                                    Bayar Penuh - <span>Rp {{ number_format($harga_calculations['bayar_penuh'], 0, ',', '.') }}</span>
-                                </label>
-                            </div>
-                        </div>
+<!-- Tampilan harga ke user -->
+<div class="mb-3">
+    <label class="form-label">Nominal yang akan dibayar</label>
+    <input type="text" class="form-control bg-light" value="Rp {{ number_format($harga_calculations['bayar_penuh'], 0, ',', '.') }}" readonly>
+</div>
 
-                        <!-- Nominal yang akan dibayar -->
-                        <div class="mb-3">
-                            <label class="form-label">Nominal yang akan dibayar</label>
-                            <input type="text" class="form-control bg-light" id="nominal_bayar" value="Rp {{ number_format($harga_calculations['dp_30'], 0, ',', '.') }}" disabled>
-                        </div>
+<!-- Hidden input buat backend -->
+<input type="hidden" name="nominal_bayar" value="{{ $harga_calculations['bayar_penuh'] }}">
+
+
+
 
                         <div class="mb-3">
                             <label for="tgl_booking" class="form-label">

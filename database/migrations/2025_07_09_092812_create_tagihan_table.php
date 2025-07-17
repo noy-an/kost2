@@ -17,7 +17,7 @@ return new class extends Migration
              $table->integer('bayar_per_bulan')->default();
              $table->integer('jumlah_bayar')->default();
              $table->date('tanggal_tagihan');
-             $table->string('status_pembayaran')->default('pending');
+             $table->string('status_pembayaran')->default('success');
             $table->string('payment_token')->nullable();
             $table->string('payment_url')->nullable();
             $table->timestamps();
