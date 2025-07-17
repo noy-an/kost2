@@ -323,40 +323,40 @@
                 </p>
             </div>
 
-            <!-- Success Alert -->
-            <div class="alert alert-success d-none" id="successAlert">
-                <i class="fas fa-check-circle me-2"></i>
-                Reset link has been sent to your email!
-            </div>
+           <form action="{{ route('password.email') }}" method="POST">
+    @csrf
 
-            <!-- Error Alert -->
-            <div class="alert alert-danger d-none" id="errorAlert">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <span id="errorMessage">Please enter a valid email address.</span>
-            </div>
+    @if(session('success'))
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>
+            {{ session('success') }}
+        </div>
+    @endif
 
-          <form action="{{ route('password.email') }}" method="POST">
-                    @csrf
-                <div class="form-floating">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
-                    <label for="email">
-                        <i class="fas fa-envelope me-2"></i>Email Address
-                    </label>
-                    <div class="invalid-feedback">
-                        Please provide a valid email address.
-                    </div>
-                </div>
+    @if(session('error'))
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ session('error') }}
+        </div>
+    @endif
 
-                <button type="submit" class="btn btn-submit" id="submitBtn">
-                    <i class="fas fa-paper-plane me-2"></i>
-                    Send Reset Link
-                </button>
+    <div class="form-floating mb-3">
+        <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+        <label for="email">
+            <i class="fas fa-envelope me-2"></i>Email Address
+        </label>
+    </div>
 
-                <a href="{{route('login')}}" class="btn btn-back" onclick="goBack()">
-                    <i class="fas fa-arrow-left me-2"></i>
-                    Back to Login
-                </a>
-            </form>
+    <button type="submit" class="btn btn-submit w-100">
+        <i class="fas fa-paper-plane me-2"></i>
+        Send Reset Link
+    </button>
+
+    <a href="{{ route('login') }}" class="btn btn-back w-100">
+        <i class="fas fa-arrow-left me-2"></i>
+        Back to Login
+    </a>
+</form>
         </div>
     </div>
 
