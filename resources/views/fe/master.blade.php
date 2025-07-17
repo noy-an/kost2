@@ -34,37 +34,41 @@
         <div class="loader"></div>
     </div>
 
-    <!-- Offcanvas Menu Section Begin -->
-    <div class="offcanvas-menu-overlay"></div>
-    <div class="offcanvas-menu-wrapper">
-        <div class="canvas-close">
-            <span class="icon_close"></span>
-        </div>
-        <nav class="mainmenu mobile-menu">
-            <ul>
-                <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
-                    <a href="{{ route('home.index') }}">Home</a>
-                </li>
-                <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
-                    <a href="{{ route('kamar.index') }}">Kamar Kost</a>
-                </li>
-                <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
-                    <a href="{{ route('tagihanpelanggan.index') }}">Kamar Kost</a>
-                </li>
-                <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
-                    <a href="{{ route('about.index') }}">About Us</a>
-                </li>
-                <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
-                    <a href="{{ route('contact.index') }}">Contact</a>
-                </li>
-                @guest
-                    <li><a href="{{ route('login') }}">Login</a></li>
-                    <li><a href="{{ route('registrasipelanggan') }}">Register</a></li>
-                @endguest
-           @auth
+   <!-- Offcanvas Menu Section Begin -->
+<div class="offcanvas-menu-overlay"></div>
+<div class="offcanvas-menu-wrapper">
+    <div class="canvas-close">
+        <span class="icon_close"></span>
+    </div>
+    <nav class="mainmenu mobile-menu">
+        <ul>
+            <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+                <a href="{{ route('home.index') }}">Home</a>
+            </li>
+            <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+                <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+            </li>
+            <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
+                <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
+            </li>
+            <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+                <a href="{{ route('about.index') }}">About Us</a>
+            </li>
+            @auth
                 @if (Auth::user()->role === 'pelanggan')
                     <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
                         <a href="{{ route('profile.index') }}">Profil Saya</a>
+                    </li>
+                    <li class="dropdown {{ Request::routeIs('contact.index') || Request::routeIs('pesan_balasan.index') ? 'active' : '' }}">
+                        <a href="javascript:void(0)">Contact ▾</a>
+                        <ul class="dropdown-content">
+                            <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
+                                <a href="{{ route('contact.index') }}">Contact</a>
+                            </li>
+                            <li class="{{ Request::routeIs('pesan_balasan.index') ? 'active' : '' }}">
+                                <a href="{{ route('pesan_balasan.index') }}">Balasan</a>
+                            </li>
+                        </ul>
                     </li>
                 @endif
                 <li>
@@ -74,159 +78,137 @@
                     </form>
                 </li>
             @endauth
+            @guest
+                <li><a href="{{ route('login') }}">Login</a></li>
+                <li><a href="{{ route('registrasipelanggan') }}">Register</a></li>
+            @endguest
+        </ul>
+    </nav>
+</div>
+<div class="canvas-open">
+    <i class="fa fa-bars"></i>
+</div>
+<!-- Offcanvas Menu Section End -->
 
-            </ul>
-        </nav>
-    </div>
-    <div class="canvas-open">
-        <i class="fa fa-bars"></i>
-    </div>
-    <!-- Offcanvas Menu Section End -->
-
-    <div class="menu-item">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-2">
-                    <div class="logo">
-                        <a href="./index.html">
-                            <img src="{{ asset('front-end/img/logo.png') }}" alt="">
-                        </a>
-                    </div>
+<!-- Desktop Menu Section Begin -->
+<div class="menu-item">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-2">
+                <div class="logo">
+                    <a href="{{ route('home.index') }}">
+                        <img src="{{ asset('front-end/img/logo.png') }}" alt="">
+                    </a>
                 </div>
-                <div class="col-lg-10">
-
-                    <div class="nav-menu">
-                        <nav class="mainmenu" id="mobile-menu">
-                            <ul>
-                                <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
-                                    <a href="{{ route('home.index') }}">Home</a>
-                                </li>
-                                <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
-                                    <a href="{{ route('kamar.index') }}">Kamar Kost</a>
-                                </li>
-                                <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
-                                    <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
-                                </li>
-                                <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
-                                    <a href="{{ route('about.index') }}">About Us</a>
-                                </li>
-                                
-                                @guest
-                                    <li>
-                                        <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
-                                    </li>
-                                @endguest
-
-                                @auth
-                                @if (Auth::user()->role === 'pelanggan')
-                            <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
-                                <a href="{{ route('profile.index') }}">Profil Saya</a>
+            </div>
+            <div class="col-lg-10">
+                <div class="nav-menu">
+                    <nav class="mainmenu d-none d-lg-block" id="mobile-menu">
+                        <ul>
+                            <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+                                <a href="{{ route('home.index') }}">Home</a>
+                            </li>
+                            <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+                                <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+                            </li>
+                            <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
+                                <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
+                            </li>
+                            <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+                                <a href="{{ route('about.index') }}">About Us</a>
                             </li>
 
-                               <style>
-    .dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .dropdown > a {
-        padding: 8px 12px;
-        display: inline-block;
-        text-decoration: none;
-        color: #333;
-        font-size: 14px;
-        font-weight: 500;
-        border-radius: 5px;
-        transition: background-color 0.2s ease;
-    }
-
-    .dropdown:hover > a {
-        background-color: #f2f2f2;
-    }
-
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        min-width: 140px;
-        background-color: #fff;
-        border-radius: 6px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-        z-index: 1000;
-        padding: 4px 0;
-    }
-
-    .dropdown:hover .dropdown-content {
-        display: block;
-    }
-
-    .dropdown-content li {
-        list-style: none;
-    }
-
-    .dropdown-content li a {
-        display: block;
-        padding: 6px 12px;
-        text-decoration: none;
-        font-size: 13px;
-        color: #444;
-        transition: background-color 0.2s ease, padding-left 0.2s ease;
-    }
-
-    .dropdown-content li a:hover {
-        background-color: #f5f5f5;
-        padding-left: 16px;
-    }
-
-    .active > a,
-    .dropdown-content li.active > a {
-        font-weight: 600;
-        color: #0066cc;
-    }
-</style>
-
-<li class="dropdown {{ Request::routeIs('contact.index') || Request::routeIs('pesan_balasan.index') ? 'active' : '' }}">
-    <a href="javascript:void(0)">Contact ▾</a>
-    <ul class="dropdown-content">
-        <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
-            <a href="{{ route('contact.index') }}">Contact</a>
-        </li>
-        <li class="{{ Request::routeIs('pesan_balasan.index') ? 'active' : '' }}">
-            <a href="{{ route('pesan_balasan.index') }}">Balasan</a>
-        </li>
-    </ul>
+                            @auth
+                                @if (Auth::user()->role === 'pelanggan')
+                                    <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
+                                        <a href="{{ route('profile.index') }}">Profil Saya</a>
+                                    </li>
+<li class="nav-item">
+  <a href="#" class="dropdown-toggle {{ request()->is('contact*') ? 'active' : '' }}">
+    Contact
+  </a>
+  <ul class="dropdown-menu">
+    <li><a class="{{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}">Contact</a></li>
+    <li><a class="{{ request()->routeIs('pesan_balasan.index') ? 'active' : '' }}" href="{{ route('pesan_balasan.index') }}">Balasan</a></li>
+  </ul>
 </li>
 
-                        @endif
-@endauth
+                                @endif
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
+                                            Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            @endauth
 
-                @guest
-                    <li>
-                        <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
-                    </li>
-                    <li>
-                        <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
-                    </li>
-                @endguest
-
-                @auth
-                    <li>
-                        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
-                                Logout
-                            </button>
-                        </form>
-                    </li>
-                @endauth
-            </ul>
-        </nav>
+                            @guest
+                                <li>
+                                    <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
+                                </li>
+                            @endguest
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+<!-- Desktop Menu Section End -->
+
+<!-- Styling untuk dropdown -->
+<style>
+  /* Untuk navigasi utama */
+  .nav-item {
+      position: relative;
+  }
+
+  .dropdown-toggle {
+      cursor: pointer;
+  }
+
+  .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      z-index: 999;
+  }
+
+  .dropdown-menu li a {
+      display: block;
+      padding: 10px 20px;
+      color: #333;
+      text-decoration: none;
+      white-space: nowrap;
+  }
+
+  .dropdown-menu li a:hover {
+      background-color: #f0f0f0;
+  }
+
+  .nav-item.open .dropdown-menu {
+      display: block;
+  }
+
+  /* Responsive fix */
+  @media (max-width: 768px) {
+      .dropdown-menu {
+          position: static;
+          box-shadow: none;
+      }
+  }
+</style>
+
+
 
             </div>
         </div>
@@ -344,7 +326,7 @@
     <script src="{{ asset('front-end/js/jquery.slicknav.js') }}"></script>
     <script src="{{ asset('front-end/js/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('front-end/js/main.js') }}"></script>
-    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"> --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Init Hamburger Menu -->
@@ -367,6 +349,30 @@
             });
         });
     </script>
+
+    <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const toggles = document.querySelectorAll(".dropdown-toggle");
+
+    toggles.forEach(toggle => {
+      toggle.addEventListener("click", function(e) {
+        e.preventDefault();
+        const parent = this.parentElement;
+        parent.classList.toggle("open");
+      });
+    });
+
+    // Tutup dropdown lain saat buka satu
+    document.addEventListener("click", function(e) {
+      if (!e.target.closest(".nav-item")) {
+        document.querySelectorAll(".nav-item.open").forEach(item => {
+          item.classList.remove("open");
+        });
+      }
+    });
+  });
+</script>
+
 </body>
 
 </html>
