@@ -50,12 +50,8 @@ Route::post('/email/verification-notification', function (Request $request) {
     Route::middleware(['auth', 'verified'])->group(function () {
  Route::resource('/home', \App\Http\Controllers\HomeController::class);
    Route::resource('/about', \App\Http\Controllers\AboutController::class);
-Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
-Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
 
- Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
-    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
@@ -66,14 +62,18 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 
 });
 
+Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
+
+ Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
+    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 
 
     //front-end
 
 Route::resource('/kost', \App\Http\Controllers\KostController::class);
 
-
+Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 
 
 // Fix: Change the route to accept kost_id as URL parameter
@@ -85,12 +85,11 @@ Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'stor
 
 Route::post('/midtrans-callback', [TagihanpelangganController::class, 'callback'])->name('midtrans.callback');
     
-    
 
 
-Route::middleware(['auth', 'role:pelanggan'])->group(function () {
 
-});
+
+
 
 
 

@@ -55,76 +55,24 @@
         </div>
 
         <div class="col-md-6 mb-3">
-          <label class="form-label">Persentase Pembayaran</label>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp30" value="30" 
-                   {{ old('persentase_pembayaran') == '30' ? 'checked' : (old('persentase_pembayaran') ? '' : 'checked') }}>
-            <label class="form-check-label" for="dp30">
-              DP 30% - <span id="dp30-amount">Rp 0</span>
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp40" value="40"
-                   {{ old('persentase_pembayaran') == '40' ? 'checked' : '' }}>
-            <label class="form-check-label" for="dp40">
-              DP 40% - <span id="dp40-amount">Rp 0</span>
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="persentase_pembayaran" id="dp50" value="50"
-                   {{ old('persentase_pembayaran') == '50' ? 'checked' : '' }}>
-            <label class="form-check-label" for="dp50">
-              DP 50% - <span id="dp50-amount">Rp 0</span>
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="persentase_pembayaran" id="bayar_penuh" value="100"
-                   {{ old('persentase_pembayaran') == '100' ? 'checked' : '' }}>
-            <label class="form-check-label" for="bayar_penuh">
-              Bayar Penuh - <span id="bayar_penuh-amount">Rp 0</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="col-md-6 mb-3">
-          <label for="dp_display" class="form-label">Nominal yang akan dibayar</label>
-          <input type="text" class="form-control bg-light" id="dp_display" disabled>
+          <label for="dp_display" class="form-label">Nominal yang Harus Dibayar</label>
+          <input type="text" class="form-control bg-light" id="dp_display" readonly>
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="jenis_pembayaran" class="form-label">Jenis Pembayaran</label>
           <select class="form-select" name="jenis_pembayaran" required>
             <option value="">-- Pilih Jenis Pembayaran --</option>
-            <option value="cash" {{ old('jenis_pembayaran') == 'cash' ? 'selected' : '' }}>
-              <i class="fas fa-money-bill-wave"></i> Cash (Tunai)
-            </option>
-            <option value="transfer_bank" {{ old('jenis_pembayaran') == 'transfer_bank' ? 'selected' : '' }}>
-              <i class="fas fa-university"></i> Transfer Bank
-            </option>
-            <option value="qris" {{ old('jenis_pembayaran') == 'qris' ? 'selected' : '' }}>
-              <i class="fas fa-qrcode"></i> QRIS
-            </option>
-            <option value="debit_card" {{ old('jenis_pembayaran') == 'debit_card' ? 'selected' : '' }}>
-              <i class="fas fa-credit-card"></i> Debit Card
-            </option>
+            <option value="cash" {{ old('jenis_pembayaran') == 'cash' ? 'selected' : '' }}>Cash</option>
+            <option value="transfer_bank" {{ old('jenis_pembayaran') == 'transfer_bank' ? 'selected' : '' }}>Transfer Bank</option>
+            <option value="qris" {{ old('jenis_pembayaran') == 'qris' ? 'selected' : '' }}>QRIS</option>
+            <option value="debit_card" {{ old('jenis_pembayaran') == 'debit_card' ? 'selected' : '' }}>Debit Card</option>
           </select>
-          <small class="form-text text-muted">
-            Pilih metode pembayaran offline yang digunakan pelanggan
-          </small>
         </div>
 
         <div class="col-md-6 mb-3">
           <label for="tgl_booking" class="form-label">Tanggal Booking</label>
-          <input type="date" class="form-control" name="tgl_booking" value="{{ old('tgl_booking') }}" required>
-        </div>
-
-        <div class="col-md-6 mb-3">
-          <label for="status_booking" class="form-label">Status Booking</label>
-          <select class="form-select" name="status_booking" required>
-            <option value="aktif" {{ old('status_booking') == 'aktif' ? 'selected' : '' }}>aktif</option>
-            <option value="masa_tenggang" {{ old('status_booking') == 'masa_tenggang' ? 'selected' : '' }}>masa_tenggang</option>
-            <option value="expired" {{ old('status_booking') == 'expired' ? 'selected' : '' }}>expired</option>
-          </select>
+          <input type="date" class="form-control" name="tgl_booking" required value="{{ old('tgl_booking') }}">
         </div>
       </div>
 
@@ -140,58 +88,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     const kostSelect = document.getElementById('kost_id');
     const dpDisplay = document.getElementById('dp_display');
-    const radioButtons = document.querySelectorAll('input[name="persentase_pembayaran"]');
-    
-    function updateDPAmounts() {
-        const selectedKost = kostSelect.options[kostSelect.selectedIndex];
-        
-        if (selectedKost.value) {
-            const harga = parseFloat(selectedKost.getAttribute('data-harga'));
-            
-            // Update amounts for each percentage
-            document.getElementById('dp30-amount').textContent = 'Rp ' + (harga * 0.3).toLocaleString('id-ID');
-            document.getElementById('dp40-amount').textContent = 'Rp ' + (harga * 0.4).toLocaleString('id-ID');
-            document.getElementById('dp50-amount').textContent = 'Rp ' + (harga * 0.5).toLocaleString('id-ID');
-            document.getElementById('bayar_penuh-amount').textContent = 'Rp ' + harga.toLocaleString('id-ID');
-            
-            // Update display field
-            updateDPDisplay();
-        } else {
-            // Reset all amounts
-            document.getElementById('dp30-amount').textContent = 'Rp 0';
-            document.getElementById('dp40-amount').textContent = 'Rp 0';
-            document.getElementById('dp50-amount').textContent = 'Rp 0';
-            document.getElementById('bayar_penuh-amount').textContent = 'Rp 0';
-            dpDisplay.value = '';
-        }
-    }
-    
-    function updateDPDisplay() {
-        const selectedKost = kostSelect.options[kostSelect.selectedIndex];
-        const selectedPercentage = document.querySelector('input[name="persentase_pembayaran"]:checked');
-        
-        if (selectedKost.value && selectedPercentage) {
-            const harga = parseFloat(selectedKost.getAttribute('data-harga'));
-            const percentage = parseFloat(selectedPercentage.value);
-            const dpAmount = harga * (percentage / 100);
-            
-            dpDisplay.value = 'Rp ' + dpAmount.toLocaleString('id-ID');
+
+    function updateHarga() {
+        const selected = kostSelect.options[kostSelect.selectedIndex];
+        if (selected && selected.value) {
+            const harga = parseFloat(selected.getAttribute('data-harga')) || 0;
+            dpDisplay.value = 'Rp ' + harga.toLocaleString('id-ID');
         } else {
             dpDisplay.value = '';
         }
     }
-    
-    // Event listeners
-    kostSelect.addEventListener('change', updateDPAmounts);
-    
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', updateDPDisplay);
-    });
-    
-    // Initial update
-    updateDPAmounts();
-    
-    // Set minimum date to today
+
+    kostSelect.addEventListener('change', updateHarga);
+    updateHarga();
+
+    // Set minimum date booking = hari ini
     const today = new Date().toISOString().split('T')[0];
     document.querySelector('input[name="tgl_booking"]').setAttribute('min', today);
 });

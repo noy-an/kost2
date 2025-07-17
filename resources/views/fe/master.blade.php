@@ -94,97 +94,55 @@
                     </div>
                 </div>
                 <div class="col-lg-10">
-                    <div class="nav-menu">
-                        <nav class="mainmenu" id="mobile-menu">
-                            <ul>
-                                <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
-                                    <a href="{{ route('home.index') }}">Home</a>
-                                </li>
-                                <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
-                                    <a href="{{ route('kamar.index') }}">Kamar Kost</a>
-                                </li>
-                                <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
-                                    <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
-                                </li>
-                                <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
-                                    <a href="{{ route('about.index') }}">About Us</a>
-                                </li>
-                                <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
-                                    <a href="{{ route('contact.index') }}">Contact</a>
-                                </li>
-                                
-                                @guest
-                                    <li>
-                                        <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
-                                    </li>
-                                @endguest
+    <div class="nav-menu">
+        <nav class="mainmenu" id="mobile-menu">
+            <ul>
+                <li class="{{ Request::routeIs('home.index') ? 'active' : '' }}">
+                    <a href="{{ route('home.index') }}">Home</a>
+                </li>
+                <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
+                    <a href="{{ route('kamar.index') }}">Kamar Kost</a>
+                </li>
+                <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
+                    <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
+                </li>
+                <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
+                    <a href="{{ route('about.index') }}">About Us</a>
+                </li>
+                <li class="{{ Request::routeIs('contact.index') ? 'active' : '' }}">
+                    <a href="{{ route('contact.index') }}">Contact</a>
+                </li>
 
-                                @auth
-                                @if (Auth::user()->role === 'pelanggan')
-                            <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
-                                <a href="{{ route('profile.index') }}">Profil Saya</a>
-                            </li>
-                        @endif
+                @guest
+                    <li>
+                        <a href="{{ route('login') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Login</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('registrasipelanggan') }}" style="background-color:#28a745; color:white; padding:6px 12px; border-radius:5px;">Register</a>
+                    </li>
+                @endguest
 
-                        @auth
-                                @php
-                                    $notifs = \App\Models\Notification::where('user_id', auth()->id())
-                                        ->where('is_read', false)
-                                        ->latest()
-                                        ->get();
-                                @endphp
+                @auth
+                    @if (Auth::user()->role === 'pelanggan')
+                        <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
+                            <a href="{{ route('profile.index') }}">Profil Saya</a>
+                        </li>
+                    @endif
 
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        🔔
-                                        @if ($notifs->count() > 0)
-                                            <span class="badge bg-danger">{{ $notifs->count() }}</span>
-                                        @endif
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="notifDropdown">
-                                                                            @if($notifs->count() > 0)
-                                        @foreach ($notifs as $notif)
-                                            <li>
-                                                <a class="dropdown-item" href="{{ $notif->link }}" onclick="markAsRead('{{ $notif->id }}')">
-                                                    {{ $notif->message }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    @else
-                                        <li><span class="dropdown-item">Tidak ada notifikasi</span></li>
-                                    @endif
+                    <li>
+                        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
+                            @csrf
+                            <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                @endauth
+            </ul>
+        </nav>
+    </div>
+</div>
 
-                                    </ul>
-                                </li>
-
-                                <script>
-                                    function markAsRead(id) {
-                                        fetch('/notif-read/' + id, {
-                                            method: 'POST',
-                                            headers: {
-                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                'Accept': 'application/json'
-                                            }
-                                        });
-                                    }
-                                </script>
-                                @endauth 
-                                                        <li>
-                                        <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            <button type="submit" style="background-color:#28a745; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer;">
-                                                Logout
-                                            </button>
-                                        </form>
-                                    </li>
-                                @endauth
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
