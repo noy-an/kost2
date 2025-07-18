@@ -76,6 +76,13 @@ Route::resource('/about', \App\Http\Controllers\AboutController::class);
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
+// Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+
+
+ Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
+    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
+
+
 
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
@@ -88,15 +95,18 @@ Route::get('/contact/show', [ContactController::class, 'show'])->name('contact.s
     Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');  
 
     Route::get('/pesan_balasan', [PesanBalasanController::class, 'index'])->name('pesan_balasan.index');
-
-
+Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::class, 'create'])
+    ->name('bookingpelanggan.form');
+    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 });
 
-Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
 
- Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
-    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
+
+
+
+
+
 
 
     //front-end
