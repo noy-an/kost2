@@ -97,7 +97,15 @@ Route::get('/contact/show', [ContactController::class, 'show'])->name('contact.s
     Route::get('/pesan_balasan', [PesanBalasanController::class, 'index'])->name('pesan_balasan.index');
 Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::class, 'create'])
     ->name('bookingpelanggan.form');
+
+
+Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
+    ->name('bookingpelanggan.store');
+
+    
+
     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
+
 });
 
 

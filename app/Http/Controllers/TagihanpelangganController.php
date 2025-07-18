@@ -14,12 +14,12 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\Auth;
 use Midtrans\Config;
 use Midtrans\Snap;
-
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingSuccessMail;
 
 class TagihanpelangganController extends Controller
 {
+
     public function __construct()
     {
         // Konfigurasi Midtrans
@@ -33,7 +33,7 @@ class TagihanpelangganController extends Controller
 public function index()
 {
 
-    Carbon::setTestNow(Carbon::parse('2026-1-3'));
+   Carbon::setTestNow(Carbon::parse('2026-1-3'));
     $userId = Auth::id();
 
     $bookings = Booking::with(['kost', 'user', 'tagihan'])
@@ -59,9 +59,7 @@ public function index()
    public function create($booking_id)
 {
 
-
-     Carbon::setTestNow(Carbon::parse('2025-11-4'));
-
+    Carbon::setTestNow(Carbon::parse('2025-11-4'));
     $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
 
     
@@ -191,7 +189,6 @@ public function index()
         ];
 
         $params = [
-            
             'transaction_details' => $transaction_details,
             'customer_details' => $customer_details,
             'item_details' => $item_details,
@@ -210,7 +207,6 @@ public function index()
             ]);
             // KIRIM EMAIL BOOKING SUKSES
 Mail::to(Auth::user()->email);
-      
             return redirect($paymentUrl);
 
         } catch (\Exception $e) {
