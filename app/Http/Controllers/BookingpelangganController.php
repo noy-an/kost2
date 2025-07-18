@@ -9,6 +9,8 @@ use App\Models\Notifbook;
 use Illuminate\Support\Facades\Auth;
 use Midtrans\Config;
 use Midtrans\Snap;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingSuccessMail;
 
 class BookingpelangganController extends Controller
 {
@@ -126,6 +128,10 @@ class BookingpelangganController extends Controller
                 'payment_token' => $params['transaction_details']['order_id'],
                 'payment_url' => $paymentUrl,
             ]);
+
+            // KIRIM EMAIL BOOKING SUKSES
+Mail::to(Auth::user()->email);
+
 
             return redirect($paymentUrl);
         } catch (\Exception $e) {
