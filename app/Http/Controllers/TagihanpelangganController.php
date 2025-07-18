@@ -30,7 +30,7 @@ class TagihanpelangganController extends Controller
 public function index()
 {
 
-    //Carbon::setTestNow(Carbon::parse('2026-1-3'));
+    Carbon::setTestNow(Carbon::parse('2025-10-17'));
     $userId = Auth::id();
 
     $bookings = Booking::with(['kost', 'user', 'tagihan'])
@@ -56,7 +56,7 @@ public function index()
    public function create($booking_id)
 {
 
-   //  Carbon::setTestNow(Carbon::parse('2025-12-2'));
+    Carbon::setTestNow(Carbon::parse('2025-10-17'));
     $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
 
     
@@ -186,6 +186,8 @@ public function index()
         ];
 
         $params = [
+            //  [KOSTUM OPSI PEMBAYARAN DI SINI]
+            'enabled_payments' => ['gopay'], 
             'transaction_details' => $transaction_details,
             'customer_details' => $customer_details,
             'item_details' => $item_details,
