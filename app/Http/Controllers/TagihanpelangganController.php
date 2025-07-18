@@ -59,7 +59,9 @@ public function index()
    public function create($booking_id)
 {
 
-     Carbon::setTestNow(Carbon::parse('2025-8-18'));
+
+     Carbon::setTestNow(Carbon::parse('2025-11-4'));
+
     $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
 
     
