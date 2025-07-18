@@ -68,9 +68,11 @@
             <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
                 <a href="{{ route('kamar.index') }}">Kamar Kost</a>
             </li>
-            <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
-                <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
-            </li>
+            @auth
+                <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
+                    <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
+                </li>
+            @endauth
             <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
                 <a href="{{ route('about.index') }}">About Us</a>
             </li>
@@ -134,9 +136,11 @@
                             <li class="{{ Request::routeIs('kamar.index') ? 'active' : '' }}">
                                 <a href="{{ route('kamar.index') }}">Kamar Kost</a>
                             </li>
-                            <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
-                                <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
-                            </li>
+                             @auth
+                                <li class="{{ Request::routeIs('tagihanpelanggan.index') ? 'active' : '' }}">
+                                    <a href="{{ route('tagihanpelanggan.index') }}">Tagihan</a>
+                                </li>
+                             @endauth
                             <li class="{{ Request::routeIs('about.index') ? 'active' : '' }}">
                                 <a href="{{ route('about.index') }}">About Us</a>
                             </li>
