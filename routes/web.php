@@ -74,7 +74,7 @@ Route::resource('/about', \App\Http\Controllers\AboutController::class);
  
 
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
-Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+Route::get('/tagihanpelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
 // Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
@@ -82,6 +82,7 @@ Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->
  Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 
+    Route::post('/check-payment-status', [TagihanpelangganController::class, 'checkPaymentStatus'])->name('payment.status');
 
 
 
