@@ -74,7 +74,7 @@ Route::resource('/about', \App\Http\Controllers\AboutController::class);
  
 
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
-Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+Route::get('/tagihanpelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
 // Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
