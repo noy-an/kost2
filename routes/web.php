@@ -100,6 +100,9 @@ Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::cl
 
 
 
+Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
+    ->name('bookingpelanggan.store');
+
 
     
 
@@ -108,9 +111,6 @@ Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::cl
 });
 
 
-
-Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
-    ->name('bookingpelanggan.store');
 
 
 
