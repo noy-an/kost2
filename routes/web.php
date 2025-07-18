@@ -56,6 +56,11 @@ Route::resource('/home', \App\Http\Controllers\HomeController::class);
 Route::resource('/about', \App\Http\Controllers\AboutController::class);
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+// Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+
+
+ Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
+    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 
 
 
@@ -73,18 +78,11 @@ Route::get('/contact/show', [ContactController::class, 'show'])->name('contact.s
 
 });
 
-Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
-
-
- Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
-    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
-
 
     //front-end
 
 Route::resource('/kost', \App\Http\Controllers\KostController::class);
 
-Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 
 
 // Fix: Change the route to accept kost_id as URL parameter
