@@ -12,6 +12,25 @@
 
       <div class="navbar-collapse justify-content-end d-flex" id="navbarNav">
         <ul class="navbar-nav align-items-center gap-3">
+               <!-- Simulasi Tanggal -->
+@if (auth()->check() && auth()->user()->role === 'admin')
+    <div style="background: #f8d7da; padding: 10px; border-bottom: 2px solid #f5c6cb;">
+        <form method="POST" action="/simulasi/tanggal" style="display:inline-block; margin-right: 10px;">
+            @csrf
+            <input type="date" name="tanggal" required value="{{ session('simulasi_tanggal') }}">
+            <button type="submit" style="padding: 5px 10px;">Set</button>
+        </form>
+
+        <form method="POST" action="/simulasi/reset" style="display:inline-block;">
+            @csrf
+            <button type="submit" style="padding: 5px 10px;">Reset</button>
+        </form>
+
+        @if (session('simulasi_tanggal'))
+            <span style="margin-left: 15px;">🕒 Simulasi aktif: <strong>{{ session('simulasi_tanggal') }}</strong></span>
+        @endif
+    </div>
+@endif
 
           <!-- Notifikasi -->
           <li class="nav-item dropdown position-relative">
