@@ -98,12 +98,11 @@ Route::get('/contact/show', [ContactController::class, 'show'])->name('contact.s
 Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::class, 'create'])
     ->name('bookingpelanggan.form');
 
-
-
-
     
 
-    Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
+Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
+    ->name('bookingpelanggan.store');
+
 
 });
 

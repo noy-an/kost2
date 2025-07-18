@@ -28,38 +28,39 @@ class ProfilePelangganController extends Controller
 
   public function update(Request $request)
 {
+    
+    
     $user = Auth::user();
+            $request->validate([
+                'name'     => 'required|string|max:255',
+                'email'    => 'required|email|unique:users,email,' . $user->id,
+                'phone'    => 'required|numeric',
+                'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+                'id_card'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ]);
 
-    $request->validate([
-        'name'     => 'required|string|max:255',
-        'email'    => 'required|email|unique:users,email,' . $user->id,
-        'phone'    => 'required|numeric',
-        'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        'id_card'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
-
-    $user->name = $request->name;
-    $user->phone = $request->phone;
-/** @var \App\Models\User|\Illuminate\Contracts\Auth\MustVerifyEmail $user */
-$user = Auth::user();
-
-if ($request->email !== $user->email) {
-    $user->email = $request->email;
-    $user->email_verified_at = null;
-    $user->sendEmailVerificationNotification(); // GA MERAH LAGI 🐶
-}
+            $user->name = $request->name;
+            $user->phone = $request->phone;
+        /** @var \App\Models\User|\Illuminate\Contracts\Auth\MustVerifyEmail $user */
 
 
+                if ($request->email !== $user->email) {
+                    $user->email = $request->email;
+                    $user->email_verified_at = null;
+                    $user->sendEmailVerificationNotification(); // GA MERAH LAGI 🐶
+                }
 
-    if ($request->hasFile('avatar')) {
-        if ($user->avatar) Storage::delete($user->avatar);
-        $user->avatar = $request->file('avatar')->store('avatar');
-    }
 
-    if ($request->hasFile('id_card')) {
-        if ($user->id_card) Storage::delete($user->id_card);
-        $user->id_card = $request->file('id_card')->store('id_card');
-    }
+
+                if ($request->hasFile('avatar')) {
+                    if ($user->avatar) Storage::delete($user->avatar);
+                    $user->avatar = $request->file('avatar')->store('avatar');
+                }
+
+                if ($request->hasFile('id_card')) {
+                    if ($user->id_card) Storage::delete($user->id_card);
+                    $user->id_card = $request->file('id_card')->store('id_card');
+                }
 
     $user->save();
 

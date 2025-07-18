@@ -25,7 +25,11 @@
     <link rel="stylesheet" href="{{ asset('front-end/css/magnific-popup.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('front-end/css/slicknav.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('front-end/css/style.css') }}" type="text/css">
-    
+    <!-- Cropper CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+<!-- Cropper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
 </head>
 
 <body>
