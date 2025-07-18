@@ -19,7 +19,26 @@ use App\Http\Controllers\PdfController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\ProfilePelangganController;
 use App\Http\Controllers\PesanBalasanController;
+use App\Http\Controllers\SimulasiController;
 // use App\Http\Controllers\LaporanPdfController;
+use App\Models\Notifbook;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Carbon;
+
+
+Route::middleware(['web'])->group(function () {
+  Auth::routes(['verify' => true]);
+
+
+    // 💻 Halaman form simulasi (kalau lo butuh tampilin form-nya di route terpisah)
+    Route::get('/simulasi/tanggal', [SimulasiController::class, 'showForm'])->name('simulasi.form');
+
+    // ✅ Set tanggal simulasi (POST)
+    Route::post('/simulasi/tanggal', [SimulasiController::class, 'setTanggal'])->name('simulasi.set');
+
+    // ❌ Reset tanggal simulasi (POST)
+    Route::post('/simulasi/reset', [SimulasiController::class, 'resetTanggal'])->name('simulasi.reset');
+
 
 Auth::routes(['verify' => true]);
 
@@ -47,20 +66,22 @@ Route::post('/email/verification-notification', function (Request $request) {
     });
 
 
-
+Route::resource('/home', \App\Http\Controllers\HomeController::class);
+Route::resource('/about', \App\Http\Controllers\AboutController::class);
   Route::resource('/', \App\Http\Controllers\HomeController::class);
     Route::middleware(['auth', 'verified'])->group(function () {
 
  
-Route::resource('/home', \App\Http\Controllers\HomeController::class);
-Route::resource('/about', \App\Http\Controllers\AboutController::class);
+
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
 Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+
 // Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
 
 
  Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
+
 
 
 
@@ -74,9 +95,23 @@ Route::get('/contact/show', [ContactController::class, 'show'])->name('contact.s
     Route::post('/profile/update', [ProfilePelangganController::class, 'update'])->name('profile.update');  
 
     Route::get('/pesan_balasan', [PesanBalasanController::class, 'index'])->name('pesan_balasan.index');
+Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::class, 'create'])
+    ->name('bookingpelanggan.form');
 
 
+Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
+    ->name('bookingpelanggan.store');
+
+    
 });
+
+
+
+
+
+
+
+
 
 
     //front-end
@@ -86,11 +121,7 @@ Route::resource('/kost', \App\Http\Controllers\KostController::class);
 
 
 // Fix: Change the route to accept kost_id as URL parameter
-Route::get('/bookingpelanggan/create/{kost_id}', [BookingpelangganController::class, 'create'])
-    ->name('bookingpelanggan.form');
 
-Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'store'])
-    ->name('bookingpelanggan.store');
 
 Route::post('/midtrans-callback', [TagihanpelangganController::class, 'callback'])->name('midtrans.callback');
     
@@ -102,7 +133,7 @@ Route::post('/midtrans-callback', [TagihanpelangganController::class, 'callback'
 
 
 
-use App\Models\Notifbook;
+
 
 Route::patch('/notifbook/{id}/read', function ($id) {
     Notifbook::where('id', $id)->update(['is_read' => true]);
@@ -149,3 +180,5 @@ Route::get('lupa-password', [ResetPasswordController::class, 'showForgetForm'])-
 Route::post('lupa-password', [ResetPasswordController::class, 'sendResetLink'])->name('password.email');
 Route::get('reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
+
+});
