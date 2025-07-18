@@ -56,7 +56,7 @@ class ResetPasswordController extends Controller
         $request->validate([
             'email' => 'required|email',
             'token' => 'required',
-            'password' => 'required|min:5|confirmed',
+            'password' => 'required|min:6|confirmed',
         ]);
 
         $reset = DB::table('password_reset_tokens')
