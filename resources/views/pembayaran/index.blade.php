@@ -13,193 +13,143 @@
 @section('content')
 <div class="card shadow-sm rounded-3 border-0">
   <div class="card-body">
-    <!-- Header -->
+
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
       <h4 class="fw-bold text-dark mb-0">💰 Data Pembayaran</h4>
       <div class="d-flex gap-2">
-        <button type="submit" form="bulkDeleteForm" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm" id="btnBulkDelete">
-          <i class="ti ti-trash"></i> Hapus Terpilih
-        </button>
-        <a href="{{ route('pembayaran.create') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm">
-          <i class="ti ti-plus"></i> Tambah Data
+        <a href="{{ route('pembayaran.index', ['filter' => 'dp']) }}" class="btn btn-outline-primary {{ $filter == 'dp' ? 'active' : '' }}">Pembayaran DP</a>
+        <a href="{{ route('pembayaran.index', ['filter' => 'tagihan']) }}" class="btn btn-outline-primary {{ $filter == 'tagihan' ? 'active' : '' }}">Pembayaran Tagihan</a>
+      </div>
+    </div>
+
+    <form action="{{ route('pembayaran.index', ['filter' => $filter]) }}" method="GET" class="row g-2 mb-3">
+      <input type="hidden" name="filter" value="{{ $filter }}">
+      <div class="col-md-3">
+        <input type="date" name="dari" class="form-control" value="{{ request('dari') }}">
+      </div>
+      <div class="col-md-3">
+        <input type="date" name="sampai" class="form-control" value="{{ request('sampai') }}">
+      </div>
+      <div class="col-md-3">
+        <input type="text" name="nama" class="form-control" placeholder="Cari nama user..." value="{{ request('nama') }}">
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
+        @if(request('nama') || request('dari') || request('sampai'))
+        <a href="{{ route('pembayaran.index', ['filter' => $filter]) }}" class="btn btn-outline-danger">
+          <i class="ti ti-x"></i>
         </a>
-      </div>
-    </div>
-
-    <!-- Filter Form -->
-    <form action="{{ route('pembayaran.index') }}" method="GET" class="mb-4">
-      <div class="row g-2">
-        <div class="col-md-3">
-          <input type="date" name="dari" class="form-control" value="{{ request('dari') }}">
-        </div>
-        <div class="col-md-3">
-          <input type="date" name="sampai" class="form-control" value="{{ request('sampai') }}">
-        </div>
-        <div class="col-md-3">
-          <input type="date" name="tanggal_bayar" class="form-control" value="{{ request('tanggal_bayar') }}">
-        </div>
-        <div class="col-md-3">
-          <input type="text" name="search" class="form-control" placeholder="Cari nama / metode / tempat bayar..." value="{{ request('search') }}">
-        </div>
-        <div class="col-12 d-flex gap-2 mt-2">
-          <button type="submit" class="btn btn-outline-primary">
-            <i class="ti ti-filter"></i> Filter
-          </button>
-          @if(request('search') || request('dari') || request('sampai') || request('tanggal_bayar'))
-          <a href="{{ route('pembayaran.index') }}" class="btn btn-outline-danger">
-            <i class="ti ti-x"></i> Reset
-          </a>
-          @endif
-        </div>
+        @endif
       </div>
     </form>
 
-    <!-- Bulk Delete Form -->
-    <form action="{{ route('pembayaran.bulk-delete') }}" method="POST" id="bulkDeleteForm">
-      @csrf
-      @method('DELETE')
+    @if(request('dari') && request('sampai'))
+    <p class="text-muted">
+      Menampilkan data dari <strong>{{ request('dari') }}</strong> sampai <strong>{{ request('sampai') }}</strong>
+    </p>
+    @endif
 
-      <!-- Table -->
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle text-center">
-          <thead class="table-light">
-            <tr class="text-nowrap">
-              <th><input type="checkbox" id="checkAll"></th>
-              <th>No</th>
-              <th>Booking</th>
-              <th>Metode</th>
-              <th>Status</th>
-              <th>No. Rekening</th>
-              <th>Tempat</th>
-              <th>ID Transaksi</th>
-              <th>Tgl Bayar</th>
-              <th>Bukti</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($pembayarans as $no => $pembayaran)
-            <tr>
-              <td><input type="checkbox" name="ids[]" value="{{ $pembayaran->id }}" class="checkItem"></td>
-              <td>{{ $no + $pembayarans->firstItem() }}</td>
-              <td class="text-start text-nowrap">
-                <strong>User:</strong> {{ $pembayaran->booking->user->name ?? '-' }}<br>
-                <strong>Kamar:</strong> {{ $pembayaran->booking->kost->nomor_kamar ?? '-' }}<br>
-                <strong>Tgl:</strong> {{ \Carbon\Carbon::parse($pembayaran->booking->tgl_booking)->translatedFormat('d F Y') }}
-              </td>
-              <td>{{ $pembayaran->metode_bayar }}</td>
-              <td>
-                <span class="badge 
-                  @if($pembayaran->status_bayar === 'paid') bg-success
-                  @elseif($pembayaran->status_bayar === 'unpaid') bg-danger
-                  @else bg-warning text-dark
-                  @endif">
-                  {{ ucfirst($pembayaran->status_bayar) }}
-                </span>
-              </td>
-              <td>{{ $pembayaran->no_rekening }}</td>
-              <td>{{ $pembayaran->tempat_bayar }}</td>
-              <td>{{ $pembayaran->transaksi_id }}</td>
-              <td>
-                {{ $pembayaran->tanggal_bayar ? \Carbon\Carbon::parse($pembayaran->tanggal_bayar)->translatedFormat('d F Y') : '-' }}
-              </td>
-              <td>
-                @if($pembayaran->bukti_bayar)
-                <img src="{{ asset('storage/' . $pembayaran->bukti_bayar) }}" alt="Bukti Bayar" width="50" height="50" class="rounded object-fit-cover">
-                @else
-                <span class="text-muted">-</span>
-                @endif
-              </td>
-              <td>
-                <div class="d-flex justify-content-center gap-1">
-                  <a href="{{ route('pembayaran.edit', $pembayaran->id) }}" class="btn btn-sm btn-warning" title="Edit">
-                    <i class="ti ti-edit"></i>
-                  </a>
-                  {{-- <form action="{{ route('pembayaran.destroy', $pembayaran->id) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
-                      <i class="ti ti-trash"></i>
-                    </button>
-                  </form> --}}
-                </div>
-              </td>
-            </tr>
-            @empty
-            <tr>
-              <td colspan="11" class="text-center text-muted py-4">
-                <i class="ti ti-info-circle"></i> Belum ada data pembayaran tersedia.
-              </td>
-            </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
-    </form>
+    @if(request('nama'))
+    <p class="text-muted">
+      Mencari nama user: <strong>{{ request('nama') }}</strong>
+    </p>
+    @endif
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-end mt-3">
-      {{ $pembayarans->appends(request()->query())->links('pagination::bootstrap-5') }}
+
+   @if ($filter == 'dp')
+<h6 class="fw-semibold text-dark mb-3">Data Pembayaran DP Booking</h6>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-hover align-middle text-center">
+    <thead class="table-light">
+      <tr class="text-nowrap">
+        <th>No</th>
+        <th>Nama User</th>
+        <th>No. Kamar</th>
+        <th>DP</th>
+        <th>Jenis Pembayaran</th>
+        <th>Tanggal Booking</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      @forelse($bookings as $index => $booking)
+      <tr>
+        <td>{{ $index + 1 }}</td>
+        <td>{{ $booking->user->name ?? '-' }}</td>
+        <td>{{ $booking->kost->nomor_kamar ?? '-' }}</td>
+        <td class="text-end">Rp{{ number_format($booking->dp, 0, ',', '.') }}</td>
+        <td class="text-end">{{ $booking->jenis_pembayaran }}</td>
+        <td>{{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d F Y') }}</td>
+
+        @php
+        $lastTagihan = $booking->tagihan->where('status_pembayaran', 'success')->sortByDesc('tanggal_tagihan')->first();
+        $tglTagihan = $lastTagihan ? \Carbon\Carbon::parse($lastTagihan->tanggal_tagihan) : \Carbon\Carbon::parse($booking->tgl_booking);
+        $jatuhTempo = $tglTagihan->copy()->addDays(30);
+        $tenggang = $jatuhTempo->copy()->addDay();
+        $now = \Carbon\Carbon::now();
+
+        if ($now->gt($tenggang)) {
+            $status = 'Expired';
+            $badge = 'bg-danger';
+        } elseif ($now->gt($jatuhTempo)) {
+            $status = 'Masa Tenggang';
+            $badge = 'bg-warning text-dark';
+        } else {
+            $status = 'Aktif';
+            $badge = 'bg-success';
+        }
+        @endphp
+
+        <td><span class="badge {{ $badge }}">{{ $status }}</span></td>
+      </tr>
+      @empty
+      <tr>
+        <td colspan="7" class="text-center text-muted py-4">
+          <i class="ti ti-info-circle"></i> Tidak ada data DP Booking.
+        </td>
+      </tr>
+      @endforelse
+        </tbody>
+      </table>
     </div>
+
+    @elseif ($filter == 'tagihan')
+    <h6 class="fw-semibold text-dark mb-3">Data Pembayaran Tagihan</h6>
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle text-center">
+        <thead class="table-light">
+          <tr>
+            <th>No</th>
+            <th>User</th>
+            <th>Kost</th>
+            <th>Bulan Tagihan</th>
+            <th>Jumlah Dibayar</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($tagihans as $no => $tagihan)
+          <tr>
+            <td>{{ $no + 1 }}</td>
+            <td>{{ $tagihan->booking->user->name ?? '-' }}</td>
+            <td class="text-start">
+              <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
+              <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
+            </td>
+            <td>{{ $tagihan->nama_bulan_dinamis }}</td>
+            <td class="text-end">Rp {{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</td>
+          </tr>
+          @empty
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">
+              <i class="ti ti-info-circle"></i> Tidak ada data pembayaran tagihan.
+            </td>
+          </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+    @endif
   </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  // SweetAlert individual delete
-  document.querySelectorAll(".btn-delete").forEach(button => {
-    button.addEventListener("click", function (e) {
-      e.preventDefault();
-      const form = this.closest("form");
-
-      Swal.fire({
-        title: 'Yakin ingin menghapus?',
-        text: "Data pembayaran akan dihapus permanen!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ya, hapus!',
-        cancelButtonText: 'Batal'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          form.submit();
-        }
-      });
-    });
-  });
-
-  // Checkbox: pilih semua
-  document.getElementById('checkAll').addEventListener('change', function () {
-    document.querySelectorAll('.checkItem').forEach(cb => cb.checked = this.checked);
-  });
-
-  // SweetAlert bulk delete
-  document.getElementById('btnBulkDelete').addEventListener('click', function (e) {
-    e.preventDefault();
-    const selected = document.querySelectorAll('.checkItem:checked');
-    if (selected.length === 0) {
-      Swal.fire('Tidak ada data terpilih!', 'Pilih minimal satu pembayaran untuk dihapus.', 'warning');
-      return;
-    }
-
-    Swal.fire({
-      title: 'Hapus data terpilih?',
-      text: `Sebanyak ${selected.length} data akan dihapus permanen.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Ya, hapus semua!',
-      cancelButtonText: 'Batal'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        document.getElementById('bulkDeleteForm').submit();
-      }
-    });
-  });
-});
-</script>
-@endpush
