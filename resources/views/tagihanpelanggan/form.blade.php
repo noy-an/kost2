@@ -26,18 +26,70 @@
                         </div>
                     @endif
 
+                    @if(isset($paymentData) && $paymentData['success'])
+                        <!-- QR Code Payment Section -->
+                        <div class="text-center mb-4">
+                            <h5 class="text-primary mb-3"><i class="fas fa-qrcode me-2"></i>Scan QR Code untuk Pembayaran</h5>
+                            <img src="{{ $paymentData['qr_code_url'] }}" alt="QR Code Gopay" class="img-fluid mb-3" style="max-width: 250px;">
+                            <p class="text-muted small mb-3">Scan QR code di atas menggunakan aplikasi GoPay</p>
+                            
+                            <div class="d-flex justify-content-center gap-3 mb-4">
+                                <a href="{{ $paymentData['deeplink_url'] }}" class="btn btn-outline-success">
+                                    <i class="fab fa-google-play me-2"></i>Bayar dengan GoPay
+                                </a>
+                              <button onclick="checkStatus()" class="btn btn-outline-primary">
+    <i class="fas fa-sync-alt me-2"></i>Cek Status Pembayaran
+</button>
+
+<script>
+function checkStatus() {
+    fetch("{{ route('payment.status') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            order_id: '{{ $paymentData['order_id'] ?? '' }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Status Pembayaran: ' + data.data.transaction_status + 
+                  '\nTanggal: ' + data.data.transaction_time);
+        } else {
+            alert('Gagal memeriksa status: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Terjadi kesalahan saat memeriksa status');
+        console.error(error);
+    });
+}
+</script>
+                            </div>
+                        </div>
+                    @else
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Gagal memproses pembayaran. Silakan coba lagi.
+                        </div>
+                    @endif
+
                     <form action="{{ route('tagihanpelanggan.store') }}" method="POST" id="payment-form">
                         @csrf
                         <input type="hidden" name="booking_id" value="{{ $booking->id }}">
                         <input type="hidden" name="bayar_per_bulan" value="{{ $nominalBayar }}">
                         <input type="hidden" name="jumlah_bayar" value="1">
                         <input type="hidden" name="tanggal_tagihan" value="{{ $tanggalTagihan }}">
+                        <input type="hidden" name="order_id" value="{{ $paymentData['order_id'] ?? '' }}">
 
                         <div class="row g-3">
                             <!-- Customer Info Section -->
                             <div class="col-md-12">
                                 <div class="bg-light p-3 rounded mb-3">
-                                    <h5 class="text-primary mb-3"><i ></i>Informasi Pelanggan</h5>
+                                    <h5 class="text-primary mb-3"><i class="fas fa-user-circle me-2"></i>Informasi Pelanggan</h5>
                                     <div class="row">
                                         <div class="col-md-6">
                                             <label class="form-label text-muted small">Nama Pemesan</label>
@@ -54,7 +106,7 @@
                             <!-- Payment Summary Section -->
                             <div class="col-md-12">
                                 <div class="border p-3 rounded mb-3">
-                                    <h5 class="text-primary mb-3"><i></i>Ringkasan Pembayaran</h5>
+                                    <h5 class="text-primary mb-3"><i class="fas fa-receipt me-2"></i>Ringkasan Pembayaran</h5>
                                     <div class="row">
                                         <div class="col-md-6 mb-2">
                                             <label class="form-label text-muted small">Harga Kost/Bulan</label>
@@ -93,21 +145,28 @@
                             </div>
 
                             <!-- Submit Button -->
-                            <div class="col-md-12 mt-2">
-                                <button type="submit" class="btn btn-primary btn-lg w-100 py-3" id="pay-button">
-                                    <i ></i>Bayar Sekarang (Rp {{ number_format($nominalBayar, 0, ',', '.') }})
-                                </button>
-                                <p class="text-muted small mt-2 text-center">
-                                    <i class="fas fa-info-circle me-1"></i>Anda akan diarahkan ke halaman pembayaran Midtrans
-                                </p>
-                            </div>
+                            <!-- Submit Button -->
+<div class="col-md-12 mt-2" id="payment-button-container">
+    @if(isset($paymentData) && $paymentData['success'])
+        <button type="submit" class="btn btn-primary btn-lg w-100 py-3" id="pay-button">
+            <i class="fas fa-check-circle me-2"></i>Konfirmasi Pembayaran (Rp {{ number_format($nominalBayar, 0, ',', '.') }})
+        </button>
+        <p class="text-muted small mt-2 text-center">
+            <i class="fas fa-info-circle me-1"></i>Pastikan Anda sudah menyelesaikan pembayaran melalui QR code di atas
+        </p>
+    @else
+        <button type="submit" class="btn btn-primary btn-lg w-100 py-3" id="pay-button">
+            <i class="fas fa-check-circle me-2"></i>Konfirmasi Pembayaran (Rp {{ number_format($nominalBayar, 0, ',', '.') }})
+        </button>
+    @endif
+</div>
                         </div>
                     </form>
                 </div>
 
                 <div class="card-footer bg-light py-3">
                     <div class="text-center text-muted small">
-                        <i ></i> Transaksi aman dan terenkripsi
+                        <i class="fas fa-lock me-1"></i> Transaksi aman dan terenkripsi
                     </div>
                 </div>
             </div>
@@ -117,16 +176,34 @@
 @endsection
 
 @push('scripts')
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+
+@if(isset($paymentData) && $paymentData['success'])
 <script>
-    document.getElementById('pay-button').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('pay-button').disabled = true;
-        document.getElementById('pay-button').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
-        
-        document.getElementById('payment-form').submit();
-    });
+let paymentCheckInterval = setInterval(function() {
+    fetch("{{ route('payment.status') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            order_id: '{{ $paymentData['order_id'] }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && 
+           (data.data.transaction_status === 'settlement' || 
+            data.data.transaction_status === 'capture')) {
+            clearInterval(paymentCheckInterval);
+            window.location.href = "{{ route('tagihanpelanggan.index') }}?payment=success";
+        }
+    })
+    .catch(error => console.error('Error checking payment status:', error));
+}, 5000);
 </script>
+@endif
 @endpush
 
 @push('styles')
@@ -152,6 +229,13 @@
     .btn-primary:hover {
         background-color: #1e3c8b;
         transform: translateY(-2px);
+    }
+    #qrcode-container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        display: inline-block;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 </style>
 @endpush
