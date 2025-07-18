@@ -33,7 +33,7 @@ class TagihanpelangganController extends Controller
 public function index()
 {
 
-    Carbon::setTestNow(Carbon::parse('2025-8-18'));
+   // Carbon::setTestNow(Carbon::parse('2025-9-17'));
     $userId = Auth::id();
 
     $bookings = Booking::with(['kost', 'user', 'tagihan'])
@@ -59,7 +59,7 @@ public function index()
    public function create($booking_id)
 {
 
-     Carbon::setTestNow(Carbon::parse('2025-8-18'));
+    //Carbon::setTestNow(Carbon::parse('2025-8-18'));
     $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
 
     
