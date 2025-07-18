@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tagihan', function (Blueprint $table) {
-                $table->string('status_pembayaran')->default('pending')->change();
+                $table->string('status_pembayaran')->default('success')->change();
         });
     }
 
@@ -21,8 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('tagihan', function (Blueprint $table) {
-            //
-        });
+        //
     }
 };
