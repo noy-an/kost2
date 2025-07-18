@@ -15,7 +15,7 @@ class CekBookingDanKirimNotif extends Command
     public function handle()
     {
        Log::info('🔥 CekBookingDanKirimNotif JALAN jam: ' . now());
-  //Carbon::setTestNow(Carbon::parse('2026-1-3'));
+  Carbon::setTestNow(Carbon::parse('2025-9-17'));
 
         $bookings = Booking::with(['user', 'kost', 'tagihan'])->get();
 
