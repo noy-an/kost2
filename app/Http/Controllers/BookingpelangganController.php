@@ -35,11 +35,9 @@ class BookingpelangganController extends Controller
         }
 
         $harga_calculations = [
-           
             'bayar_penuh' => round($kost->harga),
         ];
 
-       
         $bookings = Booking::where('kost_id', $kost->id)->get();
         $disabledDates = [];
 
@@ -74,8 +72,8 @@ class BookingpelangganController extends Controller
                 ->with('error', 'Maaf, kost sudah tidak tersedia.');
         }
 
-       $nominal_pembayaran = $request->nominal_bayar;
-      $jenis_pembayaran = 'bayar_penuh';
+        $nominal_pembayaran = $request->nominal_bayar;
+        $jenis_pembayaran = 'bayar_penuh';
 
         $booking = Booking::create([
             'user_id' => Auth::id(),
@@ -118,8 +116,17 @@ class BookingpelangganController extends Controller
             'item_details' => $item_details,
             'callbacks' => [
                 'finish' => route('tagihanpelanggan.index'),
-            ]
+            ],
         ];
+
+        // === Bagian Custom Opsi Pembayaran Midtrans ===
+        $params['enabled_payments'] = [      // 
+            // 'qris',
+            'gopay',
+                  // 
+            // 'credit_card' // 
+        ];
+        // === Selesai bagian custom ===
 
         try {
             $paymentUrl = Snap::createTransaction($params)->redirect_url;
