@@ -19,14 +19,15 @@ class AuthController extends Controller
     {
         // VALIDASI INPUT
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'role' => 'required|string',
-            'phone' => 'required|string',
-            'password' => 'required|string|min:6',
-            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-            'id_card' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-        ]);
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'role' => 'required|string',
+        'phone' => 'required|string|min:10|max:15|unique:users,phone',
+        'password' => 'required|string|min:6',
+        'avatar' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+    '   id_card' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+    ]);
+
 
         // SIMPAN DATA
         $user = new User();
@@ -76,7 +77,7 @@ class AuthController extends Controller
                 return redirect()->route('login')->with('gagal', 'Unauthorized access.');
             }
         } else {
-            return redirect()->back()->with('gagal', 'Email or Password is incorrect.');
+            return redirect()->back()->withInput()->with('gagal', 'Email atau Password salah.');
         }
     }
 

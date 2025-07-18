@@ -256,18 +256,6 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
-
-<script>
-  const input = document.querySelector("#phone");
-  const iti = window.intlTelInput(input, {
-    separateDialCode: true,
-    initialCountry: "id", 
-    preferredCountries: ["id", "us", "gb", "my", "sg"],
-    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
-  });
-</script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const togglePassword = document.getElementById('togglePassword');
@@ -287,9 +275,9 @@
       const phoneField = document.getElementById('phone');
       phoneField.addEventListener('input', function() {
         let value = this.value.replace(/\D/g, '');
-        if (value.length >= 10) {
+        if (value.length >= 6) {
           if (value.startsWith('62')) {
-            value = '+' + value;
+            value = '+62' + value.substring(2);
           } else if (value.startsWith('0')) {
             value = '+62' + value.substring(1);
           } else if (!value.startsWith('+')) {

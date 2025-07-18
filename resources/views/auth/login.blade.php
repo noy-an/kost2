@@ -295,11 +295,12 @@
         <div class="form-group">
           <label for="email" class="form-label">Email</label>
           <input type="email" 
-                 class="form-control" 
-                 name="email" 
-                 id="email" 
-                 placeholder="Masukkan email Anda"
-                 required>
+            class="form-control" 
+            name="email" 
+            id="email" 
+            placeholder="Masukkan email Anda"
+            value="{{ old('email') }}"
+            required>
         </div>
 
         <!-- Password Field -->
