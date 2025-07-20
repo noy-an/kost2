@@ -17,6 +17,8 @@ use Midtrans\Snap;
 use Midtrans\CoreApi;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingSuccessMail;
+use Midtrans\Transaction;
+
 
 class TagihanpelangganController extends Controller
 {
@@ -154,46 +156,6 @@ class TagihanpelangganController extends Controller
         }
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'booking_id' => 'required|exists:booking,id',
-            'bayar_per_bulan' => 'required|integer|min:0',
-            'jumlah_bayar' => 'required|integer|min:0',
-        ]);
-
-        $booking = Booking::where('id', $request->booking_id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
-
-        if (!in_array($booking->status_booking, ['aktif', 'masa_tenggang'])) {
-            return back()->with('error', 'Booking ini tidak bisa dibayar.');
-        }
-
-        $tagihan = Tagihan::create([
-            'booking_id' => $request->booking_id,
-            'bayar_per_bulan' => $request->bayar_per_bulan,
-            'jumlah_bayar' => $request->jumlah_bayar,
-            'tanggal_tagihan' => Tagihan::where('booking_id', $request->booking_id)
-                ->orderByDesc('tanggal_tagihan')
-                ->first()
-                ? Carbon::parse(
-                    Tagihan::where('booking_id', $request->booking_id)
-                        ->orderByDesc('tanggal_tagihan')
-                        ->first()
-                        ->tanggal_tagihan
-                )->addDays(30)
-                : Carbon::parse($booking->tgl_booking)->addDays(30),
-            'status_pembayaran' => 'pending',
-            'payment_token' => $request->order_id
-        ]);
-
-        Mail::to(Auth::user()->email)->send(new BookingSuccessMail($booking));
-
-        return redirect()->route('tagihanpelanggan.index')
-            ->with('success', 'Pembayaran sedang diproses. Silakan cek status pembayaran Anda.');
-    }
-
     public function callback(Request $request)
     {
         try {
@@ -256,10 +218,62 @@ class TagihanpelangganController extends Controller
     }
 
     public function checkPaymentStatus(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required'
+        ]);
+
+        try {
+            Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+            Config::$isProduction = env('MIDTRANS_IS_PRODUCTION');
+            Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
+            Config::$is3ds = env('MIDTRANS_IS_3DS');
+
+            $status = \Midtrans\Transaction::status($request->order_id);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $status
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+   public function updateStatus($bookingId)
+    {
+        $booking = Booking::where('id', $bookingId)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Update booking status to 'aktif'
+        $booking->status_booking = 'aktif';
+        $booking->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function store(Request $request)
 {
     $request->validate([
+        'booking_id' => 'required|exists:booking,id',
+        'bayar_per_bulan' => 'required|integer|min:0',
+        'jumlah_bayar' => 'required|integer|min:1',
         'order_id' => 'required'
     ]);
+
+    $booking = Booking::where('id', $request->booking_id)
+        ->where('user_id', Auth::id())
+        ->firstOrFail();
+
+    if (!in_array($booking->status_booking, ['aktif', 'masa_tenggang'])) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Booking ini tidak bisa dibayar.'
+        ], 400);
+    }
 
     try {
         Config::$serverKey = env('MIDTRANS_SERVER_KEY');
@@ -267,17 +281,54 @@ class TagihanpelangganController extends Controller
         Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
         Config::$is3ds = env('MIDTRANS_IS_3DS');
 
-        $status = \Midtrans\Transaction::status($request->order_id);
+        $statusResponse = \Midtrans\Transaction::status($request->order_id);
         
+        $statusMap = match ($statusResponse->transaction_status) {
+            'capture' => $statusResponse->fraud_status === 'challenge' ? 'challenge' : 'success',
+            'settlement' => 'success',
+            'pending' => 'pending',
+            'deny' => 'failed',
+            'expire' => 'expired',
+            'cancel' => 'cancelled',
+            default => 'unknown',
+        };
+
+        $tagihan = Tagihan::create([
+            'booking_id' => $request->booking_id,
+            'bayar_per_bulan' => $request->bayar_per_bulan,
+            'jumlah_bayar' => $request->jumlah_bayar,
+            'tanggal_tagihan' => Tagihan::where('booking_id', $request->booking_id)
+                ->orderByDesc('tanggal_tagihan')
+                ->first()
+                ? Carbon::parse(
+                    Tagihan::where('booking_id', $request->booking_id)
+                        ->orderByDesc('tanggal_tagihan')
+                        ->first()
+                        ->tanggal_tagihan
+                )->addDays(30)
+                : Carbon::parse($booking->tgl_booking)->addDays(30),
+            'status_pembayaran' => $statusMap,
+            'payment_token' => $request->order_id
+        ]);
+
+        if ($statusMap === 'success') {
+            $booking->status_booking = 'aktif';
+            $booking->save();
+        }
+
+        Mail::to(Auth::user()->email)->send(new BookingSuccessMail($booking));
+
         return response()->json([
             'success' => true,
-            'data' => $status
+            'redirect' => route('tagihanpelanggan.index')
         ]);
+
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => $e->getMessage()
+            'message' => 'Gagal memverifikasi pembayaran: ' . $e->getMessage()
         ], 500);
     }
 }
-}
+
+} 
