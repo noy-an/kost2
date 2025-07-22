@@ -137,7 +137,7 @@
               <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
             </td>
             <td>{{ $tagihan->nama_bulan_dinamis }}</td>
-            <td class="text-end">Rp {{ number_format($tagihan->jumlah_bayar, 0, ',', '.') }}</td>
+            <td class="text-end">Rp {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
           </tr>
           @empty
           <tr>

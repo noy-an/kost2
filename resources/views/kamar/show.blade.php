@@ -84,23 +84,29 @@
                                 </ul>
 
                                 <div class="mt-auto">
-                                    @if($kosts->status === 'kosong')
-                                        @auth('web')
-                                            <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" 
-                                               class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
-                                                <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
-                                            </a>
-                                        @else
-                                            <button onclick="showLoginAlert()" 
-                                                    class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
-                                                <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
-                                            </button>
-                                        @endauth
-                                    @else
-                                        <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
-                                            <i class="fas fa-times-circle me-2"></i>Kamar Tidak Tersedia
-                                        </button>
-                                    @endif
+                                 @if($kosts->status === 'kosong')
+    @auth('web')
+        @if($sudahBooking)
+            <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
+                <i class="fas fa-ban me-2"></i>Anda Sudah Booking Kamar Ini
+            </button>
+        @else
+            <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" 
+               class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
+                <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
+            </a>
+        @endif
+    @else
+        <button onclick="showLoginAlert()" 
+                class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
+            <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
+        </button>
+    @endauth
+@else
+    <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
+        <i class="fas fa-times-circle me-2"></i>Kamar Tidak Tersedia
+    </button>
+@endif
 
                                     <a href="{{ route('kamar.index') }}" 
                                        class="btn btn-outline-dark btn-lg w-100 rounded-pill">
