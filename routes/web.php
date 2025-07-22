@@ -83,7 +83,8 @@ Route::get('/tagihanpelanggan', [TagihanPelangganController::class, 'index'])->n
     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
 
     Route::post('/check-payment-status', [TagihanpelangganController::class, 'checkPaymentStatus'])->name('payment.status');
-
+Route::post('/tagihanpelanggan/update-status/{booking}', [TagihanpelangganController::class, 'updateStatus'])
+    ->name('tagihanpelanggan.updateStatus');
 
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');

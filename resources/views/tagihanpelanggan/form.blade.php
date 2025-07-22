@@ -37,38 +37,9 @@
                                 <a href="{{ $paymentData['deeplink_url'] }}" class="btn btn-outline-success">
                                     <i class="fab fa-google-play me-2"></i>Bayar dengan GoPay
                                 </a>
-                              <button onclick="checkStatus()" class="btn btn-outline-primary">
-    <i class="fas fa-sync-alt me-2"></i>Cek Status Pembayaran
-</button>
-
-<script>
-function checkStatus() {
-    fetch("{{ route('payment.status') }}", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({
-            order_id: '{{ $paymentData['order_id'] ?? '' }}'
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Status Pembayaran: ' + data.data.transaction_status + 
-                  '\nTanggal: ' + data.data.transaction_time);
-        } else {
-            alert('Gagal memeriksa status: ' + data.message);
-        }
-    })
-    .catch(error => {
-        alert('Terjadi kesalahan saat memeriksa status');
-        console.error(error);
-    });
-}
-</script>
+                                <button onclick="checkStatus()" class="btn btn-outline-primary">
+                                    <i class="fas fa-sync-alt me-2"></i>Cek Status Pembayaran
+                                </button>
                             </div>
                         </div>
                     @else
@@ -113,10 +84,6 @@ function checkStatus() {
                                             <p class="fw-bold text-success">Rp {{ number_format($hargaKost, 0, ',', '.') }}</p>
                                         </div>
                                         <div class="col-md-6 mb-2">
-                                            <label class="form-label text-muted small">Total Dibayar (DP+Tagihan)</label>
-                                            <p class="fw-bold">Rp {{ number_format($dpAwal + $totalSudahDibayar, 0, ',', '.') }}</p>
-                                        </div>
-                                        <div class="col-md-6 mb-2">
                                             <label class="form-label text-muted small">Bulan Ke</label>
                                             <p class="fw-bold">{{ $bulanKe }}</p>
                                         </div>
@@ -136,32 +103,18 @@ function checkStatus() {
                                             <label class="form-label text-muted small">Nominal yang Harus Dibayar</label>
                                             <h4 class="fw-bold text-danger">Rp {{ number_format($nominalBayar, 0, ',', '.') }}</h4>
                                         </div>
-                                        <div class="col-md-6">
-                                            <label class="form-label text-muted small">Sisa Tagihan</label>
-                                            <h4 class="fw-bold text-danger">Rp {{ number_format($sisaTagihan, 0, ',', '.') }}</h4>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Submit Button -->
-                            <!-- Submit Button -->
-<div class="col-md-12 mt-2" id="payment-button-container">
-    @if(isset($paymentData) && $paymentData['success'])
-        <button type="submit" class="btn btn-primary btn-lg w-100 py-3" id="pay-button">
-            <i class="fas fa-check-circle me-2"></i>Konfirmasi Pembayaran (Rp {{ number_format($nominalBayar, 0, ',', '.') }})
-        </button>
-        <p class="text-muted small mt-2 text-center">
-            <i class="fas fa-info-circle me-1"></i>Pastikan Anda sudah menyelesaikan pembayaran melalui QR code di atas
-        </p>
-    @else
-        <button type="submit" class="btn btn-primary btn-lg w-100 py-3" id="pay-button">
-            <i class="fas fa-check-circle me-2"></i>Konfirmasi Pembayaran (Rp {{ number_format($nominalBayar, 0, ',', '.') }})
-        </button>
-    @endif
-</div>
                         </div>
                     </form>
+
+                    <!-- Kembali Button Container (hidden by default) -->
+                    <div class="text-center mt-4" id="kembali-container" style="display: none;">
+                        <a href="{{ route('tagihanpelanggan.index') }}" class="btn btn-success" id="kembali-button">
+                            <i class="fas fa-arrow-left me-2"></i>Kembali ke Halaman Utama
+                        </a>
+                    </div>
                 </div>
 
                 <div class="card-footer bg-light py-3">
@@ -173,12 +126,90 @@ function checkStatus() {
         </div>
     </div>
 </div>
-@endsection
-
-@push('scripts')
 
 @if(isset($paymentData) && $paymentData['success'])
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+function checkStatus() {
+    fetch("{{ route('payment.status') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            order_id: '{{ $paymentData['order_id'] }}'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.data.transaction_status === 'settlement' || data.data.transaction_status === 'capture') {
+                // Show success alert
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pembayaran Berhasil',
+                    text: 'Status pembayaran: ' + data.data.transaction_status + 
+                          '\nTanggal: ' + data.data.transaction_time,
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Submit form and redirect to index
+                        submitAndRedirect();
+                    }
+                });
+            } else {
+                alert('Status Pembayaran: ' + data.data.transaction_status + 
+                      '\nTanggal: ' + data.data.transaction_time);
+            }
+        } else {
+            alert('Gagal memeriksa status: ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('Terjadi kesalahan saat memeriksa status');
+        console.error(error);
+    });
+}
+
+function submitAndRedirect() {
+    fetch("{{ route('tagihanpelanggan.store') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({
+            booking_id: '{{ $booking->id }}',
+            bayar_per_bulan: '{{ $nominalBayar }}',
+            jumlah_bayar: 1,
+            tanggal_tagihan: '{{ $tanggalTagihan }}',
+            order_id: '{{ $paymentData['order_id'] ?? '' }}'
+        })
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+        } else {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if (data && data.redirect) {
+            window.location.href = data.redirect;
+        } else {
+            window.location.href = "{{ route('tagihanpelanggan.index') }}";
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        window.location.href = "{{ route('tagihanpelanggan.index') }}";
+    });
+}
+
+// Auto check payment status every 5 seconds
 let paymentCheckInterval = setInterval(function() {
     fetch("{{ route('payment.status') }}", {
         method: 'POST',
@@ -197,14 +228,27 @@ let paymentCheckInterval = setInterval(function() {
            (data.data.transaction_status === 'settlement' || 
             data.data.transaction_status === 'capture')) {
             clearInterval(paymentCheckInterval);
-            window.location.href = "{{ route('tagihanpelanggan.index') }}?payment=success";
+            
+            // Show success alert
+            Swal.fire({
+                icon: 'success',
+                title: 'Pembayaran Berhasil',
+                text: 'Status pembayaran: ' + data.data.transaction_status + 
+                      '\nTanggal: ' + data.data.transaction_time,
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit form and redirect to index
+                    submitAndRedirect();
+                }
+            });
         }
     })
     .catch(error => console.error('Error checking payment status:', error));
 }, 5000);
 </script>
 @endif
-@endpush
+@endsection
 
 @push('styles')
 <style>
@@ -236,6 +280,15 @@ let paymentCheckInterval = setInterval(function() {
         border-radius: 8px;
         display: inline-block;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+    .btn-success:hover {
+        background-color: #218838;
     }
 </style>
 @endpush
