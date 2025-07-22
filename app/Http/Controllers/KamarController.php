@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Kost;
+use App\Models\Booking;
+use Illuminate\Support\Facades\Auth;
 class KamarController extends Controller
 {
     /**
@@ -48,15 +50,23 @@ class KamarController extends Controller
      */
 public function show(string $id)
 {
-    $kosts = \App\Models\Kost::findOrFail($id); // ubah jadi $kosts
+    $kosts = \App\Models\Kost::findOrFail($id);
+
+    $user = Auth::user();
+    $sudahBooking = false;
+
+    if ($user) {
+        $sudahBooking = Booking::where('user_id', $user->id)
+            ->where('kost_id', $kosts->id)
+            ->exists(); 
+    }
 
     return view('kamar.show', [
         'title' => 'Detail Kamar',
-        'kosts' => $kosts
+        'kosts' => $kosts,
+        'sudahBooking' => $sudahBooking
     ]);
 }
-
-
 
     /**
      * Show the form for editing the specified resource.
