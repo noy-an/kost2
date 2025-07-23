@@ -25,7 +25,7 @@ class AuthController extends Controller
         'phone' => 'required|string|min:10|unique:users,phone',
         'password' => 'required|string|min:6',
         'avatar' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-    '   id_card' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+        'id_card' => 'required|image|mimes:jpeg,png,jpg|max:5120',
     ]);
 
 

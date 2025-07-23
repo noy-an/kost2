@@ -33,6 +33,7 @@
                                 <th>Harga/Bulan</th>
                                 <th>DP Dibayar</th>
                                 <th>Status</th>
+                                <th>Keterangan</th>
                                 <th>Tanggal Booking</th>
                                 <th>Tanggal Tagihan</th>
                                 <th>Aksi</th>
@@ -56,10 +57,13 @@
                                     $now = now();
                                     if ($now->gt($tenggang)) {
                                         $status = 'expired';
+                                        $keterangan = '';
                                     } elseif ($now->gt($jatuhTempo)) {
                                         $status = 'masa_tenggang';
+                                        $keterangan = 'unpaid';
                                     } else {
                                         $status = 'aktif';
+                                        $keterangan = 'paid';
                                     }
 
                                     $bolehBayar = $status === 'masa_tenggang';
@@ -78,20 +82,25 @@
                                             {{ ucfirst($status) }}
                                         </span>
                                     </td>
+                                    <td>
+                                        @if($keterangan === 'paid')
+                                            <span class="badge bg-success">Paid</span>
+                                        @elseif($keterangan === 'unpaid')
+                                            <span class="badge bg-danger">Unpaid</span>
+                                        @endif
+                                    </td>
                                     <td>{{ Carbon::parse($booking->tgl_booking)->format('d M Y') }}</td>
-                                  @php
-    $tagihanTerakhir = $booking->tagihan->sortByDesc('tanggal_tagihan')->first();
-@endphp
-
-<td>
-    {{ $tagihanTerakhir ? Carbon::parse($tagihanTerakhir->tanggal_tagihan)->format('d M Y') : '-' }}
-</td>
-
+                                    @php
+                                        $tagihanTerakhir = $booking->tagihan->sortByDesc('tanggal_tagihan')->first();
+                                    @endphp
+                                    <td>
+                                        {{ $tagihanTerakhir ? Carbon::parse($tagihanTerakhir->tanggal_tagihan)->format('d M Y') : '-' }}
+                                    </td>
                                     <td>
                                         @if($bolehBayar)
                                             <a href="{{ route('tagihanpelanggan.create', $booking->id) }}"
                                                class="btn btn-sm btn-primary">
-                                                Buat Tagihan
+                                                Bayar Tagihan
                                             </a>
                                         @elseif($status === 'expired')
                                             <span class="text-danger small">Kamar sudah expired</span>
