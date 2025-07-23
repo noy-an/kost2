@@ -17,7 +17,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
       <h4 class="fw-bold text-dark mb-0">💰 Data Pembayaran</h4>
       <div class="d-flex gap-2">
-        <a href="{{ route('pembayaran.index', ['filter' => 'dp']) }}" class="btn btn-outline-primary {{ $filter == 'dp' ? 'active' : '' }}">Pembayaran DP</a>
+        <a href="{{ route('pembayaran.index', ['filter' => 'dp']) }}" class="btn btn-outline-primary {{ $filter == 'dp' ? 'active' : '' }}">Data Booking</a>
         <a href="{{ route('pembayaran.index', ['filter' => 'tagihan']) }}" class="btn btn-outline-primary {{ $filter == 'tagihan' ? 'active' : '' }}">Pembayaran Tagihan</a>
       </div>
     </div>
@@ -66,8 +66,6 @@
         <th>No</th>
         <th>Nama User</th>
         <th>No. Kamar</th>
-        <th>DP</th>
-        <th>Jenis Pembayaran</th>
         <th>Tanggal Booking</th>
         <th>Status</th>
       </tr>
@@ -78,8 +76,6 @@
         <td>{{ $index + 1 }}</td>
         <td>{{ $booking->user->name ?? '-' }}</td>
         <td>{{ $booking->kost->nomor_kamar ?? '-' }}</td>
-        <td class="text-end">Rp{{ number_format($booking->dp, 0, ',', '.') }}</td>
-        <td class="text-end">{{ $booking->jenis_pembayaran }}</td>
         <td>{{ \Carbon\Carbon::parse($booking->tgl_booking)->translatedFormat('d F Y') }}</td>
 
         @php
@@ -123,8 +119,10 @@
             <th>No</th>
             <th>User</th>
             <th>Kost</th>
+            <th>Bayar DP</th>
             <th>Bulan Tagihan</th>
-            <th>Jumlah Dibayar</th>
+            <th>Bayar Tagihan</th>
+            <th>Metode Bayar</th>
           </tr>
         </thead>
         <tbody>
@@ -136,8 +134,10 @@
               <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
               <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
             </td>
+            <td class="text-end">Rp {{ number_format($tagihan->booking->dp, 0, ',', '.') }}</td>
             <td>{{ $tagihan->nama_bulan_dinamis }}</td>
             <td class="text-end">Rp {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
+             <td class="text-end">{{ $tagihan->booking->jenis_pembayaran }}</td>
           </tr>
           @empty
           <tr>
