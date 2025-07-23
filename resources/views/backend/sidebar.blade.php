@@ -34,7 +34,7 @@
         </li>
 
         <!-- Booking -->
-        {{-- <li class="sidebar-item">
+        <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('booking.*') ? 'active' : '' }}" href="{{ route('booking.index') }}">
             <i class="ti ti-calendar-event"></i><span class="hide-menu">Booking</span>
             @if($bookingBaru)
@@ -46,22 +46,22 @@
         <!-- Tagihan -->
         <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('tagihan.*') ? 'active' : '' }}" href="{{ route('tagihan.index') }}">
-            <i class="ti ti-file-invoice"></i><span class="hide-menu">Tagihan</span>
+            <i class="ti ti-file-invoice"></i><span class="hide-menu">Pembayaran</span>
             @if($tagihanBaru)
               <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
             @endif
           </a>
-        </li> --}}
+        </li>
 
         <!-- Pembayaran -->
-        <li class="sidebar-item">
+        {{-- <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('pembayaran.*') ? 'active' : '' }}" href="{{ route('pembayaran.index') }}">
             <i class="ti ti-credit-card"></i><span class="hide-menu">Pembayaran</span>
             @if($pembayaranBaru)
               <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
             @endif
           </a>
-        </li>
+        </li> --}}
 
         <!-- Pengguna -->
         <li class="sidebar-item">

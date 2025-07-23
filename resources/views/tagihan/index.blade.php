@@ -73,8 +73,10 @@
               <th>No</th>
               <th>Nama User</th>
               <th>Kost</th>
-              <th>Jumlah Bayar</th>
+              <th>Bayar DP</th>
               <th>Bulan Tagihan</th>
+              <th>Bayar Tagihan</th>
+              <th>Metode Bayar</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -88,8 +90,10 @@
                 <strong>Kamar:</strong> {{ $tagihan->booking->kost->nomor_kamar ?? '-' }}<br>
                 <strong>Lantai:</strong> {{ $tagihan->booking->kost->nomor_lantai ?? '-' }}
               </td>
-              <td class="text-end">Rp. {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
-              <td class="text-start">{{ $tagihan->tanggal_tagihan_format }}</td>
+                   <td class="text-end">Rp {{ number_format($tagihan->booking->dp, 0, ',', '.') }}</td>
+            <td>{{ $tagihan->nama_bulan_dinamis }}</td>
+            <td class="text-end">Rp {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
+             <td class="text-end">{{ $tagihan->booking->jenis_pembayaran }}</td>
               <td>
                 <div class="d-flex justify-content-center gap-1">
                   <a href="{{ route('tagihan.edit', $tagihan->id) }}" class="btn btn-sm btn-warning" title="Edit">
