@@ -311,12 +311,26 @@ class TagihanpelangganController extends Controller
             'payment_token' => $request->order_id
         ]);
 
-        if ($statusMap === 'success') {
-            $booking->status_booking = 'aktif';
-            $booking->save();
-        }
+      if ($statusMap === 'success') {
+    $booking->status_booking = 'aktif';
+    $booking->save();
+}
 
-        Mail::to(Auth::user()->email)->send(new BookingSuccessMail($booking));
+$emailSubject = match ($statusMap) {
+    'success' => 'Pembayaran Sukses',
+    'pending' => 'Menunggu Pembayaran',
+    'failed', 'deny' => 'Pembayaran Gagal',
+    'expired' => 'Tagihan Kadaluarsa',
+    'cancelled' => 'Pembayaran Dibatalkan',
+    default => 'Status Pembayaran Tidak Diketahui',
+};
+
+$emailBody = "Halo {$booking->user->name}, status pembayaran kamu untuk kost {$booking->kost->nomor_kamar} adalah: " . strtoupper($statusMap) . ".";
+
+Mail::raw($emailBody, function ($message) use ($booking, $emailSubject) {
+    $message->to($booking->user->email)
+        ->subject($emailSubject);
+});
 
         return response()->json([
             'success' => true,

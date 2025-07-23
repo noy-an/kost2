@@ -35,13 +35,23 @@ class CekBookingDanKirimNotif extends Command
             $tenggang = $jatuhTempo->copy()->addDay();
             $now = now();
 
-            if ($now->gt($tenggang)) {
-                $status = 'expired';
-            } elseif ($now->gt($jatuhTempo)) {
-                $status = 'masa_tenggang';
-            } else {
-                $status = 'aktif';
-            }
+           $tagihanBulanIni = $booking->tagihan
+    ->where('tanggal_tagihan', '>=', $tglTerakhir->copy()->addDays(30)->startOfDay())
+    ->where('tanggal_tagihan', '<=', $tglTerakhir->copy()->addDays(30)->endOfDay())
+    ->first();
+
+if ($tagihanBulanIni && $tagihanBulanIni->status_pembayaran === 'success') {
+    $status = 'paid';
+} elseif ($now->lte($tenggang)) {
+    $status = 'unpaid';
+} elseif ($now->gt($tenggang)) {
+    $status = 'expired';
+} elseif ($now->gt($jatuhTempo)) {
+    $status = 'masa_tenggang';
+} else {
+    $status = 'aktif';
+}
+
 
             if (!$booking->notif_last_sent || $booking->notif_last_sent->lt(now()->subHours(12))) {
                 $booking->user->notify(new BookingNotification($status, $booking->kost->nomor_kamar));
