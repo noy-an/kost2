@@ -155,15 +155,10 @@
                                         <a href="{{ route('profile.index') }}">Profil Saya</a>
                                     </li>
 <li class="nav-item">
-  <a href="#" class="dropdown-toggle {{ request()->is('contact*') ? 'active' : '' }}">
+  <a href="{{ route('contact.index') }}" class="{{ request()->routeIs('contact.index') ? 'active' : '' }}">
     Contact
   </a>
-  <ul class="dropdown-menu">
-    <li><a class="{{ request()->routeIs('contact.index') ? 'active' : '' }}" href="{{ route('contact.index') }}">Contact</a></li>
-    <li><a class="{{ request()->routeIs('pesan_balasan.index') ? 'active' : '' }}" href="{{ route('pesan_balasan.index') }}">Balasan</a></li>
-  </ul>
 </li>
-
                                 @endif
                                 <li>
                                     <form action="{{ route('logout') }}" method="POST" style="display:inline;">
