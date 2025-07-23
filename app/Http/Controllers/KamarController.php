@@ -51,14 +51,33 @@ class KamarController extends Controller
 public function show(string $id)
 {
     $kosts = \App\Models\Kost::findOrFail($id);
-
     $user = Auth::user();
     $sudahBooking = false;
 
     if ($user) {
-        $sudahBooking = Booking::where('user_id', $user->id)
+        $booking = Booking::where('user_id', $user->id)
             ->where('kost_id', $kosts->id)
-            ->exists(); 
+            ->latest('tgl_booking')
+            ->first();
+
+        if ($booking) {
+            $lastTagihan = $booking->tagihan
+                ->where('status_pembayaran', 'success')
+                ->sortByDesc('tanggal_tagihan')
+                ->first();
+
+            $tglTerakhir = $lastTagihan
+                ? \Carbon\Carbon::parse($lastTagihan->tanggal_tagihan)
+                : \Carbon\Carbon::parse($booking->tgl_booking);
+
+            $jatuhTempo = $tglTerakhir->copy()->addDays(30);
+            $tenggang = $jatuhTempo->copy()->addDay();
+            $now = now();
+
+            if ($now->lte($tenggang)) {
+                $sudahBooking = true;
+            }
+        }
     }
 
     return view('kamar.show', [
