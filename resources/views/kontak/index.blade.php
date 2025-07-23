@@ -56,7 +56,7 @@
                 <h5 class="mb-0 text-primary fw-bold">Balas Pesan</h5>
                 <button type="button" class="btn-close" id="close-reply-form"></button>
             </div>
-            <form id="reply-form" method="POST">
+            {{-- <form id="reply-form" method="POST">
                 @csrf
                 <input type="hidden" name="email_id" id="reply-email-id">
                 <div class="mb-3">
@@ -77,7 +77,31 @@
                         <i class="ti ti-send"></i> Kirim Balasan
                     </button>
                 </div>
-            </form>
+            </form> --}}
+
+            <form id="reply-form" method="POST">
+    @csrf
+    <input type="hidden" name="email_id" id="reply-email-id">
+    <div class="mb-3">
+        <label for="reply-to" class="form-label">Kepada</label>
+        <input type="email" class="form-control" id="reply-to" name="to" readonly>
+    </div>
+    <div class="mb-3">
+        <label for="reply-subject" class="form-label">Subjek</label>
+        <input type="text" class="form-control" id="reply-subject" name="subject" value="Menanggapi pesan Anda kepada kami (Sona Kost)" readonly>
+    </div>
+    <div class="mb-3">
+        <label for="reply-message" class="form-label">Pesan</label>
+        <textarea class="form-control" id="reply-message" name="message" rows="5" required></textarea>
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-outline-secondary rounded-pill" id="cancel-reply">Batal</button>
+        <button type="submit" class="btn btn-primary rounded-pill">
+            <i class="ti ti-send"></i> Kirim Balasan
+        </button>
+    </div>
+</form>
+
         </div>
     </div>
 
@@ -206,25 +230,25 @@
         });
     }
 
-    // Fungsi untuk menangani balas email
-    document.querySelectorAll('.btn-reply').forEach(button => {
-        button.addEventListener('click', function() {
-            const email = this.getAttribute('data-email');
-            const subject = this.getAttribute('data-subject');
-            const id = this.getAttribute('data-id');
-            
-            // Isi form balasan
-            document.getElementById('reply-to').value = email;
-            document.getElementById('reply-subject').value = 'Re: ' + subject;
-            document.getElementById('reply-email-id').value = id;
-            
-            // Tampilkan form balasan
-            document.getElementById('reply-form-container').style.display = 'block';
-            
-            // Scroll ke form balasan
-            document.getElementById('reply-form-container').scrollIntoView({ behavior: 'smooth' });
-        });
+   document.querySelectorAll('.btn-reply').forEach(button => {
+    button.addEventListener('click', function() {
+        const email = this.getAttribute('data-email');
+        const subject = this.getAttribute('data-subject');
+        const id = this.getAttribute('data-id');
+        
+        // Isi form balasan
+        document.getElementById('reply-to').value = email;
+        document.getElementById('reply-subject').value = 'Menanggapi pesan Anda kepada kami (Sona Kost)';
+        document.getElementById('reply-subject').setAttribute('readonly', true);
+        document.getElementById('reply-email-id').value = id;
+        
+        // Tampilkan form balasan
+        document.getElementById('reply-form-container').style.display = 'block';
+        
+        // Scroll ke form balasan
+        document.getElementById('reply-form-container').scrollIntoView({ behavior: 'smooth' });
     });
+});
 
     // Fungsi untuk menutup form balasan
     document.getElementById('close-reply-form').addEventListener('click', function() {
