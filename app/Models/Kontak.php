@@ -17,4 +17,10 @@ class Kontak extends Model
         'subjek',
         'pesan',
     ];
+    
+    public function balasan()
+{
+    return $this->hasMany(Balasan::class);
 }
+}
+
