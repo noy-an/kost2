@@ -308,7 +308,8 @@ class TagihanpelangganController extends Controller
                 )->addDays(30)
                 : Carbon::parse($booking->tgl_booking)->addDays(30),
             'status_pembayaran' => $statusMap,
-            'payment_token' => $request->order_id
+            'payment_token' => $request->order_id,
+            'keterangan' => $statusMap === 'success' ? 'paid' : 'unpaid'
         ]);
 
       if ($statusMap === 'success') {
