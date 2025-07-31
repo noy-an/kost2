@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingSuccessMail;
 use Midtrans\Transaction;
 
-
+use Illuminate\Support\Facades\Http;
 class TagihanpelangganController extends Controller
 {
     public function __construct()
@@ -316,21 +316,13 @@ class TagihanpelangganController extends Controller
     $booking->save();
 }
 
-$emailSubject = match ($statusMap) {
-    'success' => 'Pembayaran Sukses',
-    'pending' => 'Menunggu Pembayaran',
-    'failed', 'deny' => 'Pembayaran Gagal',
-    'expired' => 'Tagihan Kadaluarsa',
-    'cancelled' => 'Pembayaran Dibatalkan',
-    default => 'Status Pembayaran Tidak Diketahui',
-};
+$this->kirimWaBookingStatus(
+    $booking->user->name,
+    $booking->status_booking,
+    $booking->kost->nomor_kamar,
+    $booking->user->phone
+);
 
-$emailBody = "Halo {$booking->user->name}, status pembayaran kamu untuk kost {$booking->kost->nomor_kamar} adalah: " . strtoupper($statusMap) . ".";
-
-Mail::raw($emailBody, function ($message) use ($booking, $emailSubject) {
-    $message->to($booking->user->email)
-        ->subject($emailSubject);
-});
 
         return response()->json([
             'success' => true,
@@ -344,5 +336,39 @@ Mail::raw($emailBody, function ($message) use ($booking, $emailSubject) {
         ], 500);
     }
 }
+function kirimWaBookingStatus($nama, $status, $nomorKamar, $nomorHP)
+{
+    $apiToken = env('JAPATI_API_TOKEN');
+    $gateway = env('JAPATI_GATEWAY_NUMBER');
 
+    $judul = match ($status) {
+        'aktif' => '✅ Booking Aktif',
+        'masa_tenggang' => '⚠️ Booking Masa Tenggang',
+        'expired' => '❌ Booking Expired',
+        default => 'ℹ️ Status Booking',
+    };
+
+    $isi = match ($status) {
+        'aktif' => "Booking kamu untuk kamar $nomorKamar sudah aktif.",
+        'masa_tenggang' => "Booking kamu masuk masa tenggang! Segera bayar ulang.",
+        'expired' => "Booking kamu sudah expired! Hubungi admin.",
+        default => 'Status booking tidak diketahui.',
+    };
+
+    $message = "*$judul*\n\n$isi";
+
+    $res = Http::asForm()->withHeaders([
+        'Authorization' => 'Bearer ' . $apiToken,
+        'X-Requested-With' => 'XMLHttpRequest',
+    ])->post('https://app.japati.id/api/send-message', [
+        'gateway' => $gateway,
+        'number' => $nomorHP,
+        'type' => 'text',
+        'message' => $message,
+    ]);
+
+    if (!$res->successful()) {
+        Log::error('Gagal kirim WA booking: ' . $res->body());
+    }
+}
 } 

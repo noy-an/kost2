@@ -40,36 +40,13 @@ Route::middleware(['web'])->group(function () {
     Route::post('/simulasi/reset', [SimulasiController::class, 'resetTanggal'])->name('simulasi.reset');
 
 
-Auth::routes(['verify' => true]);
 
-Route::get('/email/verify', function () {
-    return view('auth.verify-email');
-})->middleware('auth')->name('verification.notice');
-
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/home');
-})->middleware(['auth', 'signed'])->name('verification.verify');
-
-Route::post('/email/verification-notification', function (Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-    return back()->with('message', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-
-    Route::post('/notif-read/{id}', function ($id) {
-        $notif = \App\Models\Notification::find($id);
-        if ($notif && $notif->user_id === Auth::id()
-) {
-            $notif->update(['is_read' => true]);
-        }
-        return response()->json(['status' => 'ok']);
-    });
 
 
 Route::resource('/home', \App\Http\Controllers\HomeController::class);
 Route::resource('/about', \App\Http\Controllers\AboutController::class);
   Route::resource('/', \App\Http\Controllers\HomeController::class);
-    Route::middleware(['auth', 'verified'])->group(function () {
+
 
  
 
@@ -109,10 +86,13 @@ Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'stor
     ->name('bookingpelanggan.store');
 
 
-});
 
 
 
+
+
+Route::get('/register/otp', [AuthController::class, 'formOtp'])->name('otp.form');
+Route::post('/register/otp', [AuthController::class, 'submitOtp'])->name('otp.submit');
 
 
 

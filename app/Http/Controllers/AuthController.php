@@ -4,54 +4,103 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 class AuthController extends Controller
 {
 
+
+ 
     public function registrasiPelanggan()
     {
         return view('auth.registrasipelanggan',[
             'title'=> 'verif'
         ]);
     }
+   private function kirimOtp($phone, $nama)
+{
+    $otp = rand(100000, 999999);
+    Cache::put("otp_$phone", $otp, now()->addMinutes(5)); // expired dalam 5 menit
 
-    public function submitRegistrasiPelanggan(Request $request)
-    {
-        // VALIDASI INPUT
-        $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'role' => 'required|string',
-        'phone' => 'required|string|min:10|unique:users,phone',
-        'password' => 'required|string|min:6',
-        'avatar' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-        'id_card' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+    // Ganti pake Japati / WhatsApp lu
+    $pesan = "Kode OTP registrasi untuk $nama adalah: *$otp*. Berlaku 5 menit.";
+
+    // Panggil fungsi WA
+    kirimWa($phone, $pesan); // asumsinya lu udah punya fungsi kirimWa()
+}
+   public function submitRegistrasiPelanggan(Request $request)
+{
+ $validated = $request->validate([
+    'name' => 'required|string|max:255',
+    'email' => 'required|email|unique:users,email',
+    'role' => 'required|string',
+    'phone' => 'required|string|min:10|unique:users,phone',
+    'password' => 'required|string|min:6',
+    'avatar' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+    'id_card' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+]);
+
+// Simpan path-nya aja
+$avatarPath = $request->file('avatar')->store('avatar_temp', 'public');
+$idCardPath = $request->file('id_card')->store('id_card_temp', 'public');
+
+// Jangan sentuh objek file, simpen path-nya aja
+$dataToStore = [
+    'name' => $validated['name'],
+    'email' => $validated['email'],
+    'role' => $validated['role'],
+    'phone' => $validated['phone'],
+    'password' => $validated['password'],
+    'avatar_path' => $avatarPath,
+    'id_card_path' => $idCardPath,
+];
+
+session()->put('pending_register', $dataToStore);
+
+
+    $this->kirimOtp($validated['phone'], $validated['name']);
+
+    return redirect()->route('otp.form')->with('sukses', 'Kode OTP dikirim ke WhatsApp.');
+}
+
+public function formOtp()
+{
+    return view('auth.otp'); // pastiin ini file nya ada di `resources/views/auth/otp.blade.php`
+}
+
+public function submitOtp(Request $request)
+{
+    $request->validate([
+        'otp' => 'required|digits:6',
     ]);
 
-
-        // SIMPAN DATA
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->role = $request->role;
-        $user->phone = $request->phone;
-        $user->avatar = $request->avatar;
-        $user->id_card = $request->id_card;
-        $user->password = bcrypt($request->password);
-
-        if ($request->hasFile('id_card')) {
-            $user->id_card = $request->file('id_card')->store('id_card', 'public');
-        }
-
-        if ($request->hasFile('avatar')) {
-            $user->avatar = $request->file('avatar')->store('avatar', 'public');
-        }
-
-       $user->save();
-        $user->sendEmailVerificationNotification();
-        return redirect()->route('login')->with('sukses', 'Registrasi berhasil. Cek email untuk verifikasi!');
-
+    $data = session('pending_register');
+    if (!$data) {
+        return redirect()->route('registrasi.pelanggan')->with('gagal', 'Session habis, silakan daftar ulang.');
     }
+
+    $cachedOtp = Cache::get("otp_" . $data['phone']);
+    if ($request->otp != $cachedOtp) {
+        return back()->with('gagal', 'Kode OTP salah atau sudah kedaluwarsa.');
+    }
+
+    $user = new User();
+    $user->name = $data['name'];
+    $user->email = $data['email'];
+    $user->phone = $data['phone'];
+    $user->role = $data['role'];
+    $user->password = bcrypt($data['password']);
+    $user->avatar = $data['avatar_path']; // bisa diubah pas verifikasi final
+    $user->id_card = $data['id_card_path'];
+    $user->email_verified_at = now();
+    $user->save();
+
+    Cache::forget("otp_" . $data['phone']);
+    session()->forget('pending_register');
+
+    auth()->login($user);
+    return redirect()->route('home.index')->with('sukses', 'Registrasi berhasil!');
+}
 
     public function login()
     {
