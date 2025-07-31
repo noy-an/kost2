@@ -81,7 +81,7 @@ public function show(string $id)
             if ($now->lte($tenggang)) {
                 $sudahBooking = true;
 
-                // 👉 CEK APA ITU BOOKING MILIK USER SENDIRI
+             
                 if ($bookingAktif->user_id === $user->id) {
                     $bookingUserSendiri = true;
                 }
