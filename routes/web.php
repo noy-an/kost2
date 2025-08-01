@@ -63,6 +63,12 @@ Route::get('/tagihanpelanggan', [TagihanPelangganController::class, 'index'])->n
 Route::post('/tagihanpelanggan/update-status/{booking}', [TagihanpelangganController::class, 'updateStatus'])
     ->name('tagihanpelanggan.updateStatus');
 
+Route::prefix('cicilan')->group(function() {
+    Route::get('/{booking_id}', [TagihanpelangganController::class, 'createCicilan'])->name('cicilan.create');
+    Route::post('/process', [TagihanpelangganController::class, 'processCicilan'])->name('cicilan.process');
+    Route::get('/finish', [TagihanpelangganController::class, 'finishPayment'])->name('cicilan.finish');
+    Route::post('/store', [TagihanpelangganController::class, 'storeCicilan'])->name('cicilan.store');
+});
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
