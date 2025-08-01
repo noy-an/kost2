@@ -42,6 +42,23 @@
                         <tbody>
                             @foreach($data as $booking)
                                 @php
+                                    // Calculate remaining payments for each component
+                                    $totalPaidKost = $booking->tagihan()->where('component', 'kost')->sum('amount_paid');
+                                    $totalPaidAir = $booking->tagihan()->where('component', 'air')->sum('amount_paid');
+                                    $totalPaidKebersihan = $booking->tagihan()->where('component', 'kebersihan')->sum('amount_paid');
+
+                                    $hargaKost = $booking->kost->harga;
+                                    $dpAwal = $booking->dp ?? 0;
+                                    $air = 100000; // Example value for water bill
+                                    $kebersihan = 50000; // Example value for cleaning bill
+
+                                    $sisaKost = max(0, $hargaKost - $dpAwal - $totalPaidKost);
+                                    $sisaAir = max(0, $air - $totalPaidAir);
+                                    $sisaKebersihan = max(0, $kebersihan - $totalPaidKebersihan);
+
+                                    $totalSisa = $sisaKost + $sisaAir + $sisaKebersihan;
+
+                                    // Get last payment date
                                     $lastTagihan = $booking->tagihan
                                         ->where('status_pembayaran', 'success')
                                         ->sortByDesc('tanggal_tagihan')
@@ -66,7 +83,16 @@
                                         $keterangan = 'paid';
                                     }
 
-                                    $bolehBayar = $status === 'masa_tenggang';
+                                    // Override status if there are remaining payments
+                                    if ($totalSisa > 0) {
+                                        $status = 'masa_tenggang';
+                                        $keterangan = 'unpaid';
+                                    } else {
+                                        $status = 'aktif';
+                                        $keterangan = 'paid';
+                                    }
+
+                                    $bolehBayar = $status === 'masa_tenggang' && $totalSisa > 0;
                                 @endphp
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
@@ -84,9 +110,9 @@
                                     </td>
                                     <td>
                                         @if($keterangan === 'paid')
-                                            <span class="badge bg-success">Paid</span>
+                                            <span class="badge bg-success">Lunas</span>
                                         @elseif($keterangan === 'unpaid')
-                                            <span class="badge bg-danger">Unpaid</span>
+                                            <span class="badge bg-danger">Belum Lunas</span>
                                         @endif
                                     </td>
                                     <td>{{ Carbon::parse($booking->tgl_booking)->format('d M Y') }}</td>
@@ -98,12 +124,14 @@
                                     </td>
                                     <td>
                                         @if($bolehBayar)
-                                            <a href="{{ route('tagihanpelanggan.create', $booking->id) }}"
-                                               class="btn btn-sm btn-primary">
-                                                Bayar Tagihan
+                                            <a href="{{ route('cicilan.create', $booking->id) }}"
+                                            class="btn btn-sm btn-primary">
+                                                Bayar
                                             </a>
                                         @elseif($status === 'expired')
                                             <span class="text-danger small">Kamar sudah expired</span>
+                                        @elseif($totalSisa <= 0)
+                                            <span class="text-success small">Semua tagihan lunas</span>
                                         @else
                                             <span class="text-muted small">Belum jatuh tempo</span>
                                         @endif
