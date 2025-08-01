@@ -11,6 +11,9 @@ use Midtrans\Config;
 use Midtrans\Snap;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingSuccessMail;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 
 class BookingpelangganController extends Controller
 {
@@ -56,6 +59,43 @@ class BookingpelangganController extends Controller
         ]);
     }
 
+function kirimWaBookingStatus($nama, $status, $nomorKamar, $nomorHP)
+{
+    $apiToken = env('JAPATI_API_TOKEN');
+    $gateway = env('JAPATI_GATEWAY_NUMBER');
+
+    $judul = match ($status) {
+        'aktif' => '✅ Booking Aktif',
+        'masa_tenggang' => '⚠️ Booking Masa Tenggang',
+        'expired' => '❌ Booking Expired',
+        default => 'ℹ️ Status Booking',
+    };
+
+    $isi = match ($status) {
+        'aktif' => "Booking kamu untuk kamar $nomorKamar sudah aktif.",
+        'masa_tenggang' => "Booking kamu masuk masa tenggang! Segera bayar ulang.",
+        'expired' => "Booking kamu sudah expired! Hubungi admin.",
+        default => 'Status booking tidak diketahui.',
+    };
+
+    $message = "*$judul*\n\n$isi";
+
+    $res = Http::asForm()->withHeaders([
+        'Authorization' => 'Bearer ' . $apiToken,
+        'X-Requested-With' => 'XMLHttpRequest',
+    ])->post('https://app.japati.id/api/send-message', [
+        'gateway' => $gateway,
+        'number' => $nomorHP,
+        'type' => 'text',
+        'message' => $message,
+    ]);
+
+    if (!$res->successful()) {
+        Log::error('Gagal kirim WA booking: ' . $res->body());
+    }
+}
+
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -128,22 +168,28 @@ class BookingpelangganController extends Controller
         ];
         // === Selesai bagian custom ===
 
-        try {
-            $paymentUrl = Snap::createTransaction($params)->redirect_url;
+       try {
+    $paymentUrl = Snap::createTransaction($params)->redirect_url;
 
-            $booking->update([
-                'payment_token' => $params['transaction_details']['order_id'],
-                'payment_url' => $paymentUrl,
-            ]);
-            
-            // KIRIM EMAIL BOOKING SUKSES
-Mail::to(Auth::user()->email);
+    $booking->update([
+        'payment_token' => $params['transaction_details']['order_id'],
+        'payment_url' => $paymentUrl,
+    ]);
 
+    // 🟢 KIRIM WA DI SINI AJA NIH COK
+    $controller = new BookingpelangganController();
+    $controller->kirimWaBookingStatus(
+        $booking->user->name,
+        'unpaid', // status "unpaid" atau lu bisa ganti sesuai kebutuhan
+        $booking->kost->nomor_kamar,
+        $booking->user->phone
+    );
 
-            return redirect($paymentUrl);
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Pembayaran gagal: ' . $e->getMessage());
-        }
+    return redirect($paymentUrl);
+} catch (\Exception $e) {
+    return redirect()->back()
+        ->with('error', 'Pembayaran gagal: ' . $e->getMessage());
+}
+
     }
 }
