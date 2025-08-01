@@ -44,9 +44,19 @@
           <input type="number" class="form-control" name="harga" value="{{ old('harga', $kost->harga) }}" >
         </div>
 
-         <div class="col-md-6 mb-3">
+        <div class="col-md-6 mb-3">
+          <label for="air" class="form-label">Biaya Air (Rp)</label>
+          <input type="number" class="form-control" name="air" value="{{ old('air', $kost->air) }}" >
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="kebersihan" class="form-label">Biaya Kebersihan (Rp)</label>
+          <input type="number" class="form-control" name="kebersihan" value="{{ old('kebersihan', $kost->kebersihan) }}" >
+        </div>
+
+        <div class="col-md-6 mb-3">
           <label for="ukuran_ruangan" class="form-label">Ukuran Ruangan</label>
-          <input type="text" class="form-control" name="ukuran_ruangan" value="{{ old('ukuran_ruangan') }}" >
+          <input type="text" class="form-control" name="ukuran_ruangan" value="{{ old('ukuran_ruangan', $kost->ukuran_ruangan) }}" >
         </div>
         
         <div class="col-md-6 mb-3">
