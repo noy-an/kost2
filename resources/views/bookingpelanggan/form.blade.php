@@ -44,6 +44,16 @@
                             <input type="text" class="form-control" id="harga_kost" value="Rp {{ number_format($kost->harga, 0, ',', '.') }}" disabled>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Harga Air</label>
+                            <input type="text" class="form-control" id="harga_air" value="Rp {{ number_format($kost->air, 0, ',', '.') }}" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Harga Kebersihan</label>
+                            <input type="text" class="form-control" id="harga_kebersihan" value="Rp {{ number_format($kost->kebersihan, 0, ',', '.') }}" disabled>
+                        </div>
+
 <!-- Tampilan harga ke user -->
 <div class="mb-3">
     <label class="form-label">Nominal yang akan dibayar</label>

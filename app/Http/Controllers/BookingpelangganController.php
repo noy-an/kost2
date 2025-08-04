@@ -38,7 +38,7 @@ class BookingpelangganController extends Controller
         }
 
         $harga_calculations = [
-            'bayar_penuh' => round($kost->harga),
+            'bayar_penuh' => $kost->harga + $kost->air + $kost->kebersihan,
         ];
 
         $bookings = Booking::where('kost_id', $kost->id)->get();
