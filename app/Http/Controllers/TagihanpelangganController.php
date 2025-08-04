@@ -339,7 +339,7 @@ $this->kirimWaBookingStatus(
         ], 500);
     }
 }
-function kirimWaBookingStatus($nama, $status, $nomorKamar, $nomorHP)
+public function kirimWaBookingStatus($nama, $status, $nomorKamar, $nomorHP)
 {
     $apiToken = env('JAPATI_API_TOKEN');
     $gateway = env('JAPATI_GATEWAY_NUMBER');
@@ -369,6 +369,11 @@ function kirimWaBookingStatus($nama, $status, $nomorKamar, $nomorHP)
         'type' => 'text',
         'message' => $message,
     ]);
+
+    if (!$res->successful()) {
+        Log::error('Gagal kirim WA booking: ' . $res->body());
+    }
+}
 
 
 
@@ -594,12 +599,13 @@ foreach ($components as $component) {
             'message' => 'Gagal menyimpan cicilan: ' . $e->getMessage()
         ], 500);
     }
-}
 
-
+    
     if (!$res->successful()) {
         Log::error('Gagal kirim WA booking: ' . $res->body());
     }
 }
 
-} 
+
+}
+
