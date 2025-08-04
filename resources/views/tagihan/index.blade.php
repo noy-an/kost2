@@ -92,7 +92,8 @@
               </td>
                    <td class="text-end">Rp {{ number_format($tagihan->booking->dp, 0, ',', '.') }}</td>
             <td>{{ $tagihan->nama_bulan_dinamis }}</td>
-            <td class="text-end">Rp {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td>
+            {{-- <td class="text-end">Rp {{ number_format($tagihan->bayar_per_bulan, 0, ',', '.') }}</td> --}}
+            <td class="text-end">Rp {{ number_format($tagihan->amount_paid, 0, ',', '.') }}</td>3
              <td class="text-end">{{ $tagihan->booking->jenis_pembayaran }}</td>
               <td>
                 <div class="d-flex justify-content-center gap-1">
