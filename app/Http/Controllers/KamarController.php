@@ -21,7 +21,7 @@ class KamarController extends Controller
             $query->where('nomor_kamar', 'like', '%' . $search . '%');
         }
 
-        $kosts = $query->where('status', 'kosong')->paginate(9); // hanya kost kosong
+      $kosts = $query->paginate(9); 
 
         return view('kamar.index', [
             'title' => 'Daftar Kost',
