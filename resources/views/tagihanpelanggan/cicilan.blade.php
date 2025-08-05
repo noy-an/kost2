@@ -69,7 +69,7 @@
                                         </label>
                                     </div>
                                 </td>
-                                <td>Rp{{ number_format($air, 0, ',', '.') }}</td>
+                                <td>Rp{{ number_format($booking->kost->air, 0, ',', '.') }}</td>
                                 <td>Rp{{ number_format($sisaAir, 0, ',', '.') }}</td>
                             </tr>
                             <tr>
@@ -81,7 +81,7 @@
                                         </label>
                                     </div>
                                 </td>
-                                <td>Rp{{ number_format($kebersihan, 0, ',', '.') }}</td>
+                                <td>Rp{{ number_format($booking->kost->kebersihan, 0, ',', '.') }}</td>
                                 <td>Rp{{ number_format($sisaKebersihan, 0, ',', '.') }}</td>
                             </tr>
                         </table>
