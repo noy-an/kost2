@@ -53,22 +53,26 @@ public function show(string $id)
     $kosts = \App\Models\Kost::findOrFail($id);
     $user = Auth::user();
     $sudahBooking = false;
+    $bookingUserSendiri = false;
+    $bookingAktif = null;
 
     if ($user) {
-        $booking = Booking::where('user_id', $user->id)
-            ->where('kost_id', $kosts->id)
+        $bookingAktif = Booking::where('kost_id', $kosts->id)
+            ->whereHas('tagihan', function ($q) {
+                $q->where('status_pembayaran', 'success');
+            })
             ->latest('tgl_booking')
             ->first();
 
-        if ($booking) {
-            $lastTagihan = $booking->tagihan
+        if ($bookingAktif) {
+            $lastTagihan = $bookingAktif->tagihan
                 ->where('status_pembayaran', 'success')
                 ->sortByDesc('tanggal_tagihan')
                 ->first();
 
             $tglTerakhir = $lastTagihan
                 ? \Carbon\Carbon::parse($lastTagihan->tanggal_tagihan)
-                : \Carbon\Carbon::parse($booking->tgl_booking);
+                : \Carbon\Carbon::parse($bookingAktif->tgl_booking);
 
             $jatuhTempo = $tglTerakhir->copy()->addDays(30);
             $tenggang = $jatuhTempo->copy()->addDay();
@@ -76,6 +80,11 @@ public function show(string $id)
 
             if ($now->lte($tenggang)) {
                 $sudahBooking = true;
+
+             
+                if ($bookingAktif->user_id === $user->id) {
+                    $bookingUserSendiri = true;
+                }
             }
         }
     }
@@ -83,7 +92,8 @@ public function show(string $id)
     return view('kamar.show', [
         'title' => 'Detail Kamar',
         'kosts' => $kosts,
-        'sudahBooking' => $sudahBooking
+        'sudahBooking' => $sudahBooking,
+        'bookingUserSendiri' => $bookingUserSendiri
     ]);
 }
 

@@ -272,21 +272,7 @@
       const submitText = document.getElementById('submitText');
       const spinner = document.getElementById('spinner');
 
-      const phoneField = document.getElementById('phone');
-      phoneField.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        if (value.length >= 6) {
-          if (value.startsWith('62')) {
-            value = '+62' + value.substring(2);
-          } else if (value.startsWith('0')) {
-            value = '+62' + value.substring(1);
-          } else if (!value.startsWith('+')) {
-            value = '+62' + value;
-          }
-        }
-        this.value = value;
-      });
-
+     
       const fileUploadFields = ['avatar', 'id_card'];
       fileUploadFields.forEach(function(fieldId) {
         const field = document.getElementById(fieldId);

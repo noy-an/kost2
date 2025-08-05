@@ -36,7 +36,7 @@
 
                                     {{-- Status Badge --}}
                                     <div class="position-absolute top-0 end-0 m-3">
-                                        @if($kosts->status === 'kosong')
+                                        @if(!$sudahBooking)
                                             <span class="badge bg-success fs-6 px-3 py-2 rounded-pill shadow-sm">
                                                 <i class="fas fa-check-circle me-1"></i>Tersedia
                                             </span>
@@ -84,12 +84,17 @@
                                 </ul>
 
                                 <div class="mt-auto">
-                                 @if($kosts->status === 'kosong')
     @auth('web')
         @if($sudahBooking)
-            <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
-                <i class="fas fa-ban me-2"></i>Anda Sudah Booking Kamar Ini
-            </button>
+            @if($bookingUserSendiri)
+                <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
+                    <i class="fas fa-ban me-2"></i>Anda Sudah Booking Kamar Ini
+                </button>
+            @else
+                <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
+                    <i class="fas fa-ban me-2"></i>Kamar Sudah Dipesan Orang
+                </button>
+            @endif
         @else
             <a href="{{ route('bookingpelanggan.form', $kosts->id) }}" 
                class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
@@ -97,22 +102,24 @@
             </a>
         @endif
     @else
-        <button onclick="showLoginAlert()" 
-                class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
-            <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
-        </button>
+        @if(!$sudahBooking)
+            <button onclick="showLoginAlert()" 
+                    class="btn btn-primary btn-lg w-100 rounded-pill mb-3 shadow-sm">
+                <i class="fas fa-calendar-check me-2"></i>Booking Sekarang
+            </button>
+        @else
+            <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
+                <i class="fas fa-ban me-2"></i>Kamar Sudah Dipesan Orang
+            </button>
+        @endif
     @endauth
-@else
-    <button class="btn btn-secondary btn-lg w-100 rounded-pill mb-3" disabled>
-        <i class="fas fa-times-circle me-2"></i>Kamar Tidak Tersedia
-    </button>
-@endif
 
-                                    <a href="{{ route('kamar.index') }}" 
-                                       class="btn btn-outline-dark btn-lg w-100 rounded-pill">
-                                        <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
-                                    </a>
-                                </div>
+    <a href="{{ route('kamar.index') }}" 
+       class="btn btn-outline-dark btn-lg w-100 rounded-pill">
+        <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
+    </a>
+</div>
+
                             </div>
                         </div>
                     </div>

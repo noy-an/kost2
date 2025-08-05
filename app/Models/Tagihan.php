@@ -11,13 +11,16 @@ class Tagihan extends Model
 
     protected $fillable = [
         'booking_id',
+        'component',
+        'amount_paid',
         'bayar_per_bulan',
         'jumlah_bayar',
         'tanggal_tagihan',
         'status_pembayaran',
         'payment_token',
         'payment_url',
-        'keterangan', //  kolom baru ditambahkan di sini
+        'keterangan',
+        'is_advance', //  kolom baru ditambahkan di sini
     ];
 
     public function booking()
