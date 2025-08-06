@@ -33,9 +33,32 @@ class BookingpelangganController extends Controller
             return redirect()->route('kamar.index')->with('error', 'Kost tidak ditemukan.');
         }
 
-        if ($kost->status !== 'kosong') {
-            return redirect()->route('kamar.index')->with('error', 'Kost sudah tidak tersedia.');
-        }
+        $bookingAktif = Booking::where('kost_id', $kost->id)
+    ->whereHas('tagihan', function ($q) {
+        $q->where('status_pembayaran', 'success');
+    })
+    ->latest('tgl_booking')
+    ->first();
+
+if ($bookingAktif) {
+    $lastTagihan = $bookingAktif->tagihan
+        ->where('status_pembayaran', 'success')
+        ->sortByDesc('tanggal_tagihan')
+        ->first();
+
+    $tglTerakhir = $lastTagihan
+        ? \Carbon\Carbon::parse($lastTagihan->tanggal_tagihan)
+        : \Carbon\Carbon::parse($bookingAktif->tgl_booking);
+
+    $jatuhTempo = $tglTerakhir->copy()->addDays(30);
+    $tenggang = $jatuhTempo->copy()->addDay();
+    $now = now();
+
+    if ($now->lte($tenggang)) {
+        return redirect()->route('kamar.index')->with('error', 'Kamar sudah dibooking orang lain.');
+    }
+}
+
 
         $harga_calculations = [
             'bayar_penuh' => round($kost->harga),
@@ -64,19 +87,24 @@ function kirimWaBookingStatus($nama, $status, $nomorKamar, $nomorHP)
     $apiToken = env('JAPATI_API_TOKEN');
     $gateway = env('JAPATI_GATEWAY_NUMBER');
 
-    $judul = match ($status) {
-        'aktif' => '✅ Booking Aktif',
-        'masa_tenggang' => '⚠️ Booking Masa Tenggang',
-        'expired' => '❌ Booking Expired',
-        default => 'ℹ️ Status Booking',
-    };
+  $judul = match ($status) {
+    'aktif' => '✅ Booking Aktif',
+    'masa_tenggang' => '⚠️ Booking Masa Tenggang',
+    'expired' => '❌ Booking Expired',
+    'paid' => '🟢 Pembayaran Berhasil',
+    'unpaid' => '📌 Booking Belum Dibayar',
+    default => 'ℹ️ Status Booking',
+};
 
-    $isi = match ($status) {
-        'aktif' => "Booking kamu untuk kamar $nomorKamar sudah aktif.",
-        'masa_tenggang' => "Booking kamu masuk masa tenggang! Segera bayar ulang.",
-        'expired' => "Booking kamu sudah expired! Hubungi admin.",
-        default => 'Status booking tidak diketahui.',
-    };
+$isi = match ($status) {
+    'aktif' => "Booking kamu untuk kamar $nomorKamar sudah aktif.",
+    'masa_tenggang' => "Booking kamu masuk masa tenggang! Segera bayar ulang.",
+    'expired' => "Booking kamu sudah expired! Hubungi admin.",
+    'paid' => "Pembayaran kamu untuk kamar $nomorKamar sudah *BERHASIL*. Terima kasih!",
+    'unpaid' => "Kamu berhasil booking kamar $nomorKamar. Segera lakukan pembayaran sebelum expired.",
+    default => 'Status booking tidak diketahui.',
+};
+
 
     $message = "*$judul*\n\n$isi";
 
@@ -180,7 +208,7 @@ function kirimWaBookingStatus($nama, $status, $nomorKamar, $nomorHP)
     $controller = new BookingpelangganController();
     $controller->kirimWaBookingStatus(
         $booking->user->name,
-        'unpaid', // status "unpaid" atau lu bisa ganti sesuai kebutuhan
+        'paid', // status "unpaid" atau lu bisa ganti sesuai kebutuhan
         $booking->kost->nomor_kamar,
         $booking->user->phone
     );
@@ -192,4 +220,5 @@ function kirimWaBookingStatus($nama, $status, $nomorKamar, $nomorHP)
 }
 
     }
+    
 }
