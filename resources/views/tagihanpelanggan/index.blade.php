@@ -49,9 +49,10 @@
 
                                     $hargaKost = $booking->kost->harga;
                                     $dpAwal = $booking->dp ?? 0;
-                                    $air = 100000; // Example value for water bill
-                                    $kebersihan = 50000; // Example value for cleaning bill
+                                    $air = $booking->kost->air ?? 100000; // Use kost air value or default
+                                    $kebersihan = $booking->kost->kebersihan ?? 50000; // Use kost kebersihan value or default
 
+                                    // Calculate remaining balances correctly
                                     $sisaKost = max(0, $hargaKost - $dpAwal - $totalPaidKost);
                                     $sisaAir = max(0, $air - $totalPaidAir);
                                     $sisaKebersihan = max(0, $kebersihan - $totalPaidKebersihan);
@@ -72,24 +73,24 @@
                                     $tenggang = $jatuhTempo->copy()->addDay();
 
                                     $now = now();
-                                    if ($now->gt($tenggang)) {
-                                        $status = 'expired';
-                                        $keterangan = '';
-                                    } elseif ($now->gt($jatuhTempo)) {
-                                        $status = 'masa_tenggang';
-                                        $keterangan = 'unpaid';
-                                    } else {
+                                    
+                                    // Determine status based on time and remaining balance
+                                    if ($totalSisa <= 0) {
+                                        // All components are fully paid
                                         $status = 'aktif';
                                         $keterangan = 'paid';
-                                    }
-
-                                    // Override status if there are remaining payments
-                                    if ($totalSisa > 0) {
-                                        $status = 'masa_tenggang';
-                                        $keterangan = 'unpaid';
                                     } else {
-                                        $status = 'aktif';
-                                        $keterangan = 'paid';
+                                        // There are remaining balances
+                                        if ($now->gt($tenggang)) {
+                                            $status = 'expired';
+                                            $keterangan = 'unpaid';
+                                        } elseif ($now->gt($jatuhTempo)) {
+                                            $status = 'masa_tenggang';
+                                            $keterangan = 'unpaid';
+                                        } else {
+                                            $status = 'masa_tenggang';
+                                            $keterangan = 'unpaid';
+                                        }
                                     }
 
                                     $bolehBayar = $status === 'masa_tenggang' && $totalSisa > 0;
@@ -113,6 +114,9 @@
                                             <span class="badge bg-success">Lunas</span>
                                         @elseif($keterangan === 'unpaid')
                                             <span class="badge bg-danger">Belum Lunas</span>
+                                            <br><small class="text-muted">
+                                                Sisa: Rp{{ number_format($totalSisa, 0, ',', '.') }}
+                                            </small>
                                         @endif
                                     </td>
                                     <td>{{ Carbon::parse($booking->tgl_booking)->format('d M Y') }}</td>

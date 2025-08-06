@@ -51,24 +51,47 @@ Route::resource('/about', \App\Http\Controllers\AboutController::class);
  
 
 Route::resource('/kamar', \App\Http\Controllers\KamarController::class);
-Route::get('/tagihanpelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+
+
+// tagihan pelanggan yang lama
 
 // Route::get('/tagihan-pelanggan', [TagihanPelangganController::class, 'index'])->name('tagihanpelanggan.index');
+//  Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
+//     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
+
+//     Route::post('/check-payment-status', [TagihanpelangganController::class, 'checkPaymentStatus'])->name('payment.status');
+// Route::post('/tagihanpelanggan/update-status/{booking}', [TagihanpelangganController::class, 'updateStatus'])
+//     ->name('tagihanpelanggan.updateStatus');
+
+// Route::prefix('cicilan')->group(function() {
+//     Route::get('/{booking_id}', [TagihanpelangganController::class, 'createCicilan'])->name('cicilan.create');
+//     Route::post('/process', [TagihanpelangganController::class, 'processCicilan'])->name('cicilan.process');
+//     Route::get('/finish', [TagihanpelangganController::class, 'finishPayment'])->name('cicilan.finish');
+//     Route::post('/store', [TagihanpelangganController::class, 'storeCicilan'])->name('cicilan.store');
+// });
+
+// batas tagihan pelanggan yang lama
 
 
- Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
+// tagihan pelanggan yang baru 
+// Add these routes to your web.php file
+
+Route::middleware(['auth'])->group(function () {
+    // Tagihan Pelanggan Routes
+    Route::get('/tagihanpelanggan', [TagihanpelangganController::class, 'index'])->name('tagihanpelanggan.index');
+    Route::get('/tagihanpelanggan/create/{booking_id}', [TagihanpelangganController::class, 'create'])->name('tagihanpelanggan.create');
     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
-
-    Route::post('/check-payment-status', [TagihanpelangganController::class, 'checkPaymentStatus'])->name('payment.status');
-Route::post('/tagihanpelanggan/update-status/{booking}', [TagihanpelangganController::class, 'updateStatus'])
-    ->name('tagihanpelanggan.updateStatus');
-
-Route::prefix('cicilan')->group(function() {
-    Route::get('/{booking_id}', [TagihanpelangganController::class, 'createCicilan'])->name('cicilan.create');
-    Route::post('/process', [TagihanpelangganController::class, 'processCicilan'])->name('cicilan.process');
-    Route::get('/finish', [TagihanpelangganController::class, 'finishPayment'])->name('cicilan.finish');
-    Route::post('/store', [TagihanpelangganController::class, 'storeCicilan'])->name('cicilan.store');
+    Route::post('/tagihanpelanggan/check-payment-status', [TagihanpelangganController::class, 'checkPaymentStatus'])->name('tagihanpelanggan.checkPaymentStatus');
+    Route::post('/tagihanpelanggan/update-status/{booking_id}', [TagihanpelangganController::class, 'updateStatus'])->name('tagihanpelanggan.updateStatus');
+    
+    // Cicilan Routes
+    Route::get('/cicilan/create/{booking_id}', [TagihanpelangganController::class, 'createCicilan'])->name('cicilan.create');
+    Route::post('/cicilan/process', [TagihanpelangganController::class, 'processCicilan'])->name('cicilan.process');
+    Route::post('/cicilan/store', [TagihanpelangganController::class, 'storeCicilan'])->name('cicilan.store');
+    Route::get('/cicilan/finish', [TagihanpelangganController::class, 'finishPayment'])->name('cicilan.finish');
+    Route::post('/cicilan/check-status', [TagihanpelangganController::class, 'checkCicilanStatus'])->name('cicilan.checkStatus');
 });
+// batas tagihan pelanggan yang baru 
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');

@@ -48,6 +48,7 @@
                                 <th>Nominal</th>
                                 <th>Sisa Tagihan</th>
                             </tr>
+                            @if($sisaKost > 0)
                             <tr>    
                                 <td>
                                     <div class="form-check">
@@ -60,6 +61,8 @@
                                 <td>Rp{{ number_format($booking->kost->harga, 0, ',', '.') }}</td>
                                 <td>Rp{{ number_format($sisaKost, 0, ',', '.') }}</td>
                             </tr>
+                            @endif
+                            @if($sisaAir > 0)
                             <tr>
                                 <td>
                                     <div class="form-check">
@@ -69,9 +72,11 @@
                                         </label>
                                     </div>
                                 </td>
-                                <td>Rp{{ number_format($booking->kost->air, 0, ',', '.') }}</td>
+                                <td>Rp{{ number_format($air, 0, ',', '.') }}</td>
                                 <td>Rp{{ number_format($sisaAir, 0, ',', '.') }}</td>
                             </tr>
+                            @endif
+                            @if($sisaKebersihan > 0)
                             <tr>
                                 <td>
                                     <div class="form-check">
@@ -81,9 +86,10 @@
                                         </label>
                                     </div>
                                 </td>
-                                <td>Rp{{ number_format($booking->kost->kebersihan, 0, ',', '.') }}</td>
+                                <td>Rp{{ number_format($kebersihan, 0, ',', '.') }}</td>
                                 <td>Rp{{ number_format($sisaKebersihan, 0, ',', '.') }}</td>
                             </tr>
+                            @endif
                         </table>
                     </div>
                 </div>
@@ -163,19 +169,26 @@ $(document).ready(function() {
         
         $('#nominal_pembayaran').attr('max', total);
         $('.percentage-btn').prop('disabled', false);
+        
+        // Reset nominal pembayaran jika melebihi max baru
+        const currentNominal = parseInt($('#nominal_pembayaran').val()) || 0;
+        if (currentNominal > total) {
+            $('#nominal_pembayaran').val('');
+        }
     }
 
-    // Percentage buttons handler
+    // Percentage buttons handler - FIXED CALCULATION
     $('.percentage-btn').click(function() {
         const percentage = parseInt($(this).data('percentage'));
         const components = calculateComponentTotals();
         
         let totalAmount = 0;
         for (const component in components) {
-            totalAmount += Math.floor(components[component] * (percentage / 100));
+            totalAmount += components[component];
         }
         
-        $('#nominal_pembayaran').val(totalAmount);
+        const calculatedAmount = Math.floor(totalAmount * (percentage / 100));
+        $('#nominal_pembayaran').val(calculatedAmount);
     });
 
     $('#payButton').click(function() {
@@ -287,6 +300,9 @@ $(document).ready(function() {
             }
         });
     }
+
+    // Initialize on page load
+    updateMaxPayment();
 });
 </script>
 @endsection
