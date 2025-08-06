@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Tagihan;
+use App\Models\Deposit;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification;
 use App\Notifications\BookingNotification;
@@ -18,8 +20,8 @@ use Midtrans\CoreApi;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingSuccessMail;
 use Midtrans\Transaction;
-
 use Illuminate\Support\Facades\Http;
+
 class TagihanpelangganController extends Controller
 {
     public function __construct()
@@ -32,7 +34,6 @@ class TagihanpelangganController extends Controller
 
     public function index()
     {
-        // Carbon::setTestNow(Carbon::parse('2026-1-3'));
         $userId = Auth::id();
 
         $bookings = Booking::with(['kost', 'user', 'tagihan'])
@@ -47,7 +48,6 @@ class TagihanpelangganController extends Controller
 
     public function create($booking_id)
     {
-        // Carbon::setTestNow(Carbon::parse('2025-11-4'));
         $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
         
         $lastTagihan = $booking->tagihan
@@ -62,20 +62,6 @@ class TagihanpelangganController extends Controller
         $jatuhTempo = $tglTerakhir->copy()->addDays(30);
         $tenggang = $jatuhTempo->copy()->addDay();
 
-        // $now = now();
-        // if ($now->gt($tenggang)) {
-        //     $status = 'expired';
-        // } elseif ($now->gt($jatuhTempo)) {
-        //     $status = 'masa_tenggang';
-        // } else {
-        //     $status = 'aktif';
-        // }
-
-        // if ($status !== 'masa_tenggang') {
-        //     return back()->with('error', 'Hanya bisa membayar saat masa tenggang.');
-        // }
-
-        // Hitung sisa tagihan
         $hargaKost = $booking->kost->harga;
         $dpAwal = $booking->dp ?? 0;
 
@@ -92,7 +78,6 @@ class TagihanpelangganController extends Controller
 
         $nominalBayar = $booking->kost->harga;
 
-        // Generate payment data for direct QR display
         $paymentData = $this->generatePaymentData($booking, $nominalBayar, $bulanKe);
 
         return view('tagihanpelanggan.form', compact(
@@ -107,8 +92,6 @@ class TagihanpelangganController extends Controller
             'paymentData'
         ));
     }
-
-    
 
     private function generatePaymentData($booking, $amount, $month)
     {
@@ -251,8 +234,7 @@ class TagihanpelangganController extends Controller
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        // Update booking status to 'aktif'
-        $booking->status = 'aktif';
+        $booking->updated_at = now();
         $booking->save();
 
         return response()->json(['success' => true]);
@@ -270,13 +252,6 @@ class TagihanpelangganController extends Controller
         $booking = Booking::where('id', $request->booking_id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
-
-        if (!in_array($booking->status, ['aktif', 'masa_tenggang'])) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Booking ini tidak bisa dibayar.'
-            ], 400);
-        }
 
         try {
             Config::$serverKey = env('MIDTRANS_SERVER_KEY');
@@ -315,14 +290,9 @@ class TagihanpelangganController extends Controller
                 'keterangan' => $statusMap === 'success' ? 'paid' : 'unpaid'
             ]);
 
-            if ($statusMap === 'success') {
-                $booking->status = 'aktif';
-                $booking->save();
-            }
-
             $this->kirimWaBookingStatus(
                 $booking->user->name,
-                $booking->status_booking,
+                'aktif',
                 $booking->kost->nomor_kamar,
                 $booking->user->phone
             );
@@ -380,12 +350,10 @@ class TagihanpelangganController extends Controller
     {
         $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
         
-        // Check if booking belongs to authenticated user
         if ($booking->user_id != Auth::id()) {
             abort(403);
         }
 
-        // Get remaining balances for each component - FIXED CALCULATION
         $totalPaidKost = $booking->tagihan()->where('component', 'kost')->sum('amount_paid');
         $totalPaidAir = $booking->tagihan()->where('component', 'air')->sum('amount_paid');
         $totalPaidKebersihan = $booking->tagihan()->where('component', 'kebersihan')->sum('amount_paid');
@@ -395,7 +363,6 @@ class TagihanpelangganController extends Controller
         $air = $booking->kost->air ?? 100000;
         $kebersihan = $booking->kost->kebersihan ?? 50000;
 
-        // Calculate remaining balances correctly
         $sisaKost = max(0, $hargaKost - $dpAwal - $totalPaidKost);
         $sisaAir = max(0, $air - $totalPaidAir);
         $sisaKebersihan = max(0, $kebersihan - $totalPaidKebersihan);
@@ -417,7 +384,7 @@ class TagihanpelangganController extends Controller
     {
         $request->validate([
             'booking_id' => 'required|exists:booking,id',
-            'nominal_pembayaran' => 'required|numeric|min:1',
+            'nominal_pembayaran' => 'required|numeric|min:5000',
             'components' => 'required|array|min:1'
         ]);
 
@@ -425,10 +392,8 @@ class TagihanpelangganController extends Controller
         $nominal = $request->nominal_pembayaran;
         $components = $request->components;
 
-        // Generate order ID
         $orderId = 'CICILAN-' . $booking->id . '-' . time();
 
-        // Prepare Midtrans payment
         Config::$serverKey = env('MIDTRANS_SERVER_KEY');
         Config::$isProduction = env('MIDTRANS_IS_PRODUCTION');
         Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
@@ -475,10 +440,8 @@ class TagihanpelangganController extends Controller
         }
     }
 
-    // Add this new method to handle finish redirect
     public function finishPayment(Request $request)
     {
-        // You can add any logic here for after payment completion
         return redirect()->route('tagihanpelanggan.index')->with('success', 'Pembayaran berhasil diproses');
     }
 
@@ -508,12 +471,11 @@ class TagihanpelangganController extends Controller
         }
     }
 
-    // FIXED storeCicilan method with proper calculation
     public function storeCicilan(Request $request)
     {
         $request->validate([
             'booking_id' => 'required|exists:booking,id',
-            'nominal_pembayaran' => 'required|numeric|min:1',
+            'nominal_pembayaran' => 'required|numeric|min:5000',
             'components' => 'required|array|min:1',
             'order_id' => 'required'
         ]);
@@ -543,7 +505,6 @@ class TagihanpelangganController extends Controller
                 ], 400);
             }
 
-            // FIXED: Calculate remaining balances correctly for selected components
             $totalPaidKost = $booking->tagihan()->where('component', 'kost')->sum('amount_paid');
             $totalPaidAir = $booking->tagihan()->where('component', 'air')->sum('amount_paid');
             $totalPaidKebersihan = $booking->tagihan()->where('component', 'kebersihan')->sum('amount_paid');
@@ -559,48 +520,57 @@ class TagihanpelangganController extends Controller
                 'kebersihan' => max(0, $kebersihan - $totalPaidKebersihan),
             ];
 
-            // Calculate total remaining balance from selected components only
             $totalSisaDipilih = 0;
             foreach ($components as $component) {
                 $totalSisaDipilih += $sisaTagihanMap[$component] ?? 0;
             }
 
-            // Process and save payments proportionally
+            $remainingPayment = $nominal;
+            $totalPaidForComponents = 0;
+
             foreach ($components as $component) {
                 $sisa = $sisaTagihanMap[$component] ?? 0;
 
                 if ($totalSisaDipilih > 0 && $sisa > 0) {
                     $proportion = $sisa / $totalSisaDipilih;
-                    $amountPaid = round($proportion * $nominal);
-
-                    Tagihan::create([
-                        'booking_id' => $booking->id,
-                        'component' => $component,
-                        'amount_paid' => $amountPaid,
-                        'tanggal_tagihan' => now(),
-                        'status_pembayaran' => $statusMap,
-                        'payment_token' => $orderId,
-                        'keterangan' => 'cicilan'
-                    ]);
+                    $amountPaid = round($proportion * min($nominal, $totalSisaDipilih));
+                    
+                    if ($amountPaid > 0) {
+                        Tagihan::create([
+                            'booking_id' => $booking->id,
+                            'component' => $component,
+                            'amount_paid' => $amountPaid,
+                            'tanggal_tagihan' => now(),
+                            'status_pembayaran' => $statusMap,
+                            'payment_token' => $orderId,
+                            'keterangan' => 'cicilan'
+                        ]);
+                        
+                        $totalPaidForComponents += $amountPaid;
+                    }
                 }
             }
 
-            // FIXED: Check if all components are fully paid before updating booking status
-            $newTotalPaidKost = $booking->tagihan()->where('component', 'kost')->sum('amount_paid');
-            $newTotalPaidAir = $booking->tagihan()->where('component', 'air')->sum('amount_paid');
-            $newTotalPaidKebersihan = $booking->tagihan()->where('component', 'kebersihan')->sum('amount_paid');
+            $overpayment = $nominal - $totalPaidForComponents;
+            if ($overpayment > 0) {
+                Deposit::create([
+                    'user_id' => $booking->user_id,
+                    'booking_id' => $booking->id,
+                    'amount' => $overpayment,
+                    'payment_token' => $orderId,
+                    'status_pembayaran' => $statusMap
+                ]);
+            }
 
-            $newSisaKost = max(0, $hargaKost - $dpAwal - $newTotalPaidKost);
-            $newSisaAir = max(0, $air - $newTotalPaidAir);
-            $newSisaKebersihan = max(0, $kebersihan - $newTotalPaidKebersihan);
+            $allPaid = true;
+            foreach ($components as $component) {
+                if (($sisaTagihanMap[$component] ?? 0) > 0) {
+                    $allPaid = false;
+                    break;
+                }
+            }
 
-            $totalNewSisa = $newSisaKost + $newSisaAir + $newSisaKebersihan;
-
-            // Only update booking status to 'aktif' if ALL components are fully paid
-            if ($totalNewSisa <= 0) {
-                $booking->status = 'aktif';
-                $booking->save();
-                
+            if ($allPaid) {
                 $this->kirimWaBookingStatus(
                     $booking->user->name,
                     'aktif',

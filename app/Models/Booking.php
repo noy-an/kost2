@@ -36,6 +36,10 @@ class Booking extends Model
     {
         return $this->hasMany(Tagihan::class, 'booking_id');
     }
+     public function deposits()
+    {
+        return $this->hasMany(Deposit::class);
+    }
 
     // 🔥 ACCESSOR STATUS DINAMIS (aktif / masa_tenggang / expired)
     public function getStatusBookingAttribute()
