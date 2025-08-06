@@ -37,14 +37,25 @@
           <label for="nomor_lantai" class="form-label">Nomor Lantai</label>
           <input type="number" class="form-control" name="nomor_lantai" value="{{ old('nomor_lantai') }}" >
         </div>
-        <div class="col-md-6 mb-3">
-          <label for="ukuran_ruangan" class="form-label">Ukuran Ruangan</label>
-          <input type="text" class="form-control" name="ukuran_ruangan" value="{{ old('ukuran_ruangan') }}" >
-        </div>
-
+        
         <div class="col-md-6 mb-3">
           <label for="harga" class="form-label">Harga (Rp)</label>
           <input type="number" class="form-control" name="harga" value="{{ old('harga') }}" >
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="air" class="form-label">Biaya Air (Rp)</label>
+          <input type="number" class="form-control" name="air" value="{{ old('air') }}" >
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="kebersihan" class="form-label">Biaya Kebersihan (Rp)</label>
+          <input type="number" class="form-control" name="kebersihan" value="{{ old('kebersihan') }}" >
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="ukuran_ruangan" class="form-label">Ukuran Ruangan</label>
+          <input type="text" class="form-control" name="ukuran_ruangan" value="{{ old('ukuran_ruangan') }}" >
         </div>
 
         <div class="col-md-6 mb-3">

@@ -46,11 +46,13 @@
         <table class="table table-bordered table-hover align-middle text-center">
           <thead class="table-light">
             <tr class="text-nowrap">
-              <th><input type="checkbox" id="select-all"></th> <!-- BULK SELECT -->
+              <th><input type="checkbox" id="select-all"></th>
               <th>No</th>
               <th>No. Kamar</th>
               <th>Lantai</th>
               <th>Harga</th>
+              <th>Air</th>
+              <th>Kebersihan</th>
               <th>Ukuran</th>
               <th>Deskripsi</th>
               <th>Status</th>
@@ -64,11 +66,13 @@
           <tbody>
             @forelse($kost as $index => $item)
             <tr>
-              <td><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="select-row"></td> <!-- BULK SELECT -->
+              <td><input type="checkbox" name="ids[]" value="{{ $item->id }}" class="select-row"></td>
               <td>{{ $index + $kost->firstItem() }}</td>
               <td>{{ $item->nomor_kamar }}</td>
               <td>{{ $item->nomor_lantai }}</td>
               <td class="text-end">Rp{{ number_format($item->harga, 0, ',', '.') }}</td>
+              <td class="text-end">Rp{{ number_format($item->air, 0, ',', '.') }}</td>
+              <td class="text-end">Rp{{ number_format($item->kebersihan, 0, ',', '.') }}</td>
               <td class="text-wrap text-start">{{ $item->ukuran_ruangan ?? '-' }}</td>
               <td class="text-wrap text-start">{{ $item->deskripsi ?? '-' }}</td>
               <td>
@@ -107,17 +111,12 @@
                   <a href="{{ route('kost.edit', $item->id) }}" class="btn btn-sm btn-warning" title="Edit">
                     <i class="ti ti-edit"></i>
                   </a>
-                  {{-- <form action="{{ route('kost.destroy', $item->id) }}" method="POST" class="d-inline form-delete">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button" class="btn btn-sm btn-danger btn-delete"><i class="ti ti-trash"></i></button>
-                  </form> --}}
                 </div>
               </td>
             </tr>
             @empty
             <tr>
-              <td colspan="13" class="text-center text-muted py-4">
+              <td colspan="15" class="text-center text-muted py-4">
                 <i class="ti ti-info-circle"></i> Tidak ada data kost tersedia.
               </td>
             </tr>

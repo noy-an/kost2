@@ -21,7 +21,7 @@ class TagihanController extends Controller
     return redirect()->route('tagihan.index')->with('success', 'Berhasil menghapus beberapa tagihan.');
 }
 
-   public function index(Request $request)
+  public function index(Request $request)
 {
     $visited = session('visited_menus', []);
     if (!in_array('tagihan', $visited)) {

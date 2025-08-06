@@ -13,12 +13,14 @@ class Kost extends Model
         'nomor_lantai',
         'harga',
         'deskripsi',
-        'status',
         'ukuran_ruangan',
+        'status',
         'fasilitas',
+        'air',
+        'kebersihan',
         'foto1',
         'foto2',
-        'foto3',
+        'foto3'
     ];
 
       public function booking()
