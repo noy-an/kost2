@@ -123,6 +123,9 @@ Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'stor
 Route::get('/register/otp', [AuthController::class, 'formOtp'])->name('otp.form');
 Route::post('/register/otp', [AuthController::class, 'submitOtp'])->name('otp.submit');
 
+Route::get('/profile/otp', [ProfilePelangganController::class, 'formOtp'])->name('profile.otp');
+Route::post('/profile/otp', [ProfilePelangganController::class, 'submitOtp'])->name('profile.submit.otp');
+
 
 
 

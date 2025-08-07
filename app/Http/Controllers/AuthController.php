@@ -76,7 +76,7 @@ public function submitOtp(Request $request)
 
     $data = session('pending_register');
     if (!$data) {
-        return redirect()->route('registrasi.pelanggan')->with('gagal', 'Session habis, silakan daftar ulang.');
+        return redirect()->route('registrasipelanggan')->with('gagal', 'Session habis, silakan daftar ulang.');
     }
 
     $cachedOtp = Cache::get("otp_" . $data['phone']);
