@@ -41,26 +41,40 @@ class Booking extends Model
         return $this->hasMany(Deposit::class);
     }
 
-    // 🔥 ACCESSOR STATUS DINAMIS (aktif / masa_tenggang / expired)
-    public function getStatusBookingAttribute()
-    {
-        $lastTagihan = $this->tagihan()
-            ->where('status_pembayaran', 'success')
-            ->orderByDesc('tanggal_tagihan')
-            ->first();
+ public function getStatusSewaAttribute()
+{
+    $tglBooking = Carbon::parse($this->tgl_booking);
+    $batasAktif = $tglBooking->copy()->addDays(30);
+    $batasTenggang = $tglBooking->copy()->addDays(32);
+    $now = now();
 
-        $tanggalMulai = $lastTagihan
-            ? Carbon::parse($lastTagihan->tanggal_tagihan)
-            : Carbon::parse($this->tgl_booking);
+    // Hitung total tagihan dalam periode aktif
+    $tagihan = $this->tagihan()
+        ->whereDate('tanggal_tagihan', '>=', $tglBooking)
+        ->whereDate('tanggal_tagihan', '<=', $batasAktif)
+        ->get();
 
-        $jatuhTempo = $tanggalMulai->copy()->addDays(30);
-        $tenggang = $jatuhTempo->copy()->addDay();
-        $now = now();
+    $totalTagihan = $tagihan->sum('jumlah_tagihan');
 
-        return match (true) {
-            $now->gt($tenggang) => 'expired',
-            $now->gt($jatuhTempo) => 'masa_tenggang',
-            default => 'aktif',
-        };
+    $totalPembayaran = $tagihan->flatMap->pembayaran
+        ->where('status', 'success')
+        ->sum('jumlah_bayar');
+
+    // Status utama tetap berdasarkan umur sewa
+    if ($now->lte($batasAktif)) {
+        return 'aktif';
     }
+
+    if ($now->gt($batasAktif) && $now->lte($batasTenggang)) {
+        return 'masa_tenggang';
+    }
+
+    return 'expired';
+}
+
+public function getHariSejakBookingAttribute()
+{
+    return now()->diffInDays($this->tanggal_booking);
+}
+
 }
