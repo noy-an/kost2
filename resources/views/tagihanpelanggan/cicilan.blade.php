@@ -48,6 +48,7 @@
                                 <th>Nominal</th>
                                 <th>Sisa Tagihan</th>
                             </tr>
+                            @if($sisaKost > 0)
                             <tr>    
                                 <td>
                                     <div class="form-check">
@@ -60,6 +61,8 @@
                                 <td>Rp{{ number_format($booking->kost->harga, 0, ',', '.') }}</td>
                                 <td>Rp{{ number_format($sisaKost, 0, ',', '.') }}</td>
                             </tr>
+                            @endif
+                            @if($sisaAir > 0)
                             <tr>
                                 <td>
                                     <div class="form-check">
@@ -69,9 +72,11 @@
                                         </label>
                                     </div>
                                 </td>
-                                <td>Rp{{ number_format($booking->kost->air, 0, ',', '.') }}</td>
+                                <td>Rp{{ number_format($air, 0, ',', '.') }}</td>
                                 <td>Rp{{ number_format($sisaAir, 0, ',', '.') }}</td>
                             </tr>
+                            @endif
+                            @if($sisaKebersihan > 0)
                             <tr>
                                 <td>
                                     <div class="form-check">
@@ -81,9 +86,10 @@
                                         </label>
                                     </div>
                                 </td>
-                                <td>Rp{{ number_format($booking->kost->kebersihan, 0, ',', '.') }}</td>
+                                <td>Rp{{ number_format($kebersihan, 0, ',', '.') }}</td>
                                 <td>Rp{{ number_format($sisaKebersihan, 0, ',', '.') }}</td>
                             </tr>
+                            @endif
                         </table>
                     </div>
                 </div>
@@ -91,19 +97,14 @@
                 <div class="mb-3">
                     <label for="nominal_pembayaran" class="form-label">Nominal Pembayaran</label>
                     <div class="input-group mb-3">
+                        <span class="input-group-text">Rp</span>
                         <input type="number" class="form-control" id="nominal_pembayaran" name="nominal_pembayaran" 
-                               min="1" max="{{ $totalTagihan }}" required readonly>
-                        <div class="btn-group" role="group">
-                            <button class="btn btn-outline-secondary percentage-btn" type="button" data-percentage="1">1%</button>
-                            <button class="btn btn-outline-secondary percentage-btn" type="button" data-percentage="5">5%</button>
-                            <button class="btn btn-outline-secondary percentage-btn" type="button" data-percentage="10">10%</button>
-                            <button class="btn btn-outline-secondary percentage-btn" type="button" data-percentage="25">25%</button>
-                            <button class="btn btn-outline-secondary percentage-btn" type="button" data-percentage="50">50%</button>
-                            <button class="btn btn-outline-secondary percentage-btn" type="button" data-percentage="75">75%</button>
-                            <button class="btn btn-outline-secondary percentage-btn" type="button" data-percentage="100">100%</button>
-                        </div>
+                               min="5000" required>
                     </div>
-                    <small class="text-muted">Maksimal: Rp{{ number_format($totalTagihan, 0, ',', '.') }}</small>
+                    <small class="text-muted">Minimum pembayaran: Rp5.000</small>
+                    <div class="mt-2">
+                        <small class="text-info">Note: Jika nominal melebihi total tagihan, kelebihan akan masuk sebagai deposit.</small>
+                    </div>
                 </div>
 
                 <div class="d-grid gap-2">
@@ -140,7 +141,7 @@ window.snap = window.snap || null;
 $(document).ready(function() {
     // Update max payment when components are selected
     $('.component-checkbox').change(function() {
-        updateMaxPayment();
+        updateTotalTagihan();
     });
 
     function calculateComponentTotals() {
@@ -154,33 +155,17 @@ $(document).ready(function() {
         return components;
     }
 
-    function updateMaxPayment() {
+    function updateTotalTagihan() {
         let total = 0;
         const components = calculateComponentTotals();
         for (const component in components) {
             total += components[component];
         }
-        
-        $('#nominal_pembayaran').attr('max', total);
-        $('.percentage-btn').prop('disabled', false);
+        return total;
     }
-
-    // Percentage buttons handler
-    $('.percentage-btn').click(function() {
-        const percentage = parseInt($(this).data('percentage'));
-        const components = calculateComponentTotals();
-        
-        let totalAmount = 0;
-        for (const component in components) {
-            totalAmount += Math.floor(components[component] * (percentage / 100));
-        }
-        
-        $('#nominal_pembayaran').val(totalAmount);
-    });
 
     $('#payButton').click(function() {
         const nominal = $('#nominal_pembayaran').val();
-        const maxAmount = parseInt($('#nominal_pembayaran').attr('max'));
         const components = $('.component-checkbox:checked').map(function() {
             return $(this).val();
         }).get();
@@ -194,20 +179,11 @@ $(document).ready(function() {
             return;
         }
 
-        if (!nominal || nominal <= 0) {
+        if (!nominal || nominal < 5000) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Masukkan nominal pembayaran yang valid'
-            });
-            return;
-        }
-
-        if (parseInt(nominal) > maxAmount) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Nominal melebihi jumlah tagihan yang tersisa'
+                text: 'Nominal pembayaran minimal Rp5.000'
             });
             return;
         }
