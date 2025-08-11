@@ -32,35 +32,7 @@
     </div>
 @endif
 
-          <!-- Notifikasi -->
-          <li class="nav-item dropdown position-relative">
-            <a class="nav-link text-muted" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="ti ti-bell fs-5"></i>
-              @if($notifs->count() > 0)
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {{ $notifs->count() }}
-                </span>
-              @endif
-            </a>
-
-            <ul class="dropdown-menu dropdown-menu-end shadow-sm animate__animated animate__fadeIn" style="min-width: 300px;">
-              @forelse($notifs as $notif)
-              <li>
-                <form action="{{ route('notifbook.read', $notif->id) }}" method="POST">
-                  @csrf
-                  @method('PATCH')
-                  <button type="submit" class="dropdown-item text-wrap text-start">
-                    🔔 {{ $notif->message }}
-                  </button>
-                </form>
-              </li>
-              @empty
-              <li>
-                <span class="dropdown-item text-muted">Tidak ada notifikasi baru.</span>
-              </li>
-              @endforelse
-            </ul>
-          </li>
+       
 
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
