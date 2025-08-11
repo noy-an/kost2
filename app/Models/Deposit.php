@@ -14,7 +14,7 @@ class Deposit extends Model
      *
      * @var string
      */
-    protected $table = 'deposits';
+    protected $table = 'deposit';
 
     /**
      * The attributes that are mass assignable.
@@ -23,10 +23,7 @@ class Deposit extends Model
      */
     protected $fillable = [
         'user_id',
-        'booking_id',
-        'amount',
-        'payment_token',
-        'status_pembayaran'
+        'amount'
     ];
 
     /**
@@ -46,11 +43,5 @@ class Deposit extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the booking that owns the deposit.
-     */
-    public function booking()
-    {
-        return $this->belongsTo(Booking::class);
-    }
+
 }
