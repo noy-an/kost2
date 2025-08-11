@@ -293,13 +293,13 @@
 
         <!-- Email Field -->
         <div class="form-group">
-          <label for="email" class="form-label">Email</label>
-          <input type="email" 
+          <label for="phone" class="form-label">phone</label>
+          <input type="phone" 
             class="form-control" 
-            name="email" 
-            id="email" 
-            placeholder="Masukkan email Anda"
-            value="{{ old('email') }}"
+            name="phone" 
+            id="phone" 
+            placeholder="Masukkan phone Anda"
+            value="{{ old('phone') }}"
             required>
         </div>
 
@@ -410,7 +410,7 @@
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
           const activeElement = document.activeElement;
-          if (activeElement.id === 'email') {
+          if (activeElement.id === 'phone') {
             document.getElementById('password').focus();
             e.preventDefault();
           }

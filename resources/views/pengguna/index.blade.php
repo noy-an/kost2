@@ -63,7 +63,7 @@
               <th><input type="checkbox" id="selectAll"></th>
               <th>No</th>
               <th>Nama</th>
-              <th>Email</th>
+             
               <th>Role</th>
               <th>No HP</th>
               <th>Avatar</th>
@@ -79,7 +79,7 @@
               <td><input type="checkbox" name="selected[]" value="{{ $user->id }}" class="selectItem"></td>
               <td>{{ $index + $users->firstItem() }}</td>
               <td>{{ $user->name }}</td>
-              <td>{{ $user->email }}</td>
+             
               <td>
                 <span class="badge 
                   @if($user->role === 'admin') bg-primary

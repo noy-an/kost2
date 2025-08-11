@@ -199,25 +199,23 @@
           @error('name') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
 
-        <div class="form-group">
-          <label for="email" class="form-label">Email Address</label>
-          <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" placeholder="Enter your email address" required value="{{ old('email') }}">
-          @error('email') <div class="text-danger mt-1">{{ $message }}</div> @enderror
-        </div>
+        
+
+       
 
         <div class="form-group">
+          <label for="phone" class="form-label">Phone</label>
+          <input type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone" id="phone" placeholder="Enter your phone number" required value="{{ old('phone') }}">
+          @error('phone') <div class="text-danger mt-1">{{ $message }}</div> @enderror
+        </div>
+
+ <div class="form-group">
           <label for="password" class="form-label">Password</label>
           <div class="position-relative">
             <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" id="password" placeholder="Create a password" required value="{{ old('password') }}">
             <span class="input-icon" id="togglePassword"><i class="fas fa-eye"></i></span>
           </div>
           @error('password') <div class="text-danger mt-1">{{ $message }}</div> @enderror
-        </div>
-
-        <div class="form-group">
-          <label for="phone" class="form-label">Phone</label>
-          <input type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone" id="phone" placeholder="Enter your phone number" required value="{{ old('phone') }}">
-          @error('phone') <div class="text-danger mt-1">{{ $message }}</div> @enderror
         </div>
 
         <div class="form-group">
@@ -294,7 +292,7 @@
         spinner.classList.remove('d-none');
 
         let isValid = true;
-        const requiredFields = ['name', 'email', 'password', 'phone'];
+        const requiredFields = ['name', , 'password', 'phone'];
         requiredFields.forEach(fieldId => {
           const field = document.getElementById(fieldId);
           if (!field.value.trim()) {

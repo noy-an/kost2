@@ -59,9 +59,20 @@
     $totalSisa = $sisaKost + $sisaAir + $sisaKebersihan;
 
     $status = $booking->status_sewa;
-    $keterangan = $totalSisa <= 0 ? 'paid' : 'unpaid';
+   if ($status === 'masa_tenggang') {
+    $keterangan = 'bayar ulang';
+} elseif ($sisaKost <= 0 && $sisaAir <= 0 && $sisaKebersihan <= 0) {
+    $keterangan = 'paid';
+} else {
+    $keterangan = 'unpaid';
+}
 
-    $bolehBayar = in_array($status, ['aktif', 'masa_tenggang']) && $totalSisa > 0;
+
+
+   $bolehBayar = $status === 'masa_tenggang' || (
+    in_array($status, ['aktif']) && ($sisaKost > 0 || $sisaAir > 0 || $sisaKebersihan > 0)
+);
+
 
     $tagihanTerakhir = $booking->tagihan->sortByDesc('tanggal_tagihan')->first();
 @endphp
@@ -80,15 +91,18 @@
         </span>
     </td>
     <td>
-        @if($keterangan === 'paid')
-            <span class="badge bg-success">Lunas</span>
-        @else
-            <span class="badge bg-danger">Belum Lunas</span>
-            <br><small class="text-muted">
-                Sisa: Rp{{ number_format($totalSisa, 0, ',', '.') }}
-            </small>
-        @endif
-    </td>
+    @if($keterangan === 'paid')
+        <span class="badge bg-success">Lunas</span>
+    @elseif($keterangan === 'bayar ulang')
+        <span class="badge bg-warning text-dark">Bayar Ulang</span>
+    @else
+        <span class="badge bg-danger">Belum Lunas</span>
+        <br><small class="text-muted">
+            Sisa: Rp{{ number_format($totalSisa, 0, ',', '.') }}
+        </small>
+    @endif
+</td>
+
     <td>{{ \Carbon\Carbon::parse($booking->tgl_booking)->format('d M Y') }}</td>
     <td>{{ $tagihanTerakhir ? \Carbon\Carbon::parse($tagihanTerakhir->tanggal_tagihan)->format('d M Y') : '-' }}</td>
     <td>

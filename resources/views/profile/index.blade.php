@@ -29,10 +29,7 @@
                                 <span><i class="fa fa-user text-primary me-2"></i> Nama Lengkap</span>
                                 <span class="fw-semibold">{{ $user->name }}</span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span><i class="fa fa-envelope text-primary me-2"></i> Email</span>
-                                <span class="fw-semibold">{{ $user->email }}</span>
-                            </li>
+                       
                             <li class="list-group-item d-flex justify-content-between">
                                 <span><i class="fa fa-phone text-primary me-2"></i> No. Telepon</span>
                                 <span class="fw-semibold">{{ $user->phone }}</span>

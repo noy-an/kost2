@@ -216,7 +216,7 @@ Route::post('/login/submit', [AuthController::class, 'submitLogin'])->name('logi
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('lupa-password', [ResetPasswordController::class, 'showForgetForm'])->name('password.request');
-Route::post('lupa-password', [ResetPasswordController::class, 'sendResetLink'])->name('password.email');
+Route::post('lupa-password', [ResetPasswordController::class, 'sendResetLink'])->name('password.whatsapp');
 Route::get('reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('reset-password', [ResetPasswordController::class, 'resetPassword'])->name('password.update');
 

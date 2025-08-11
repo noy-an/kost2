@@ -127,46 +127,23 @@
         <h1 class="auth-title">Reset Password</h1>
         <p class="auth-subtitle">Enter your new password below to reset your account.</p>
 
-        <form action="{{ route('password.update') }}" method="POST">
-            @csrf
-            <input type="hidden" name="token" value="{{ $token }}">
-            <input type="hidden" name="email" value="{{ $email }}">
+      <form action="{{ route('password.update') }}" method="POST">
+    @csrf
+    <input type="hidden" name="token" value="{{ $token }}">
+    <input type="hidden" name="phone" value="{{ $phone }}">
 
-            <div class="mb-3">
-                <label for="password" class="form-label">New Password</label>
-                <div class="input-group">
-                    <input type="password" class="form-control @error('password') is-invalid @enderror"
-                        id="password" name="password" placeholder="Enter new password" required>
-                    <span class="input-group-text password-toggle" onclick="togglePassword('password')">
-                        <i class="fas fa-eye"></i>
-                    </span>
-                </div>
-                @error('password')
-                    <div class="error-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password Baru</label>
+        <input type="password" class="form-control" name="password" required>
+    </div>
 
-            <div class="mb-4">
-                <label for="password_confirmation" class="form-label">Confirm New Password</label>
-                <div class="input-group">
-                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
-                        placeholder="Confirm new password" required>
-                    <span class="input-group-text password-toggle" onclick="togglePassword('password_confirmation')">
-                        <i class="fas fa-eye"></i>
-                    </span>
-                </div>
-            </div>
+    <div class="mb-3">
+        <label for="password_confirmation" class="form-label">Konfirmasi Password Baru</label>
+        <input type="password" class="form-control" name="password_confirmation" required>
+    </div>
 
-            <div class="d-grid mb-3">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-key"></i> Reset Password
-                </button>
-            </div>
-
-            <div class="text-center">
-                <a href="{{ route('login') }}"><i class="fas fa-arrow-left me-1"></i> Back to Login</a>
-            </div>
-        </form>
+    <button type="submit" class="btn btn-primary w-100">Reset Password</button>
+</form>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

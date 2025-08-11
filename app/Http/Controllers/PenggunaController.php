@@ -61,7 +61,6 @@ class PenggunaController extends Controller
     {
         $request->validate([
             'name'     => 'required|string|max:100',
-            'email'    => 'required|email|unique:users,email',
             'role'     => 'required|in:admin,pelanggan,pemilik',
             'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
             'id_card'  => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
@@ -104,7 +103,7 @@ class PenggunaController extends Controller
 
         $request->validate([
             'name'     => 'required|string|max:100',
-            'email'    => 'required|email|unique:users,email,' . $id,
+           
             'role'     => 'required|in:admin,pelanggan,pemilik',
             'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
             'id_card'  => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
