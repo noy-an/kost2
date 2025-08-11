@@ -95,6 +95,12 @@ public function submitOtp(Request $request)
  
     $user->save();
 
+    \App\Models\Deposit::create([
+    'user_id' => $user->id,
+    'amount' => 0,
+]);
+
+
     Cache::forget("otp_" . $data['phone']);
     session()->forget('pending_register');
 
