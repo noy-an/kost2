@@ -32,7 +32,7 @@ class AuthController extends Controller
 {
  $validated = $request->validate([
     'name' => 'required|string|max:255',
-    'email' => 'required|email|unique:users,email',
+   
     'role' => 'required|string',
     'phone' => 'required|string|min:10|unique:users,phone',
     'password' => 'required|string|min:6',
@@ -47,7 +47,7 @@ $idCardPath = $request->file('id_card')->store('id_card_temp', 'public');
 // Jangan sentuh objek file, simpen path-nya aja
 $dataToStore = [
     'name' => $validated['name'],
-    'email' => $validated['email'],
+    
     'role' => $validated['role'],
     'phone' => $validated['phone'],
     'password' => $validated['password'],
@@ -86,13 +86,13 @@ public function submitOtp(Request $request)
 
     $user = new User();
     $user->name = $data['name'];
-    $user->email = $data['email'];
+
     $user->phone = $data['phone'];
     $user->role = $data['role'];
     $user->password = bcrypt($data['password']);
     $user->avatar = $data['avatar_path']; // bisa diubah pas verifikasi final
     $user->id_card = $data['id_card_path'];
-    $user->email_verified_at = now();
+ 
     $user->save();
 
     Cache::forget("otp_" . $data['phone']);
@@ -109,7 +109,7 @@ public function submitOtp(Request $request)
 
     public function submitLogin(Request $request)
     {
-        $data = $request->only('email', 'password');
+        $data = $request->only('phone', 'password');
 
         if (Auth::attempt($data)) {
             $request->session()->regenerate();

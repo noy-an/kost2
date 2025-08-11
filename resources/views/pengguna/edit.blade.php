@@ -35,10 +35,7 @@
           <input type="text" class="form-control shadow-sm" name="name" value="{{ old('name', $user->name) }}" required>
         </div>
 
-        <div class="col-md-6">
-          <label class="form-label">Email</label>
-          <input type="email" class="form-control shadow-sm" name="email" value="{{ old('email', $user->email) }}" required>
-        </div>
+        
 
         <div class="col-md-6">
           <label class="form-label">No HP</label>

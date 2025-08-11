@@ -150,3 +150,4 @@ Mail::to(Auth::user()->email);
                 ->with('error', 'Pembayaran gagal: ' . $e->getMessage());
         }
     }
+}

@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http; // buat request ke API WA
+use App\Models\User;
 
 class ResetPasswordController extends Controller
 {
@@ -17,50 +17,53 @@ class ResetPasswordController extends Controller
         return view('auth.forgot-password');
     }
 
-    public function sendResetLink(Request $request)
+     public function sendResetLink(Request $request)
     {
-        $request->validate(['email' => 'required|email']);
+        $request->validate(['phone' => 'required']); // ganti email jadi phone
 
-        $User = User::where('email', $request->email)->first();
-        if (!$User) {
-            return back()->with('error', 'Email tidak ditemukan.');
+        $user = User::where('phone', $request->phone)->first();
+        if (!$user) {
+            return back()->with('error', 'Nomor WA tidak ditemukan.');
         }
 
         $token = Str::random(64);
 
         DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $request->email],
+            ['phone' => $request->phone],
             ['token' => $token, 'created_at' => now()]
         );
 
-        $resetLink = url('/reset-password?token=' . $token . '&email=' . $request->email);
+        $resetLink = url('/reset-password?token=' . $token . '&phone=' . $request->phone);
 
-        Mail::raw("Klik link ini untuk reset password: $resetLink", function ($message) use ($request) {
-            $message->to($request->email);
-            $message->subject('Reset Password Pelanggan');
-        });
+        // Kirim lewat API WhatsApp
+            // Kirim lewat helper kirimWa
+        try {
+            kirimWa($request->phone, "Klik link ini untuk reset password: $resetLink");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal mengirim link reset via WhatsApp.');
+        }
 
-        return back()->with('success', 'Link reset password telah dikirim ke email.');
+        return back()->with('success', 'Link reset password telah dikirim via WhatsApp.');
     }
 
     public function showResetForm(Request $request)
     {
         return view('auth.reset-password', [
             'token' => $request->token,
-            'email' => $request->email
+            'phone' => $request->phone
         ]);
     }
 
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'phone' => 'required',
             'token' => 'required',
             'password' => 'required|min:6|confirmed',
         ]);
 
         $reset = DB::table('password_reset_tokens')
-            ->where('email', $request->email)
+            ->where('phone', $request->phone)
             ->where('token', $request->token)
             ->first();
 
@@ -68,16 +71,15 @@ class ResetPasswordController extends Controller
             return back()->with('error', 'Token tidak valid.');
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('phone', $request->phone)->first();
         if (!$user) {
-            return back()->with('error', 'Email tidak ditemukan.');
+            return back()->with('error', 'Nomor WA tidak ditemukan.');
         }
 
         $user->password = Hash::make($request->password);
-
         $user->save();
 
-        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('password_reset_tokens')->where('phone', $request->phone)->delete();
 
         return redirect('login')->with('success', 'Password berhasil direset!');
     }

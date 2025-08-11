@@ -323,38 +323,34 @@
                 </p>
             </div>
 
-           <form action="{{ route('password.email') }}" method="POST">
+          <form action="{{ route('password.whatsapp') }}" method="POST">
     @csrf
 
     @if(session('success'))
         <div class="alert alert-success">
-            <i class="fas fa-check-circle me-2"></i>
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
         <div class="alert alert-danger">
-            <i class="fas fa-exclamation-triangle me-2"></i>
             {{ session('error') }}
         </div>
     @endif
 
     <div class="form-floating mb-3">
-        <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
-        <label for="email">
-            <i class="fas fa-envelope me-2"></i>Email Address
-        </label>
+        <input type="text" class="form-control" id="phone" name="phone" placeholder="Nomor WhatsApp" required>
+        <label for="phone"><i class="fab fa-whatsapp me-2"></i>Nomor WhatsApp</label>
     </div>
 
     <button type="submit" class="btn btn-submit w-100">
         <i class="fas fa-paper-plane me-2"></i>
-        Send Reset Link
+        Kirim Link Reset via WA
     </button>
 
     <a href="{{ route('login') }}" class="btn btn-back w-100">
         <i class="fas fa-arrow-left me-2"></i>
-        Back to Login
+        Kembali ke Login
     </a>
 </form>
         </div>
