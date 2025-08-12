@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Tagihan;
 use App\Models\Deposit;
+use App\Models\DepositHistory;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification;
 use App\Notifications\BookingNotification;
@@ -471,124 +472,160 @@ class TagihanpelangganController extends Controller
         }
     }
 
-    public function storeCicilan(Request $request)
-    {
-        $request->validate([
-            'booking_id' => 'required|exists:booking,id',
-            'nominal_pembayaran' => 'required|numeric|min:5000',
-            'components' => 'required|array|min:1',
-            'order_id' => 'required'
-        ]);
+  public function storeCicilan(Request $request)
+{
+    $request->validate([
+        'booking_id' => 'required|exists:booking,id',
+        'nominal_pembayaran' => 'required|numeric|min:5000',
+        'components' => 'required|array|min:1',
+        'order_id' => 'required'
+    ]);
 
-        $booking = Booking::findOrFail($request->booking_id);
-        $nominal = $request->nominal_pembayaran;
-        $components = $request->components;
-        $orderId = $request->order_id;
+    $booking = Booking::findOrFail($request->booking_id);
+    $nominal = $request->nominal_pembayaran;
+    $components = $request->components;
+    $orderId = $request->order_id;
 
-        try {
-            $status = Transaction::status($orderId);
-            
-            $statusMap = match ($status->transaction_status) {
-                'capture' => $status->fraud_status === 'challenge' ? 'challenge' : 'success',
-                'settlement' => 'success',
-                'pending' => 'pending',
-                'deny' => 'failed',
-                'expire' => 'expired',
-                'cancel' => 'cancelled',
-                default => 'unknown',
-            };
+    try {
+        $status = Transaction::status($orderId);
 
-            if ($statusMap !== 'success') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Pembayaran belum berhasil'
-                ], 400);
+        $statusMap = match ($status->transaction_status) {
+            'capture' => $status->fraud_status === 'challenge' ? 'challenge' : 'success',
+            'settlement' => 'success',
+            'pending' => 'pending',
+            'deny' => 'failed',
+            'expire' => 'expired',
+            'cancel' => 'cancelled',
+            default => 'unknown',
+        };
+
+        if ($statusMap !== 'success') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pembayaran belum berhasil'
+            ], 400);
+        }
+
+        // Hitung total yang sudah dibayar
+        $totalPaid = [
+            'kost' => $booking->tagihan()->where('component', 'kost')->sum('amount_paid'),
+            'air' => $booking->tagihan()->where('component', 'air')->sum('amount_paid'),
+            'kebersihan' => $booking->tagihan()->where('component', 'kebersihan')->sum('amount_paid'),
+        ];
+
+        // Harga masing-masing komponen
+        $harga = [
+            'kost' => $booking->kost->harga,
+            'air' => $booking->kost->air ?? 100000,
+            'kebersihan' => $booking->kost->kebersihan ?? 50000,
+        ];
+
+        // DP awal hanya mengurangi tagihan kost
+        $dpAwal = $booking->dp ?? 0;
+        $sisaTagihan = [
+            'kost' => max(0, $harga['kost'] - $dpAwal - $totalPaid['kost']),
+            'air' => max(0, $harga['air'] - $totalPaid['air']),
+            'kebersihan' => max(0, $harga['kebersihan'] - $totalPaid['kebersihan']),
+        ];
+
+        // Hitung total sisa untuk komponen yang dipilih
+        $totalSisaDipilih = array_sum(array_intersect_key($sisaTagihan, array_flip($components)));
+
+        $totalPaidForComponents = 0;
+
+        // Logika pembagian pembayaran
+        if (in_array('air', $components) && in_array('kebersihan', $components)) {
+            // Jika keduanya dicentang, gabungkan jadi satu
+            $sisaAir = $sisaTagihan['air'];
+            $sisaKebersihan = $sisaTagihan['kebersihan'];
+            $totalAirKebersihan = $sisaAir + $sisaKebersihan;
+
+            if ($totalSisaDipilih > 0 && $totalAirKebersihan > 0) {
+                $proportion = $totalAirKebersihan / $totalSisaDipilih;
+                $amountPaid = round($proportion * min($nominal, $totalSisaDipilih));
+
+                Tagihan::create([
+                    'booking_id' => $booking->id,
+                    'component' => 'air_kebersihan',
+                    'amount_paid' => $amountPaid,
+                    'tanggal_tagihan' => now(),
+                    'status_pembayaran' => $statusMap,
+                    'payment_token' => $orderId,
+                    'keterangan' => 'cicilan'
+                ]);
+                $totalPaidForComponents += $amountPaid;
             }
-
-            $totalPaidKost = $booking->tagihan()->where('component', 'kost')->sum('amount_paid');
-            $totalPaidAir = $booking->tagihan()->where('component', 'air')->sum('amount_paid');
-            $totalPaidKebersihan = $booking->tagihan()->where('component', 'kebersihan')->sum('amount_paid');
-
-            $hargaKost = $booking->kost->harga;
-            $dpAwal = $booking->dp ?? 0;
-            $air = $booking->kost->air ?? 100000;
-            $kebersihan = $booking->kost->kebersihan ?? 50000;
-
-            $sisaTagihanMap = [
-                'kost' => max(0, $hargaKost - $dpAwal - $totalPaidKost),
-                'air' => max(0, $air - $totalPaidAir),
-                'kebersihan' => max(0, $kebersihan - $totalPaidKebersihan),
-            ];
-
-            $totalSisaDipilih = 0;
+        } else {
+            // Jika hanya satu komponen atau termasuk kost
             foreach ($components as $component) {
-                $totalSisaDipilih += $sisaTagihanMap[$component] ?? 0;
-            }
-
-            $remainingPayment = $nominal;
-            $totalPaidForComponents = 0;
-
-            foreach ($components as $component) {
-                $sisa = $sisaTagihanMap[$component] ?? 0;
+                $sisa = $sisaTagihan[$component] ?? 0;
 
                 if ($totalSisaDipilih > 0 && $sisa > 0) {
                     $proportion = $sisa / $totalSisaDipilih;
                     $amountPaid = round($proportion * min($nominal, $totalSisaDipilih));
-                    
-                    if ($amountPaid > 0) {
-                        Tagihan::create([
-                            'booking_id' => $booking->id,
-                            'component' => $component,
-                            'amount_paid' => $amountPaid,
-                            'tanggal_tagihan' => now(),
-                            'status_pembayaran' => $statusMap,
-                            'payment_token' => $orderId,
-                            'keterangan' => 'cicilan'
-                        ]);
-                        
-                        $totalPaidForComponents += $amountPaid;
-                    }
+
+                    Tagihan::create([
+                        'booking_id' => $booking->id,
+                        'component' => $component,
+                        'amount_paid' => $amountPaid,
+                        'tanggal_tagihan' => now(),
+                        'status_pembayaran' => $statusMap,
+                        'payment_token' => $orderId,
+                        'keterangan' => 'cicilan'
+                    ]);
+                    $totalPaidForComponents += $amountPaid;
                 }
             }
-
-            $overpayment = $nominal - $totalPaidForComponents;
-            if ($overpayment > 0) {
-                Deposit::create([
-                    'user_id' => $booking->user_id,
-                    'booking_id' => $booking->id,
-                    'amount' => $overpayment,
-                    'payment_token' => $orderId,
-                    'status_pembayaran' => $statusMap
-                ]);
-            }
-
-            $allPaid = true;
-            foreach ($components as $component) {
-                if (($sisaTagihanMap[$component] ?? 0) > 0) {
-                    $allPaid = false;
-                    break;
-                }
-            }
-
-            if ($allPaid) {
-                $this->kirimWaBookingStatus(
-                    $booking->user->name,
-                    'aktif',
-                    $booking->kost->nomor_kamar,
-                    $booking->user->phone
-                );
-            }
-
-            return response()->json([
-                'success' => true,
-                'redirect' => route('tagihanpelanggan.index')
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menyimpan cicilan: ' . $e->getMessage()
-            ], 500);
         }
+
+        // Update deposit (edit yang sudah ada)
+       $deposit = Deposit::where('user_id', $booking->user_id)->first();
+if ($deposit) {
+    $deposit->amount += $nominal;
+    $deposit->save();
+
+    DepositHistory::create([ 
+        'deposit_id' => $deposit->id,
+        'name'       => 'Pembayaran' . $booking->id,
+        'amount'     => $nominal,
+    ]);
+} else {
+    $newDeposit = Deposit::create([
+        'user_id' => $booking->user_id,
+        'amount' => $nominal - $totalPaidForComponents
+    ]);
+}
+
+
+        // Cek apakah semua komponen yang dipilih sudah lunas
+        $allPaid = true;
+        foreach ($components as $component) {
+            if (($sisaTagihan[$component] ?? 0) > 0) {
+                $allPaid = false;
+                break;
+            }
+        }
+
+        if ($allPaid) {
+            $this->kirimWaBookingStatus(
+                $booking->user->name,
+                'aktif',
+                $booking->kost->nomor_kamar,
+                $booking->user->phone
+            );
+        }
+
+        return response()->json([
+            'success' => true,
+            'redirect' => route('tagihanpelanggan.index')
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal menyimpan cicilan: ' . $e->getMessage()
+        ], 500);
     }
+}
+
 }

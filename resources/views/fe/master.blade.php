@@ -151,6 +151,9 @@
 
                             @auth
                                 @if (Auth::user()->role === 'pelanggan')
+                                 <li class="{{ Request::routeIs('mutasi.index') ? 'active' : '' }}">
+                        <a href="{{ route('mutasi.index') }}">Mutasi</a>
+                    </li>
                                     <li class="{{ Request::routeIs('profile.index') ? 'active' : '' }}">
                                         <a href="{{ route('profile.index') }}">Profil Saya</a>
                                     </li>

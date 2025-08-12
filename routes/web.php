@@ -13,6 +13,7 @@ use App\Http\Controllers\KostController;
 use App\Http\Controllers\TagihanController;    
 use App\Http\Controllers\TagihanpelangganController;    
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\MutasiController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\BookingpelangganController;
 use App\Http\Controllers\PdfController;
@@ -106,7 +107,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tagihanpelanggan/store', [TagihanpelangganController::class, 'store'])->name('tagihanpelanggan.store');
     Route::post('/tagihanpelanggan/check-payment-status', [TagihanpelangganController::class, 'checkPaymentStatus'])->name('tagihanpelanggan.checkPaymentStatus');
     Route::post('/tagihanpelanggan/update-status/{booking_id}', [TagihanpelangganController::class, 'updateStatus'])->name('tagihanpelanggan.updateStatus');
-    
+     Route::get('/mutasi', [MutasiController::class, 'index'])->name('mutasi.index');
     // Cicilan Routes
     Route::get('/cicilan/create/{booking_id}', [TagihanpelangganController::class, 'createCicilan'])->name('cicilan.create');
     Route::post('/cicilan/process', [TagihanpelangganController::class, 'processCicilan'])->name('cicilan.process');
