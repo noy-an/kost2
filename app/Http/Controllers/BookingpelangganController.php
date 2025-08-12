@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use App\Models\Deposit;
+use App\Models\DepositHistory;
 use App\Models\Kost;
 use App\Models\Notifbook;
 use Illuminate\Support\Facades\Auth;
@@ -57,97 +59,105 @@ class BookingpelangganController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'kost_id' => 'required|exists:kost,id',
-            'tgl_booking' => 'required|date',
-            'nominal_bayar' => 'required|numeric|min:1000',
-        ]);
+{
+    $request->validate([
+        'kost_id' => 'required|exists:kost,id',
+        'tgl_booking' => 'required|date',
+        'nominal_bayar' => 'required|numeric|min:1000',
+    ]);
 
-        $kost = Kost::findOrFail($request->kost_id);
-        $persentase = $request->persentase_pembayaran;
+    $kost = Kost::findOrFail($request->kost_id);
 
-        if ($kost->status !== 'kosong') {
-            return redirect()->route('bookingpelanggan.form', $kost->id)
-                ->with('error', 'Maaf, kost sudah tidak tersedia.');
-        }
+    if ($kost->status !== 'kosong') {
+        return redirect()->route('bookingpelanggan.form', $kost->id)
+            ->with('error', 'Maaf, kost sudah tidak tersedia.');
+    }
 
-        $nominal_pembayaran = $request->nominal_bayar;
-        $jenis_pembayaran = 'bayar_penuh';
+    // Hitung total harga
+    $total_harga = $kost->harga + $kost->air + $kost->kebersihan; 
+    $nominal_pembayaran = $request->nominal_bayar;
+    $selisih = $nominal_pembayaran - $total_harga; // bisa negatif
 
-        $booking = Booking::create([
-            'user_id' => Auth::id(),
-            'kost_id' => $kost->id,
-            'dp' => $nominal_pembayaran,
-            'persentase_pembayaran' => $persentase,
-            'jenis_pembayaran' => $jenis_pembayaran,
-            'tgl_booking' => $request->tgl_booking,
-            'status_booking' => 'aktif',
-        ]);
+    // Simpan booking
+    $booking = Booking::create([
+        'user_id' => Auth::id(),
+        'kost_id' => $kost->id,
+        'dp' => $nominal_pembayaran,
+        'persentase_pembayaran' => $request->persentase_pembayaran ?? null,
+        'jenis_pembayaran' => ($nominal_pembayaran >= $total_harga) ? 'bayar_penuh' : 'dp',
+        'tgl_booking' => $request->tgl_booking,
+        'status_booking' => 'aktif',
+    ]);
 
-          $kost->update([
+    // Update status kamar
+    $kost->update([
         'status' => 'terisi',
     ]);
 
-        Notifbook::create([
-            'booking_id' => $booking->id,
-            'message' => 'Booking baru dari pelanggan ' . Auth::user()->name . ' untuk kamar ' . $kost->nomor_kamar,
+    // Simpan notifikasi
+    Notifbook::create([
+        'booking_id' => $booking->id,
+        'message' => 'Booking baru dari pelanggan ' . Auth::user()->name . ' untuk kamar ' . $kost->nomor_kamar,
+    ]);
+
+        $deposit = Deposit::where('user_id', Auth::id())->first();
+    if ($deposit) {
+        $deposit->amount += $selisih; 
+        $deposit->save();
+
+
+    DepositHistory::create([
+        'deposit_id' => $deposit->id,
+        'name'       => 'Booking Kamar Kost ' . $request->kost_id,
+        'amount'     => $selisih,
+    ]);
+    }
+
+
+    // Midtrans payment setup
+    $transaction_details = [
+        'order_id' => 'BOOKING-' . $booking->id . '-' . time(),
+        'gross_amount' => (int) $nominal_pembayaran,
+    ];
+
+    $customer_details = [
+        'first_name' => Auth::user()->name,
+        'email' => Auth::user()->email,
+        'phone' => Auth::user()->phone ?? '08123456789',
+    ];
+
+    $item_details = [
+        [
+            'id' => $kost->id,
+            'price' => (int) $nominal_pembayaran,
+            'quantity' => 1,
+            'name' => 'Booking Kamar ' . $kost->nomor_kamar . ' (Lantai ' . $kost->nomor_lantai . ')',
+        ]
+    ];
+
+    $params = [
+        'transaction_details' => $transaction_details,
+        'customer_details' => $customer_details,
+        'item_details' => $item_details,
+        'callbacks' => [
+            'finish' => route('tagihanpelanggan.index'),
+        ],
+        'enabled_payments' => ['gopay'],
+    ];
+
+    try {
+        $paymentUrl = Snap::createTransaction($params)->redirect_url;
+
+        $booking->update([
+            'payment_token' => $params['transaction_details']['order_id'],
+            'payment_url' => $paymentUrl,
         ]);
 
-        $transaction_details = [
-            'order_id' => 'BOOKING-' . $booking->id . '-' . time(),
-            'gross_amount' => (int) $nominal_pembayaran,
-        ];
-
-        $customer_details = [
-            'first_name' => Auth::user()->name,
-            'email' => Auth::user()->email,
-            'phone' => Auth::user()->phone ?? '08123456789',
-        ];
-
-        $item_details = [
-            [
-                'id' => $kost->id,
-                'price' => (int) $nominal_pembayaran,
-                'quantity' => 1,
-                'name' => 'Booking Kamar ' . $kost->nomor_kamar . ' (Lantai ' . $kost->nomor_lantai . ')',
-            ]
-        ];
-
-        $params = [
-            'transaction_details' => $transaction_details,
-            'customer_details' => $customer_details,
-            'item_details' => $item_details,
-            'callbacks' => [
-                'finish' => route('tagihanpelanggan.index'),
-            ],
-        ];
-
-        // === Bagian Custom Opsi Pembayaran Midtrans ===
-        $params['enabled_payments'] = [      // 
-            // 'qris',
-            'gopay',
-                  // 
-            // 'credit_card' // 
-        ];
-        // === Selesai bagian custom ===
-
-        try {
-            $paymentUrl = Snap::createTransaction($params)->redirect_url;
-
-            $booking->update([
-                'payment_token' => $params['transaction_details']['order_id'],
-                'payment_url' => $paymentUrl,
-            ]);
-            
-            // KIRIM EMAIL BOOKING SUKSES
-Mail::to(Auth::user()->email);
-
-
-            return redirect($paymentUrl);
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Pembayaran gagal: ' . $e->getMessage());
-        }
+        return redirect($paymentUrl);
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->with('error', 'Pembayaran gagal: ' . $e->getMessage());
     }
+}
+
 }

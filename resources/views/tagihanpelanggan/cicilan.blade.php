@@ -106,6 +106,11 @@
                         <small class="text-info">Note: Jika nominal melebihi total tagihan, kelebihan akan masuk sebagai deposit.</small>
                     </div>
                 </div>
+                <div class="mb-3">
+  <strong>Total Tagihan Terpilih: </strong>
+  <span id="totalTerpilih">Rp0</span>
+</div>
+
 
                 <div class="d-grid gap-2">
                     <button type="button" id="payButton" class="btn btn-primary">Lanjutkan ke Pembayaran</button>
@@ -143,6 +148,23 @@ $(document).ready(function() {
     $('.component-checkbox').change(function() {
         updateTotalTagihan();
     });
+function updateTotalSelected() {
+  let total = 0;
+  $('.component-checkbox:checked').each(function() {
+    const comp = $(this).val();
+    if (comp === 'kost') total += {{ $sisaKost }};
+    else if (comp === 'air') total += {{ $sisaAir }};
+    else if (comp === 'kebersihan') total += {{ $sisaKebersihan }};
+  });
+  $('#totalTerpilih').text('Rp' + new Intl.NumberFormat('id-ID').format(total));
+}
+$(document).ready(function() {
+  updateTotalSelected();  
+
+  $('.component-checkbox').change(function() {
+    updateTotalSelected(); 
+  });
+});
 
     function calculateComponentTotals() {
         let components = {};
