@@ -487,6 +487,7 @@ class TagihanpelangganController extends Controller
     $orderId = $request->order_id;
 
     try {
+        // Ambil status transaksi Midtrans
         $status = Transaction::status($orderId);
 
         $statusMap = match ($status->transaction_status) {
@@ -506,96 +507,81 @@ class TagihanpelangganController extends Controller
             ], 400);
         }
 
-        // Hitung total yang sudah dibayar
+        // Hitung total pembayaran sudah dilakukan per komponen
         $totalPaid = [
             'kost' => $booking->tagihan()->where('component', 'kost')->sum('amount_paid'),
             'air' => $booking->tagihan()->where('component', 'air')->sum('amount_paid'),
             'kebersihan' => $booking->tagihan()->where('component', 'kebersihan')->sum('amount_paid'),
         ];
 
-        // Harga masing-masing komponen
+        // Harga tiap komponen
         $harga = [
             'kost' => $booking->kost->harga,
             'air' => $booking->kost->air ?? 100000,
             'kebersihan' => $booking->kost->kebersihan ?? 50000,
         ];
 
-        // DP awal hanya mengurangi tagihan kost
+        // DP hanya mengurangi tagihan kost
         $dpAwal = $booking->dp ?? 0;
+
         $sisaTagihan = [
             'kost' => max(0, $harga['kost'] - $dpAwal - $totalPaid['kost']),
             'air' => max(0, $harga['air'] - $totalPaid['air']),
             'kebersihan' => max(0, $harga['kebersihan'] - $totalPaid['kebersihan']),
         ];
 
-        // Hitung total sisa untuk komponen yang dipilih
+        // Total sisa dari komponen yang dipilih user
         $totalSisaDipilih = array_sum(array_intersect_key($sisaTagihan, array_flip($components)));
 
         $totalPaidForComponents = 0;
 
-        // Logika pembagian pembayaran
-        if (in_array('air', $components) && in_array('kebersihan', $components)) {
-            // Jika keduanya dicentang, gabungkan jadi satu
-            $sisaAir = $sisaTagihan['air'];
-            $sisaKebersihan = $sisaTagihan['kebersihan'];
-            $totalAirKebersihan = $sisaAir + $sisaKebersihan;
+        // Loop tiap komponen yang dipilih, buat tagihan terpisah
+        foreach ($components as $component) {
+            $sisa = $sisaTagihan[$component] ?? 0;
 
-            if ($totalSisaDipilih > 0 && $totalAirKebersihan > 0) {
-                $proportion = $totalAirKebersihan / $totalSisaDipilih;
+            if ($totalSisaDipilih > 0 && $sisa > 0) {
+                // Hitung proporsi nominal pembayaran sesuai sisa tagihan komponen
+                $proportion = $sisa / $totalSisaDipilih;
                 $amountPaid = round($proportion * min($nominal, $totalSisaDipilih));
 
                 Tagihan::create([
                     'booking_id' => $booking->id,
-                    'component' => 'air_kebersihan',
+                    'component' => $component,  // Simpan sesuai komponen (air/kebersihan/kost)
                     'amount_paid' => $amountPaid,
                     'tanggal_tagihan' => now(),
                     'status_pembayaran' => $statusMap,
                     'payment_token' => $orderId,
                     'keterangan' => 'cicilan'
                 ]);
+
                 $totalPaidForComponents += $amountPaid;
-            }
-        } else {
-            // Jika hanya satu komponen atau termasuk kost
-            foreach ($components as $component) {
-                $sisa = $sisaTagihan[$component] ?? 0;
-
-                if ($totalSisaDipilih > 0 && $sisa > 0) {
-                    $proportion = $sisa / $totalSisaDipilih;
-                    $amountPaid = round($proportion * min($nominal, $totalSisaDipilih));
-
-                    Tagihan::create([
-                        'booking_id' => $booking->id,
-                        'component' => $component,
-                        'amount_paid' => $amountPaid,
-                        'tanggal_tagihan' => now(),
-                        'status_pembayaran' => $statusMap,
-                        'payment_token' => $orderId,
-                        'keterangan' => 'cicilan'
-                    ]);
-                    $totalPaidForComponents += $amountPaid;
-                }
             }
         }
 
-        // Update deposit (edit yang sudah ada)
-       $deposit = Deposit::where('user_id', $booking->user_id)->first();
-if ($deposit) {
-    $deposit->amount += $nominal;
-    $deposit->save();
+        // Update deposit (jika ada tambah nominal, jika belum buat baru)
+        $deposit = Deposit::where('user_id', $booking->user_id)->first();
 
-    DepositHistory::create([ 
-        'deposit_id' => $deposit->id,
-        'name'       => 'Pembayaran' . $booking->id,
-        'amount'     => $nominal,
-    ]);
-} else {
-    $newDeposit = Deposit::create([
-        'user_id' => $booking->user_id,
-        'amount' => $nominal - $totalPaidForComponents
-    ]);
-}
+        if ($deposit) {
+            $deposit->amount += $nominal;
+            $deposit->save();
 
+            DepositHistory::create([
+                'deposit_id' => $deposit->id,
+                'name' => 'Pembayaran ' . implode(', ', $components),
+                'amount' => $nominal,
+            ]);
+        } else {
+            $newDeposit = Deposit::create([
+                'user_id' => $booking->user_id,
+                'amount' => $nominal,
+            ]);
+
+            DepositHistory::create([
+                'deposit_id' => $newDeposit->id,
+                'name' => 'Pembayaran ' . implode(', ', $components),
+                'amount' => $nominal,
+            ]);
+        }
 
         // Cek apakah semua komponen yang dipilih sudah lunas
         $allPaid = true;
@@ -606,6 +592,7 @@ if ($deposit) {
             }
         }
 
+        // Kirim WA jika sudah lunas semua komponen yang dipilih
         if ($allPaid) {
             $this->kirimWaBookingStatus(
                 $booking->user->name,
@@ -619,7 +606,6 @@ if ($deposit) {
             'success' => true,
             'redirect' => route('tagihanpelanggan.index')
         ]);
-
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,

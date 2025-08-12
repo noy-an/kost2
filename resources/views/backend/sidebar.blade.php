@@ -53,6 +53,15 @@
           </a>
         </li>
 
+         <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->routeIs('deposit.*') ? 'active' : '' }}" href="{{ route('deposit.index') }}">
+            <i class="ti ti-file-invoice"></i><span class="hide-menu">Deposit</span>
+            @if($depositBaru)
+              <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
+            @endif
+          </a>
+        </li>
+
         <!-- Pembayaran -->
         {{-- <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('pembayaran.*') ? 'active' : '' }}" href="{{ route('pembayaran.index') }}">
