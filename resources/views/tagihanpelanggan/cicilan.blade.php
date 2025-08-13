@@ -106,11 +106,6 @@
                         <small class="text-info">Note: Jika nominal melebihi total tagihan, kelebihan akan masuk sebagai deposit.</small>
                     </div>
                 </div>
-                <div class="mb-3">
-  <strong>Total Tagihan Terpilih: </strong>
-  <span id="totalTerpilih">Rp0</span>
-</div>
-
 
                 <div class="d-grid gap-2">
                     <button type="button" id="payButton" class="btn btn-primary">Lanjutkan ke Pembayaran</button>
@@ -144,46 +139,29 @@
 <script>
 window.snap = window.snap || null;
 $(document).ready(function() {
-    // Update max payment when components are selected
+
+    // Panggil sekali saat halaman pertama load
+    updateTotalSelected();
+
+    // Panggil lagi setiap checkbox berubah
     $('.component-checkbox').change(function() {
-        updateTotalTagihan();
+        updateTotalSelected();
     });
-function updateTotalSelected() {
-  let total = 0;
-  $('.component-checkbox:checked').each(function() {
-    const comp = $(this).val();
-    if (comp === 'kost') total += {{ $sisaKost }};
-    else if (comp === 'air') total += {{ $sisaAir }};
-    else if (comp === 'kebersihan') total += {{ $sisaKebersihan }};
-  });
-  $('#totalTerpilih').text('Rp' + new Intl.NumberFormat('id-ID').format(total));
-}
-$(document).ready(function() {
-  updateTotalSelected();  
 
-  $('.component-checkbox').change(function() {
-    updateTotalSelected(); 
-  });
-});
-
-    function calculateComponentTotals() {
-        let components = {};
-        $('.component-checkbox:checked').each(function() {
-            const component = $(this).val();
-            if (component === 'kost') components.kost = {{ $sisaKost }};
-            if (component === 'air') components.air = {{ $sisaAir }};
-            if (component === 'kebersihan') components.kebersihan = {{ $sisaKebersihan }};
-        });
-        return components;
-    }
-
-    function updateTotalTagihan() {
+    function updateTotalSelected() {
         let total = 0;
-        const components = calculateComponentTotals();
-        for (const component in components) {
-            total += components[component];
-        }
-        return total;
+        $('.component-checkbox:checked').each(function() {
+            const comp = $(this).val();
+            if (comp === 'kost') total += {{ $sisaKost }};
+            else if (comp === 'air') total += {{ $sisaAir }};
+            else if (comp === 'kebersihan') total += {{ $sisaKebersihan }};
+        });
+
+        // Update teks total
+        $('#totalTerpilih').text('Rp' + new Intl.NumberFormat('id-ID').format(total));
+
+        // Isi otomatis nominal pembayaran
+        $('#nominal_pembayaran').val(total);
     }
 
     $('#payButton').click(function() {
@@ -214,7 +192,6 @@ $(document).ready(function() {
     });
 
     function processPayment(nominal, components) {
-        // Tampilkan loading indicator
         $('#payButton').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...');
 
         $.ajax({
@@ -230,11 +207,9 @@ $(document).ready(function() {
                 $('#payButton').prop('disabled', false).html('Lanjutkan ke Pembayaran');
                 
                 if (response.success) {
-                    // Pastikan snap telah terload
                     if (typeof snap !== 'undefined') {
                         snap.pay(response.snap_token, {
                             onSuccess: function(result) {
-                                // Simpan data pembayaran setelah sukses
                                 savePayment(response.order_id, nominal, components);
                             },
                             onPending: function(result) {
@@ -287,4 +262,5 @@ $(document).ready(function() {
     }
 });
 </script>
+
 @endsection

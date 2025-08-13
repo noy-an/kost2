@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Session;
 use App\Models\Kost;
 use App\Models\Booking;
+use App\Models\Deposit;
 use App\Models\Tagihan;
 
 use Illuminate\Support\Facades\Schedule;
@@ -45,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
             'pembayaranBaru' => Pembayaran::whereDate('created_at', today())->exists() && !in_array('pembayaran', $visited),
             'penggunaBaru' => User::whereDate('created_at', today())->exists() && !in_array('pengguna', $visited),
             'kontakBaru' => Kontak::whereDate('created_at', today())->exists() && !in_array('kontak', $visited),
+             'depositBaru' => Deposit::whereDate('created_at', today())->exists() && !in_array('deposit', $visited),
         ];
 
         $view->with($notif);
