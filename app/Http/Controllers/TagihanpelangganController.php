@@ -624,43 +624,32 @@ public function storeCicilan(Request $request)
         ]);
 
         // ===== 6. CEK LUNAS ATAU BELUM =====
-        $totalSisaBulanIni = [
-            'kost' => max(0, $harga['kost'] - $dpAwal - ($totalPaid['kost'] + ($amountPaidPerComponent['kost'] ?? 0))),
-            'air' => max(0, $harga['air'] - ($totalPaid['air'] + ($amountPaidPerComponent['air'] ?? 0))),
-            'kebersihan' => max(0, $harga['kebersihan'] - ($totalPaid['kebersihan'] + ($amountPaidPerComponent['kebersihan'] ?? 0))),
-        ];
+$totalSisaBulanIni = [
+    'kost' => max(0, $harga['kost'] - $dpAwal - ($totalPaid['kost'] + ($amountPaidPerComponent['kost'] ?? 0))),
+    'air' => max(0, $harga['air'] - ($totalPaid['air'] + ($amountPaidPerComponent['air'] ?? 0))),
+    'kebersihan' => max(0, $harga['kebersihan'] - ($totalPaid['kebersihan'] + ($amountPaidPerComponent['kebersihan'] ?? 0))),
+];
 
-        if (array_sum($totalSisaBulanIni) <= 0.01) {
-            // Update booking ke aktif
-            $booking->tgl_booking = now();
-            $booking->status = 'aktif';
-            $booking->save();
+if (array_sum($totalSisaBulanIni) <= 0.01) {
+    // tanggal bayar sekarang
+    $now = now();
 
-            // Buat tagihan bulan berikutnya
-            $nextMonthDate = Carbon::createFromFormat('Y-m', $bulanTagihan)
-                ->addMonthNoOverflow()
-                ->startOfMonth();
+    // Update booking ke aktif, simpan tanggal bayar
+    $booking->tgl_booking = $now;
+    $booking->save();
 
-            foreach (['kost', 'air', 'kebersihan'] as $comp) {
-                Tagihan::firstOrCreate([
-                    'booking_id' => $booking->id,
-                    'component' => $comp,
-                    'tanggal_tagihan' => $nextMonthDate,
-                ], [
-                    'amount_paid' => 0,
-                    'status_pembayaran' => 'pending',
-                    'keterangan' => 'unpaid'
-                ]);
-            }
 
-            // Kirim WA
-            $this->kirimWaBookingStatus(
-                $booking->user->name,
-                'aktif',
-                $booking->kost->nomor_kamar,
-                $booking->user->phone
-            );
-        }
+
+    // Kirim WA
+    $this->kirimWaBookingStatus(
+        $booking->user->name,
+        'aktif',
+        $booking->kost->nomor_kamar,
+        $booking->user->phone
+    );
+}
+
+
 
         return response()->json([
             'success' => true,
