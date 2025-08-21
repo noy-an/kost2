@@ -73,9 +73,15 @@
 
     $status = $booking->status_sewa;
 
+    // PERBAIKAN: Hanya tampilkan "Lunas" jika SEMUA komponen sudah lunas
+    // dan tidak ada sisa tagihan untuk bulan berjalan
+    $isKostLunas = $sisaKost <= 0.01;
+    $isAirLunas = $sisaAir <= 0.01;
+    $isKebersihanLunas = $sisaKebersihan <= 0.01;
+    
     if ($status === 'masa_tenggang') {
         $keterangan = 'bayar ulang';
-    } elseif ($sisaKost <= 0 && $sisaAir <= 0 && $sisaKebersihan <= 0) {
+    } elseif ($isKostLunas && $isAirLunas && $isKebersihanLunas) {
         $keterangan = 'paid';
     } else {
         $keterangan = 'unpaid';
@@ -110,6 +116,15 @@
         <span class="badge bg-danger">Belum Lunas</span>
         <br><small class="text-muted">
             Sisa: Rp{{ number_format($totalSisa, 0, ',', '.') }}
+            @if($sisaKost > 0)
+                <br>Kost: Rp{{ number_format($sisaKost, 0, ',', '.') }}
+            @endif
+            @if($sisaAir > 0)
+                <br>Air: Rp{{ number_format($sisaAir, 0, ',', '.') }}
+            @endif
+            @if($sisaKebersihan > 0)
+                <br>Kebersihan: Rp{{ number_format($sisaKebersihan, 0, ',', '.') }}
+            @endif
         </small>
     @endif
 </td>

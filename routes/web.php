@@ -147,10 +147,11 @@ Route::post('/bookingpelanggan/store', [BookingpelangganController::class, 'stor
 
 Route::get('/register/otp', [AuthController::class, 'formOtp'])->name('otp.form');
 Route::post('/register/otp', [AuthController::class, 'submitOtp'])->name('otp.submit');
+Route::post('/register/otp/resend', [AuthController::class, 'resendOtp'])->name('otp.resend');
 
 Route::get('/profile/otp', [ProfilePelangganController::class, 'formOtp'])->name('profile.otp');
 Route::post('/profile/otp', [ProfilePelangganController::class, 'submitOtp'])->name('profile.submit.otp');
-
+Route::post('/profile/otp/resend', [ProfilePelangganController::class, 'resendOtp'])->name('profile.resend.otp');
 
 
 

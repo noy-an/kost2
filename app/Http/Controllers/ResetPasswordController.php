@@ -46,6 +46,7 @@ class ResetPasswordController extends Controller
         return back()->with('success', 'Link reset password telah dikirim via WhatsApp.');
     }
 
+
     public function showResetForm(Request $request)
     {
         return view('auth.reset-password', [
