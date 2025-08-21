@@ -25,7 +25,7 @@
     }
 
     .summary-card {
-        flex: 1;
+        flex: 1 1 250px;
         background: linear-gradient(to right, #ecf0f1, #ffffff);
         padding: 25px;
         border-radius: 12px;
@@ -70,6 +70,7 @@
         text-align: center;
         vertical-align: middle;
         font-size: 14px;
+        white-space: nowrap;
     }
 
     .table thead {
@@ -95,26 +96,85 @@
         }
     }
 
-.btn-custom {
-    background-color: #2e86de;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 600;
-    border: none;
-    margin: 0 5px;
-    transition: background-color 0.3s ease;
-}
-.btn-custom.disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-    pointer-events: none;
-}
-.btn-custom:hover:not(.disabled) {
-    background-color: #1b4f72;
-}
+    .btn-custom {
+        background-color: #2e86de;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        border: none;
+        margin: 0 5px;
+        transition: background-color 0.3s ease;
+    }
+    .btn-custom.disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+    .btn-custom:hover:not(.disabled) {
+        background-color: #1b4f72;
+    }
 
+    /* ============================
+       Responsive Design
+    ============================= */
+    @media (max-width: 768px) {
+        .laporan-title {
+            font-size: 20px;
+            text-align: center;
+        }
 
+        .laporan-title a {
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .summary-box {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .summary-card {
+            flex: 1 1 100%;
+            padding: 20px;
+        }
+
+        form .row.g-3 {
+            flex-direction: column;
+        }
+
+        form .col-md-4 {
+            width: 100%;
+        }
+
+        .card-header {
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .table th, .table td {
+            font-size: 12px;
+            white-space: normal;
+        }
+
+        .btn-custom {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .laporan-title {
+            font-size: 18px;
+        }
+        .summary-card h4 {
+            font-size: 16px;
+        }
+        .summary-card p {
+            font-size: 14px;
+        }
+    }
 </style>
 
 <div class="container-fluid pt-4 px-4">
@@ -125,10 +185,9 @@
                 <!-- Heading -->
                 <div class="laporan-title d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <span><i class="fas fa-chart-bar me-2 text-primary"></i> Laporan Booking & DP</span>
-               <a href="{{ route('pdf.laporan') }}" class="btn btn-success btn-sm px-3 py-2 rounded" target="_blank" style="font-size: 14px;">
-                    📄 Download Laporan
-                </a>
-
+                    <a href="{{ route('pdf.laporan') }}" class="btn btn-success btn-sm px-3 py-2 rounded" target="_blank" style="font-size: 14px;">
+                        📄 Download Laporan
+                    </a>
                 </div>
 
                 <!-- Summary -->
@@ -143,29 +202,29 @@
                     </div>
                 </div>
 
-                <!-- Table Card -->
                 <!-- Filter Form -->
-<form method="GET" action="{{ route('laporan.index') }}" class="mb-4">
-    <div class="row g-3 align-items-center">
-        <div class="col-md-4">
-            <label for="search_kamar" class="form-label fw-bold">Cari Nomor Kamar</label>
-            <input type="text" name="search_kamar" id="search_kamar" value="{{ request('search_kamar') }}" class="form-control" placeholder="Masukkan nomor kamar">
-        </div>
-        <div class="col-md-4">
-            <label for="tanggal" class="form-label fw-bold">Filter Tanggal Booking</label>
-            <input type="date" name="tanggal" id="tanggal" value="{{ request('tanggal') }}" class="form-control">
-        </div>
-        <div class="col-md-4 mt-4">
-            <button type="submit" class="btn btn-primary mt-2">
-                🔍 Cari / Filter
-            </button>
-            <a href="{{ route('laporan.index') }}" class="btn btn-secondary mt-2">
-                ❌ Reset
-            </a>
-        </div>
-    </div>
-</form>
+                <form method="GET" action="{{ route('laporan.index') }}" class="mb-4">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-4">
+                            <label for="search_kamar" class="form-label fw-bold">Cari Nomor Kamar</label>
+                            <input type="text" name="search_kamar" id="search_kamar" value="{{ request('search_kamar') }}" class="form-control" placeholder="Masukkan nomor kamar">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tanggal" class="form-label fw-bold">Filter Tanggal Booking</label>
+                            <input type="date" name="tanggal" id="tanggal" value="{{ request('tanggal') }}" class="form-control">
+                        </div>
+                        <div class="col-md-4 mt-4">
+                            <button type="submit" class="btn btn-primary mt-2 w-100">
+                                🔍 Cari / Filter
+                            </button>
+                            <a href="{{ route('laporan.index') }}" class="btn btn-secondary mt-2 w-100">
+                                ❌ Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
 
+                <!-- Table Card -->
                 <div class="card">
                     <div class="card-header">
                         Rangkuman Booking Kamar & DP
@@ -201,22 +260,22 @@
                 </div>
 
                 <!-- Pagination -->
-<div class="mt-4 text-center">
-    {{-- Tombol Previous --}}
-    <a href="{{ $data->previousPageUrl() }}" class="btn btn-custom {{ $data->onFirstPage() ? 'disabled' : '' }}">
-        Previous
-    </a>
+                <div class="mt-4 text-center">
+                    {{-- Tombol Previous --}}
+                    <a href="{{ $data->previousPageUrl() }}" class="btn btn-custom {{ $data->onFirstPage() ? 'disabled' : '' }}">
+                        Previous
+                    </a>
 
-    {{-- Tombol Next --}}
-    <a href="{{ $data->nextPageUrl() }}" class="btn btn-custom {{ $data->hasMorePages() ? '' : 'disabled' }}">
-        Next
-    </a>
+                    {{-- Tombol Next --}}
+                    <a href="{{ $data->nextPageUrl() }}" class="btn btn-custom {{ $data->hasMorePages() ? '' : 'disabled' }}">
+                        Next
+                    </a>
 
-    {{-- Info halaman --}}
-    <div class="mt-2 text-muted" style="font-weight: 500;">
-        Page {{ $data->currentPage() }} of {{ $data->lastPage() }}
-    </div>
-</div>
+                    {{-- Info halaman --}}
+                    <div class="mt-2 text-muted" style="font-weight: 500;">
+                        Page {{ $data->currentPage() }} of {{ $data->lastPage() }}
+                    </div>
+                </div>
 
             </div>
         </div>
