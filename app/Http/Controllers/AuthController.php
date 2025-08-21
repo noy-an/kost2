@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use App\Models\Otp;
+use Carbon\Carbon;
 class AuthController extends Controller
 {
 
@@ -17,16 +19,21 @@ class AuthController extends Controller
             'title'=> 'verif'
         ]);
     }
-   private function kirimOtp($phone, $nama)
+    private function kirimOtp($phone, $nama)
 {
     $otp = rand(100000, 999999);
-    Cache::put("otp_$phone", $otp, now()->addMinutes(5)); // expired dalam 5 menit
 
-    // Ganti pake Japati / WhatsApp lu
-    $pesan = "Kode OTP registrasi untuk $nama adalah: *$otp*. Berlaku 5 menit.";
+    // Simpan ke DB
+    Otp::create([
+        'user_id'   => Auth::id(),
+        'phone'     => $phone,
+        'code'      => $otp,
+        'expired_at'=> Carbon::now()->addMinutes(1),
+    ]);
 
-    // Panggil fungsi WA
-    kirimWa($phone, $pesan); // asumsinya lu udah punya fungsi kirimWa()
+    // Kirim WA
+    $pesan = "Kode OTP untuk verifikasi nomor WA $nama adalah: *$otp*. Berlaku 1 menit.";
+    kirimWa($phone, $pesan);
 }
    public function submitRegistrasiPelanggan(Request $request)
 {
@@ -68,6 +75,18 @@ public function formOtp()
     return view('auth.otp'); // pastiin ini file nya ada di `resources/views/auth/otp.blade.php`
 }
 
+public function resendOtp()
+{
+    $data = session('pending_register');
+    if (!$data) {
+        return redirect()->route('registrasipelanggan')->with('gagal', 'Session habis, silakan daftar ulang.');
+    }
+
+    $this->kirimOtp($data['phone'], $data['name']);
+    return back()->with('sukses', 'Kode OTP baru sudah dikirim ke WhatsApp.');
+}
+
+
 public function submitOtp(Request $request)
 {
     $request->validate([
@@ -79,32 +98,38 @@ public function submitOtp(Request $request)
         return redirect()->route('registrasipelanggan')->with('gagal', 'Session habis, silakan daftar ulang.');
     }
 
-    $cachedOtp = Cache::get("otp_" . $data['phone']);
-    if ($request->otp != $cachedOtp) {
+    // Cari OTP di DB
+    $otpRecord = \App\Models\Otp::where('phone', $data['phone'])
+        ->where('code', $request->otp)
+        ->where('expired_at', '>', now())
+        ->latest()
+        ->first();
+
+    if (!$otpRecord) {
         return back()->with('gagal', 'Kode OTP salah atau sudah kedaluwarsa.');
     }
 
+    // OTP valid → hapus biar ga dipakai lagi
+    $otpRecord->delete();
+
+    // Lanjut simpan user
     $user = new User();
     $user->name = $data['name'];
-
     $user->phone = $data['phone'];
     $user->role = $data['role'];
     $user->password = bcrypt($data['password']);
-    $user->avatar = $data['avatar_path']; // bisa diubah pas verifikasi final
+    $user->avatar = $data['avatar_path'];
     $user->id_card = $data['id_card_path'];
- 
     $user->save();
 
     \App\Models\Deposit::create([
-    'user_id' => $user->id,
-    'amount' => 0,
-]);
+        'user_id' => $user->id,
+        'amount' => 0,
+    ]);
 
-
-    Cache::forget("otp_" . $data['phone']);
     session()->forget('pending_register');
-
     auth()->login($user);
+
     return redirect()->route('home.index')->with('sukses', 'Registrasi berhasil!');
 }
 
