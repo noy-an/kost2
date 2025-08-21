@@ -607,19 +607,29 @@ class TagihanpelangganController extends Controller
                 ]);
             }
 
-        // ===== 5. SIMPAN KE DEPOSIT =====
-        $deposit = Deposit::firstOrCreate(
-            ['user_id' => $booking->user_id],
-            ['amount' => 0]
-        );
-        $deposit->amount += $nominal;
-        $deposit->save();
+                // ===== 5. SIMPAN KE DEPOSIT =====
+            $deposit = Deposit::firstOrCreate(
+                ['user_id' => $booking->user_id],
+                ['amount' => 0]
+            );
 
-        DepositHistory::create([
-            'deposit_id' => $deposit->id,
-            'name' => 'Pembayaran ' . implode(', ', $components),
-            'amount' => $nominal,
-        ]);
+            // Kurangi deposit sesuai total nominal
+            $deposit->amount += $nominal; // debit
+            $deposit->save();
+
+            // Simpan history per komponen
+            foreach ($components as $component) {
+                $amountComponent = $amountPaidPerComponent[$component] ?? 0;
+
+                if ($amountComponent > 0) {
+                    DepositHistory::create([
+                        'deposit_id' => $deposit->id,
+                        'name' => 'Pembayaran ' . ucfirst($component),
+                        'amount' => $amountComponent,
+                    ]);
+                }
+            }
+
 
             // ===== 6. CEK LUNAS ATAU BELUM =====
             $totalSisaBulanIni = [
