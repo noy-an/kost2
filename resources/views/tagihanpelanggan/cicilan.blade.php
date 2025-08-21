@@ -91,6 +91,10 @@
                             </tr>
                             @endif
                         </table>
+                        <div class="alert alert-info">
+                            <strong>Total Terpilih: </strong>
+                            <span id="totalTerpilih">Rp0</span>
+                        </div>
                     </div>
                 </div>
 
