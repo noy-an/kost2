@@ -500,8 +500,7 @@ class TagihanpelangganController extends Controller
             ], 500);
         }
     }
-
-  public function storeCicilan(Request $request)
+public function storeCicilan(Request $request)
 {
     $request->validate([
         'booking_id' => 'required|exists:booking,id',
@@ -516,9 +515,8 @@ class TagihanpelangganController extends Controller
     $orderId = $request->order_id;
 
     try {
-        // Ambil status transaksi Midtrans
+        // ===== 1. CEK STATUS MIDTRANS =====
         $status = Transaction::status($orderId);
-
         $statusMap = match ($status->transaction_status) {
             'capture' => $status->fraud_status === 'challenge' ? 'challenge' : 'success',
             'settlement' => 'success',
@@ -536,105 +534,128 @@ class TagihanpelangganController extends Controller
             ], 400);
         }
 
-        // Hitung total pembayaran sudah dilakukan per komponen
-        $totalPaid = [
-            'kost' => $booking->tagihan()->where('component', 'kost')->sum('amount_paid'),
-            'air' => $booking->tagihan()->where('component', 'air')->sum('amount_paid'),
-            'kebersihan' => $booking->tagihan()->where('component', 'kebersihan')->sum('amount_paid'),
-        ];
+        // ===== 2. AMBIL BULAN TAGIHAN TERTUA YANG BELUM LUNAS =====
+        $bulanTagihan = $booking->tagihan()
+            ->selectRaw("DATE_FORMAT(tanggal_tagihan, '%Y-%m') as bulan")
+            ->groupBy('bulan')
+            ->orderBy('bulan', 'asc')
+            ->get()
+            ->firstWhere(function ($row) use ($booking) {
+                $tagihanBulan = $booking->tagihan()
+                    ->whereRaw("DATE_FORMAT(tanggal_tagihan, '%Y-%m') = ?", [$row->bulan])
+                    ->get();
+                return !$tagihanBulan->every(fn($t) => $t->keterangan === 'paid');
+            })->bulan ?? now()->format('Y-m');
 
-        // Harga tiap komponen
+        // ===== 3. HARGA PER KOMPONEN =====
         $harga = [
             'kost' => $booking->kost->harga,
             'air' => $booking->kost->air ?? 100000,
             'kebersihan' => $booking->kost->kebersihan ?? 50000,
         ];
 
-        // DP hanya mengurangi tagihan kost
-        $dpAwal = $booking->dp ?? 0;
+        // Ambil semua tagihan bulan yang diproses
+        $tagihanBulanIni = $booking->tagihan()
+            ->whereRaw("DATE_FORMAT(tanggal_tagihan, '%Y-%m') = ?", [$bulanTagihan])
+            ->get()
+            ->groupBy('component');
 
+        $totalPaid = [
+            'kost' => $tagihanBulanIni->has('kost') ? $tagihanBulanIni['kost']->sum('amount_paid') : 0,
+            'air' => $tagihanBulanIni->has('air') ? $tagihanBulanIni['air']->sum('amount_paid') : 0,
+            'kebersihan' => $tagihanBulanIni->has('kebersihan') ? $tagihanBulanIni['kebersihan']->sum('amount_paid') : 0,
+        ];
+
+        // DP hanya bulan pertama booking
+        $isFirstMonth = $booking->created_at->format('Y-m') === $bulanTagihan;
+        $dpAwal = $isFirstMonth ? ($booking->dp ?? 0) : 0;
+
+        // Sisa per komponen
         $sisaTagihan = [
             'kost' => max(0, $harga['kost'] - $dpAwal - $totalPaid['kost']),
             'air' => max(0, $harga['air'] - $totalPaid['air']),
             'kebersihan' => max(0, $harga['kebersihan'] - $totalPaid['kebersihan']),
         ];
 
-        // Total sisa dari komponen yang dipilih user
         $totalSisaDipilih = array_sum(array_intersect_key($sisaTagihan, array_flip($components)));
+        $amountPaidPerComponent = [];
 
-        $totalPaidForComponents = 0;
-
-        // Loop tiap komponen yang dipilih, buat tagihan terpisah
+        // ===== 4. SIMPAN PEMBAYARAN KE TAGIHAN =====
         foreach ($components as $component) {
             $sisa = $sisaTagihan[$component] ?? 0;
-
-            if ($totalSisaDipilih > 0 && $sisa > 0) {
-                // Hitung proporsi nominal pembayaran sesuai sisa tagihan komponen
-                $proportion = $sisa / $totalSisaDipilih;
-                $amountPaid = round($proportion * min($nominal, $totalSisaDipilih));
-
-                Tagihan::create([
-                    'booking_id' => $booking->id,
-                    'component' => $component,  // Simpan sesuai komponen (air/kebersihan/kost)
-                    'amount_paid' => $amountPaid,
-                    'tanggal_tagihan' => now(),
-                    'status_pembayaran' => $statusMap,
-                    'payment_token' => $orderId,
-                    'keterangan' => 'cicilan'
-                ]);
-
-                $totalPaidForComponents += $amountPaid;
+            if ($sisa <= 0) {
+                $amountPaidPerComponent[$component] = 0;
+                continue;
             }
-        }
 
-        // Update deposit (jika ada tambah nominal, jika belum buat baru)
-        $deposit = Deposit::where('user_id', $booking->user_id)->first();
+            $proportion = $sisa / $totalSisaDipilih;
+            $amountPaid = round($proportion * min($nominal, $totalSisaDipilih), 2);
+            $amountPaid = min($amountPaid, $sisa);
 
-        if ($deposit) {
-            $deposit->amount += $nominal;
-            $deposit->save();
+            $amountPaidPerComponent[$component] = $amountPaid;
 
-            DepositHistory::create([
-                'deposit_id' => $deposit->id,
-                'name' => 'Pembayaran ' . implode(', ', $components),
-                'amount' => $nominal,
-            ]);
-        } else {
-            $newDeposit = Deposit::create([
-                'user_id' => $booking->user_id,
-                'amount' => $nominal,
-            ]);
+            $newTotalPaid = $totalPaid[$component] + $amountPaid + ($component === 'kost' ? $dpAwal : 0);
+            $isLunas = $newTotalPaid >= $harga[$component] - 0.01;
+            $keterangan = $isLunas ? 'paid' : 'cicilan';
 
-            DepositHistory::create([
-                'deposit_id' => $newDeposit->id,
-                'name' => 'Pembayaran ' . implode(', ', $components),
-                'amount' => $nominal,
+            Tagihan::create([
+                'booking_id' => $booking->id,
+                'component' => $component,
+                'amount_paid' => $amountPaid,
+                'tanggal_tagihan' => now(),
+                'status_pembayaran' => $statusMap,
+                'payment_token' => $orderId,
+                'keterangan' => $keterangan
             ]);
         }
 
-        // Cek apakah semua komponen yang dipilih sudah lunas
-        $allPaid = true;
-        foreach ($components as $component) {
-            if (($sisaTagihan[$component] ?? 0) > 0) {
-                $allPaid = false;
-                break;
-            }
-        }
+        // ===== 5. SIMPAN KE DEPOSIT =====
+        $deposit = Deposit::firstOrCreate(
+            ['user_id' => $booking->user_id],
+            ['amount' => 0]
+        );
+        $deposit->amount += $nominal;
+        $deposit->save();
 
-        // Kirim WA jika sudah lunas semua komponen yang dipilih
-        if ($allPaid) {
-            $this->kirimWaBookingStatus(
-                $booking->user->name,
-                'aktif',
-                $booking->kost->nomor_kamar,
-                $booking->user->phone
-            );
-        }
+        DepositHistory::create([
+            'deposit_id' => $deposit->id,
+            'name' => 'Pembayaran ' . implode(', ', $components),
+            'amount' => $nominal,
+        ]);
+
+        // ===== 6. CEK LUNAS ATAU BELUM =====
+$totalSisaBulanIni = [
+    'kost' => max(0, $harga['kost'] - $dpAwal - ($totalPaid['kost'] + ($amountPaidPerComponent['kost'] ?? 0))),
+    'air' => max(0, $harga['air'] - ($totalPaid['air'] + ($amountPaidPerComponent['air'] ?? 0))),
+    'kebersihan' => max(0, $harga['kebersihan'] - ($totalPaid['kebersihan'] + ($amountPaidPerComponent['kebersihan'] ?? 0))),
+];
+
+if (array_sum($totalSisaBulanIni) <= 0.01) {
+    // tanggal bayar sekarang
+    $now = now();
+
+    // Update booking ke aktif, simpan tanggal bayar
+    $booking->tgl_booking = $now;
+    $booking->save();
+
+
+
+    // Kirim WA
+    $this->kirimWaBookingStatus(
+        $booking->user->name,
+        'aktif',
+        $booking->kost->nomor_kamar,
+        $booking->user->phone
+    );
+}
+
+
 
         return response()->json([
             'success' => true,
             'redirect' => route('tagihanpelanggan.index')
         ]);
+
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
