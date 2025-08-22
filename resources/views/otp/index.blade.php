@@ -41,7 +41,6 @@
             <th>No</th>
             <th>Phone</th>
             <th>Kode OTP</th>
-            <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -50,17 +49,6 @@
             <td>{{ $index + $otps->firstItem() }}</td>
             <td>{{ $otp->phone }}</td>
             <td>{{ $otp->code }}</td>
-            <td>
-              <div class="d-flex justify-content-center gap-1">
-                <form action="{{ route('otp.destroy', $otp->id) }}" method="POST" class="d-inline">
-                  @csrf
-                  @method('DELETE')
-                  <button type="button" class="btn btn-sm btn-danger btn-delete" title="Hapus">
-                    <i class="ti ti-trash"></i>
-                  </button>
-                </form>
-              </div>
-            </td>
           </tr>
           @empty
           <tr>
