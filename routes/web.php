@@ -22,6 +22,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\ProfilePelangganController;
 use App\Http\Controllers\PesanBalasanController;
 use App\Http\Controllers\SimulasiController;
+use App\Http\Controllers\OtpController;
 // use App\Http\Controllers\LaporanPdfController;
 use App\Models\Notifbook;
 use Illuminate\Support\Facades\Session;
@@ -192,6 +193,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('kontak', KontakController::class);
     Route::resource('pembayaran', PembayaranController::class);
     Route::resource('tagihan', TagihanController::class);
+    Route::resource('otp', OtpController::class);
     Route::resource('pengguna', PenggunaController::class);
     Route::delete('/tagihan', [TagihanController::class, 'bulkDelete'])->name('tagihan.bulkDelete');
     Route::delete('/booking', [BookingController::class, 'bulkDelete'])->name('booking.bulkDelete');

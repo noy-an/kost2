@@ -55,8 +55,17 @@
 
          <li class="sidebar-item">
           <a class="sidebar-link {{ request()->routeIs('deposit.*') ? 'active' : '' }}" href="{{ route('deposit.index') }}">
-            <i class="ti ti-file-invoice"></i><span class="hide-menu">Deposit</span>
+            <i class="ti ti-cash-banknote"></i><span class="hide-menu">Deposit</span>
             @if($depositBaru)
+              <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
+            @endif
+          </a>
+        </li>
+
+           <li class="sidebar-item">
+          <a class="sidebar-link {{ request()->routeIs('otp.*') ? 'active' : '' }}" href="{{ route('otp.index') }}">
+            <i class="ti ti-password"></i><span class="hide-menu">OTP</span>
+            @if($otpBaru)
               <span class="badge bg-danger rounded-pill small ms-2">NEW</span>
             @endif
           </a>

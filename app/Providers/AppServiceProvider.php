@@ -9,6 +9,7 @@ use App\Models\Kost;
 use App\Models\Booking;
 use App\Models\Deposit;
 use App\Models\Tagihan;
+use App\Models\Otp;
 
 use Illuminate\Support\Facades\Schedule;
 use App\Models\Pembayaran;
@@ -47,6 +48,8 @@ class AppServiceProvider extends ServiceProvider
             'penggunaBaru' => User::whereDate('created_at', today())->exists() && !in_array('pengguna', $visited),
             'kontakBaru' => Kontak::whereDate('created_at', today())->exists() && !in_array('kontak', $visited),
              'depositBaru' => Deposit::whereDate('created_at', today())->exists() && !in_array('deposit', $visited),
+             'otpBaru' => Otp::whereDate('created_at', today())->exists() && !in_array('otp', $visited),
+             
         ];
 
         $view->with($notif);
