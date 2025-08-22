@@ -360,6 +360,39 @@ class TagihanpelangganController extends Controller
         }
     }
 
+    // Fungsi baru untuk mengirim QR code via WhatsApp
+    private function kirimQRCodeWhatsApp($qrCodeUrl, $nomorHP, $orderId, $amount)
+    {
+        $apiToken = env('JAPATI_API_TOKEN');
+        $gateway = env('JAPATI_GATEWAY_NUMBER');
+
+        $message = "*🔄 QR Code Pembayaran*\n\n";
+        $message .= "Order ID: {$orderId}\n";
+        $message .= "Nominal: Rp" . number_format($amount, 0, ',', '.') . "\n\n";
+        $message .= "Silakan scan QR code berikut untuk melakukan pembayaran:\n";
+        $message .= "{$qrCodeUrl}\n\n";
+        $message .= "⚠️ *PENTING:* QR code ini hanya untuk mempermudah Anda melihat kode pembayaran. Untuk menyelesaikan pembayaran, tetap gunakan halaman Midtrans yang telah dibuka.\n\n";
+        $message .= "Terima kasih! 🙏";
+
+        $res = Http::asForm()->withHeaders([
+            'Authorization' => 'Bearer ' . $apiToken,
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->post('https://app.japati.id/api/send-message', [
+            'gateway' => $gateway,
+            'number' => $nomorHP,
+            'type' => 'text',
+            'message' => $message,
+        ]);
+
+        if ($res->successful()) {
+            Log::info("QR Code berhasil dikirim ke WhatsApp: {$nomorHP}");
+            return true;
+        } else {
+            Log::error('Gagal kirim QR Code via WA: ' . $res->body());
+            return false;
+        }
+    }
+
     public function createCicilan($booking_id)
     {
         $booking = Booking::with('kost', 'user', 'tagihan')->findOrFail($booking_id);
@@ -415,7 +448,7 @@ class TagihanpelangganController extends Controller
             'components' => 'required|array|min:1'
         ]);
 
-        $booking = Booking::findOrFail($request->booking_id);
+        $booking = Booking::with('user')->findOrFail($request->booking_id);
         $nominal = $request->nominal_pembayaran;
         $components = $request->components;
 
@@ -426,7 +459,8 @@ class TagihanpelangganController extends Controller
         Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
         Config::$is3ds = env('MIDTRANS_IS_3DS');
 
-        $params = [
+        // Parameter untuk Snap (pembayaran normal)
+        $snapParams = [
             'transaction_details' => [
                 'order_id' => $orderId,
                 'gross_amount' => $nominal,
@@ -449,14 +483,60 @@ class TagihanpelangganController extends Controller
             ]
         ];
 
+        // Parameter untuk Core API (generate QR code)
+        $qrParams = [
+            'payment_type' => 'gopay',
+            'transaction_details' => [
+                'order_id' => $orderId . '-QR',
+                'gross_amount' => $nominal,
+            ],
+            'customer_details' => [
+                'first_name' => Auth::user()->name,
+                'email' => Auth::user()->email,
+                'phone' => Auth::user()->phone ?? '08123456789',
+            ],
+            'item_details' => [
+                [
+                    'id' => $booking->id,
+                    'price' => $nominal,
+                    'quantity' => 1,
+                    'name' => 'QR Code - Cicilan Pembayaran Kost (' . implode(', ', $components) . ')',
+                ]
+            ]
+        ];
+
         try {
-            $snapToken = Snap::getSnapToken($params);
+            // Generate Snap token untuk pembayaran normal
+            $snapToken = Snap::getSnapToken($snapParams);
+            
+            // Generate QR code menggunakan Core API
+            $qrResponse = null;
+            $qrCodeUrl = null;
+            
+            try {
+                $qrResponse = CoreApi::charge($qrParams);
+                $qrCodeUrl = $qrResponse->actions[0]->url ?? null;
+                
+                // Kirim QR code ke WhatsApp jika berhasil dibuat
+                if ($qrCodeUrl && Auth::user()->phone) {
+                    $this->kirimQRCodeWhatsApp(
+                        $qrCodeUrl, 
+                        Auth::user()->phone, 
+                        $orderId, 
+                        $nominal
+                    );
+                }
+            } catch (\Exception $qrError) {
+                Log::warning('Gagal generate QR code: ' . $qrError->getMessage());
+                // Lanjutkan tanpa QR code jika gagal
+            }
             
             return response()->json([
                 'success' => true,
                 'order_id' => $orderId,
                 'snap_token' => $snapToken,
-                'message' => 'Token berhasil dibuat'
+                'qr_code_url' => $qrCodeUrl,
+                'message' => 'Token berhasil dibuat' . ($qrCodeUrl ? ' dan QR code dikirim ke WhatsApp' : '')
             ]);
         } catch (\Exception $e) {
             Log::error('Midtrans Error: ' . $e->getMessage());
